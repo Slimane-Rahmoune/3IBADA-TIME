@@ -25,11 +25,11 @@
   .tab{padding:8px 12px;border-radius:10px;border:1px solid #cfd8e3;background:#fff;cursor:pointer}
   .tab.active{background:var(--accent);border-color:var(--accent);color:#fff}
 
-  /* tasks */
-  .task{display:flex;align-items:center;justify-content:space-between;padding:12px;border:1px solid #e9eef5;border-radius:10px;margin:8px 0}
-  .left{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+  /* tasks (planning) */
+  .task{display:flex;align-items:center;justify-content:space-between;padding:10px;border:1px solid #e9eef5;border-radius:10px;margin:6px 0}
+  .left{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
   .time{font-weight:bold;min-width:150px}
-  .badge{font-size:12px;background:#e8f1ff;border:1px solid #cfe0ff;border-radius:999px;padding:4px 8px}
+  .badge{font-size:12px;background:#e8f1ff;border:1px solid #cfe0ff;border-radius:999px;padding:2px 8px}
   .now{border-color:var(--now);box-shadow:0 0 0 2px rgba(19,179,139,.15)}
   .now .badge{background:#e9fff7;border-color:#b9f1df}
   .nowTag{font-size:12px;color:#0f8a6a;margin-inline-start:6px}
@@ -41,15 +41,16 @@
 
   /* adhkar */
   .adh-toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
-  .dhk{border:1px solid #e6ebf2;border-radius:10px;padding:12px;margin:10px 0}
-  .dhk h4{margin:0 0 8px 0;font-size:16px}
-  .dhk p{margin:6px 0}
+  .sectionHead{display:flex;align-items:center;justify-content:space-between;margin:10px 0 6px 0}
+  .catTitle{font-weight:bold}
+  .sectionActions{display:flex;gap:6px}
+  .dhk{border:1px solid #e6ebf2;border-radius:10px;padding:10px;margin:8px 0}
+  .dhk h4{margin:0 0 6px 0;font-size:16px}
+  .dhk p{margin:4px 0}
   .dhk .controls{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:6px}
   .counter{min-width:46px;text-align:center;border-radius:8px;border:1px solid #cfd8e3;padding:4px 8px}
   .tag{display:inline-block;font-size:12px;background:#fafafa;border:1px solid #e8e8e8;border-radius:999px;padding:2px 8px;margin-inline-start:6px}
-  .catTitle{margin:12px 0 6px 0;font-weight:bold}
-  .divider{height:1px;background:#e9eef5;margin:10px 0}
-  .hidden{display:none}
+  .divider{height:1px;background:#e9eef5;margin:8px 0}
 
   /* quran */
   .qrow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
@@ -184,7 +185,7 @@ const T = {
         {txt:"دعاء دخول البيت: بسم الله ولجنا وبسم الله خرجنا…", count:1, ref:"أبو داود"},
         {txt:"ذكر الطعام: بسم الله — وبعده: الحمد لله الذي أطعمنا…", count:1, ref:"أبو داود"},
         {txt:"لبس الثوب: الحمد لله الذي كساني هذا…", count:1, ref:"أبو داود"},
-        {txt:"سفر: الله أكبر (ثلاثًا)… سبحان الذي سخر لنا هذا…", count:1, ref:"مسلم"}
+        {txt:"سفر: سبحان الذي سخر لنا هذا…", count:1, ref:"مسلم"}
       ]
     },
     // quran
@@ -241,7 +242,7 @@ const T = {
       sleep:[
         {txt:"Bismika Allâhumma amûtu wa ahyâ", count:1, ref:"Bukhari"},
         {txt:"Âyat al-Kursî", count:1, ref:"Bukhari"},
-        {txt:"Ikhlâs + Falaq + Nâs (souffler et passer les mains)", count:1, ref:"Bukhari"}
+        {txt:"Ikhlâs + Falaq + Nâs", count:1, ref:"Bukhari"}
       ],
       home:[
         {txt:"Entrer à la maison", count:1, ref:"Abu Dawud"},
@@ -303,7 +304,7 @@ const T = {
       sleep:[
         {txt:"Bismika Allahumma amutu wa ahya", count:1, ref:"Bukhari"},
         {txt:"Ayat al-Kursi", count:1, ref:"Bukhari"},
-        {txt:"Ikhlas + Falaq + Nas (blow and wipe)", count:1, ref:"Bukhari"}
+        {txt:"Ikhlas + Falaq + Nas", count:1, ref:"Bukhari"}
       ],
       home:[
         {txt:"Entering home", count:1, ref:"Abu Dawud"},
@@ -317,8 +318,8 @@ const T = {
   }
 };
 
-// 114 surahs
-const SURAH_NAMES=[/* … même tableau que précédemment … */"Al-Fātiḥah","Al-Baqarah","Āl ‘Imrān","An-Nisā’","Al-Mā’idah","Al-An‘ām","Al-A‘rāf","Al-Anfāl","At-Tawbah","Yūnus","Hūd","Yūsuf","Ar-Ra‘d","Ibrāhīm","Al-Ḥijr","An-Naḥl","Al-Isrā’","Al-Kahf","Maryam","Ṭā Hā","Al-Anbiyā’","Al-Ḥajj","Al-Mu’minūn","An-Nūr","Al-Furqān","Ash-Shu‘arā’","An-Naml","Al-Qaṣaṣ","Al-‘Ankabūt","Ar-Rūm","Luqmān","As-Sajdah","Al-Aḥzāb","Saba’","Fāṭir","Yā Sīn","As-Ṣāffāt","Ṣād","Az-Zumar","Ghāfir","Fuṣṣilat","Ash-Shūrā","Az-Zukhruf","Ad-Dukhān","Al-Jāthiyah","Al-Aḥqāf","Muḥammad","Al-Fatḥ","Al-Ḥujurāt","Qāf","Adh-Dhāriyāt","Aṭ-Ṭūr","An-Najm","Al-Qamar","Ar-Raḥmān","Al-Wāqi‘ah","Al-Ḥadīd","Al-Mujādilah","Al-Ḥashr","Al-Mumtaḥanah","Aṣ-Ṣaff","Al-Jumu‘ah","Al-Munāfiqūn","At-Taghābun","Aṭ-Ṭalāq","At-Taḥrīm","Al-Mulk","Al-Qalam","Al-Ḥāqqah","Al-Ma‘ārij","Nūḥ","Al-Jinn","Al-Muzzammil","Al-Muddaththir","Al-Qiyāmah","Al-Insān","Al-Mursalāt","An-Naba’","An-Nāzi‘āt","‘Abasa","At-Takwīr","Al-Infiṭār","Al-Muṭaffifīn","Al-Inshiqāq","Al-Burūj","Aṭ-Ṭāriq","Al-A‘lā","Al-Ghāshiyah","Al-Fajr","Al-Balad","Ash-Shams","Al-Layl","Aḍ-Ḍuḥā","Ash-Sharḥ","At-Tīn","Al-‘Alaq","Al-Qadr","Al-Bayyinah","Az-Zalzalah","Al-‘Ādiyāt","Al-Qāri‘ah","At-Takāthur","Al-‘Aṣr","Al-Humazah","Al-Fīl","Quraysh","Al-Mā‘ūn","Al-Kawthar","Al-Kāfirūn","An-Naṣr","Al-Masad","Al-Ikhlāṣ","Al-Falaq","An-Nās"];
+// 114 surahs (abrégé pour la place)
+const SURAH_NAMES=["Al-Fātiḥah","Al-Baqarah","Āl ‘Imrān","An-Nisā’","Al-Mā’idah","Al-An‘ām","Al-A‘rāf","Al-Anfāl","At-Tawbah","Yūnus","Hūd","Yūsuf","Ar-Ra‘d","Ibrāhīm","Al-Ḥijr","An-Naḥl","Al-Isrā’","Al-Kahf","Maryam","Ṭā Hā","Al-Anbiyā’","Al-Ḥajj","Al-Mu’minūn","An-Nūr","Al-Furqān","Ash-Shu‘arā’","An-Naml","Al-Qaṣaṣ","Al-‘Ankabūt","Ar-Rūm","Luqmān","As-Sajdah","Al-Aḥzāb","Saba’","Fāṭir","Yā Sīn","As-Ṣāffāt","Ṣād","Az-Zumar","Ghāfir","Fuṣṣilat","Ash-Shūrā","Az-Zukhruf","Ad-Dukhān","Al-Jāthiyah","Al-Aḥqāf","Muḥammad","Al-Fatḥ","Al-Ḥujurāt","Qāf","Adh-Dhāriyāt","Aṭ-Ṭūr","An-Najm","Al-Qamar","Ar-Raḥmān","Al-Wāqi‘ah","Al-Ḥadīd","Al-Mujādilah","Al-Ḥashr","Al-Mumtaḥanah","Aṣ-Ṣaff","Al-Jumu‘ah","Al-Munāfiqūn","At-Taghābun","Aṭ-Ṭalāq","At-Taḥrīm","Al-Mulk","Al-Qalam","Al-Ḥāqqah","Al-Ma‘ārij","Nūḥ","Al-Jinn","Al-Muzzammil","Al-Muddaththir","Al-Qiyāmah","Al-Insān","Al-Mursalāt","An-Naba’","An-Nāzi‘āt","‘Abasa","At-Takwīr","Al-Infiṭār","Al-Muṭaffifīn","Al-Inshiqāq","Al-Burūj","Aṭ-Ṭāriq","Al-A‘lā","Al-Ghāshiyah","Al-Fajr","Al-Balad","Ash-Shams","Al-Layl","Aḍ-Ḍuḥā","Ash-Sharḥ","At-Tīn","Al-‘Alaq","Al-Qadr","Al-Bayyinah","Az-Zalzalah","Al-‘Ādiyāt","Al-Qāri‘ah","At-Takāthur","Al-‘Aṣr","Al-Humazah","Al-Fīl","Quraysh","Al-Mā‘ūn","Al-Kawthar","Al-Kāfirūn","An-Naṣr","Al-Masad","Al-Ikhlāṣ","Al-Falaq","An-Nās"];
 
 /* ======================= HELPERS ======================= */
 const $=s=>document.querySelector(s);
@@ -397,33 +398,56 @@ function renderAdhkar(lang,L){
   const cur=localStorage.getItem("adh_slot_"+lang) || L.slots[0].key;
   slotSel.value=cur;
 
-  drawAdhkar(lang,L,cur, adhSearch.value.trim());
+  drawAdhkarList(lang,L,cur, adhSearch.value.trim());
 
-  slotSel.onchange=()=>{localStorage.setItem("adh_slot_"+lang,slotSel.value);drawAdhkar(lang,L,slotSel.value, adhSearch.value.trim());};
+  slotSel.onchange=()=>{localStorage.setItem("adh_slot_"+lang,slotSel.value);drawAdhkarList(lang,L,slotSel.value, adhSearch.value.trim());};
   resetAdhkar.onclick=()=>{
     if(slotSel.value==="all"){
-      // reset all slots
       L.slots.filter(s=>s.key!=="all").forEach(s=>localStorage.removeItem(adhkarStoreKey(lang,s.key)));
     }else{
       localStorage.removeItem(adhkarStoreKey(lang,slotSel.value));
     }
-    drawAdhkar(lang,L,slotSel.value, adhSearch.value.trim());
+    drawAdhkarList(lang,L,slotSel.value, adhSearch.value.trim());
   };
-  adhSearch.oninput=()=>drawAdhkar(lang,L,slotSel.value, adhSearch.value.trim());
+  adhSearch.oninput=()=>drawAdhkarList(lang,L,slotSel.value, adhSearch.value.trim());
 }
 
-function drawAdhkar(lang,L,slotKey,query){
+function drawAdhkarList(lang,L,slotKey,query){
   adhkarList.innerHTML="";
-  const renderList=(slotKey,label,list)=>{
-    if(list.length===0) return;
-    // section title
-    if(slotKey!=="__noheader__"){
-      const h=document.createElement("div");
-      h.className="catTitle"; h.textContent=label; adhkarList.appendChild(h);
+
+  // Helper: rend une section (avec en-tête optionnel)
+  const renderList = (storeKey, headerLabel, items) => {
+    if (!items || items.length === 0) return;
+
+    if (headerLabel) {
+      const head=document.createElement("div");
+      head.className="sectionHead";
+      head.innerHTML=`<div class="catTitle">${headerLabel}</div>
+        <div class="sectionActions">
+          <button class="primary" id="${storeKey}-all">✅ ${L.checkAll}</button>
+          <button id="${storeKey}-reset">↺ ${L.resetAdhkar}</button>
+        </div>`;
+      adhkarList.appendChild(head);
       const divi=document.createElement("div"); divi.className="divider"; adhkarList.appendChild(divi);
+
+      // actions section
+      document.addEventListener("click", (ev)=>{
+        if(ev.target && ev.target.id===`${storeKey}-all`){
+          const counts=loadJSON(adhkarStoreKey(lang,storeKey));
+          items.forEach((d,idx)=>{counts[idx]=d.count||1;});
+          saveJSON(adhkarStoreKey(lang,storeKey),counts);
+          // rafraîchit la vue
+          drawAdhkarList(lang,L,slotKey, query);
+        }
+        if(ev.target && ev.target.id===`${storeKey}-reset`){
+          localStorage.removeItem(adhkarStoreKey(lang,storeKey));
+          drawAdhkarList(lang,L,slotKey, query);
+        }
+      }, {once:true});
     }
-    const counts=loadJSON(adhkarStoreKey(lang,slotKey));
-    list.forEach((d,idx)=>{
+
+    const counts=loadJSON(adhkarStoreKey(lang,storeKey));
+    items.forEach((d,idx)=>{
       if(query && !d.txt.toLowerCase().includes(query.toLowerCase())) return;
       const need=d.count||1, cur=counts[idx]||0;
       const div=document.createElement("div");
@@ -432,35 +456,34 @@ function drawAdhkar(lang,L,slotKey,query){
         <h4>${d.txt}</h4>
         <p class="muted">${d.ref?`<span class="tag">${d.ref}</span>`:""}<span class="tag">x${need}</span></p>
         <div class="controls">
-          <button class="primary" id="${slotKey}-plus-${idx}">+1</button>
-          <button id="${slotKey}-minus-${idx}">-1</button>
-          <span class="counter" id="${slotKey}-count-${idx}">${cur}/${need}</span>
-          <button id="${slotKey}-done-${idx}">✅</button>
-          <button id="${slotKey}-reset-${idx}">↺</button>
+          <button class="primary" id="${storeKey}-plus-${idx}">+1</button>
+          <button id="${storeKey}-minus-${idx}">-1</button>
+          <span class="counter" id="${storeKey}-count-${idx}">${cur}/${need}</span>
+          <button id="${storeKey}-done-${idx}">✅</button>
+          <button id="${storeKey}-reset-${idx}">↺</button>
         </div>`;
       adhkarList.appendChild(div);
 
       const update=(v)=>{
         const c=Math.max(0,Math.min(need,v));
-        counts[idx]=c; saveJSON(adhkarStoreKey(lang,slotKey),counts);
-        $("#"+`${slotKey}-count-${idx}`).textContent=`${c}/${need}`;
+        counts[idx]=c; saveJSON(adhkarStoreKey(lang,storeKey),counts);
+        document.getElementById(`${storeKey}-count-${idx}`).textContent=`${c}/${need}`;
       };
-      $("#"+`${slotKey}-plus-${idx}`).onclick=()=>update((counts[idx]||0)+1);
-      $("#"+`${slotKey}-minus-${idx}`).onclick=()=>update((counts[idx]||0)-1);
-      $("#"+`${slotKey}-done-${idx}`).onclick=()=>update(need);
-      $("#"+`${slotKey}-reset-${idx}`).onclick=()=>update(0);
+      document.getElementById(`${storeKey}-plus-${idx}`).onclick =()=>update((counts[idx]||0)+1);
+      document.getElementById(`${storeKey}-minus-${idx}`).onclick=()=>update((counts[idx]||0)-1);
+      document.getElementById(`${storeKey}-done-${idx}`).onclick =()=>update(need);
+      document.getElementById(`${storeKey}-reset-${idx}`).onclick=()=>update(0);
     });
   };
 
-  if(slotKey==="all"){
-    // show all categories consecutively
+  if (slotKey === "all") {
+    // toutes les catégories avec titre
     L.slots.filter(s=>s.key!=="all").forEach(s=>{
-      const list=(L.adhkar[s.key]||[]);
-      renderList(s.key, s.name, list);
+      renderList(s.key, s.name, (L.adhkar[s.key]||[]));
     });
-  }else{
-    const list=(L.adhkar[slotKey]||[]);
-    renderList(slotKey,"__noheader__", list); // no header inside single slot view
+  } else {
+    // un seul créneau — PAS d'en-tête (headerLabel = null)
+    renderList(slotKey, null, (L.adhkar[slotKey]||[]));
   }
 }
 
@@ -486,7 +509,7 @@ function showPage(key){[pagePlan,pageAdhkar,pageQuran].forEach(p=>p.style.displa
 /* ======================= RENDER ALL / INIT ======================= */
 function renderAll(lang){
   const rtl=(lang==="ar"); document.documentElement.lang=lang; document.documentElement.dir=rtl?"rtl":"ltr"; document.body.style.direction=rtl?"rtl":"ltr";
-  const L=T[lang]; titleEl.textContent=L.title; $("#langLabel").textContent=L.lang; notifyBtn.textContent=L.notify; hintEl.textContent=L.hint;
+  const L=T[lang]; titleEl.textContent=L.title; document.getElementById("langLabel").textContent=L.lang; notifyBtn.textContent=L.notify; hintEl.textContent=L.hint;
   renderPlan(lang,L); renderAdhkar(lang,L); renderQuran(lang,L);
 }
 
