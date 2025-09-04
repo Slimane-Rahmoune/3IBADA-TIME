@@ -5,7 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>جدول إدارة الوقت</title>
 <style>
-  :root{--bg:#eef6ff;--card:#fff;--text:#1b2a41;--muted:#5f6b7a;--shadow:0 1px 4px rgba(0,0,0,.12);--brand:#1e88e5;--now:#13b38b;--accent:#0ea5e9;}
+  :root{
+    --bg:#eef6ff;--card:#fff;--text:#1b2a41;--muted:#5f6b7a;--shadow:0 1px 4px rgba(0,0,0,.12);
+    --brand:#1e88e5;--now:#13b38b;--accent:#0ea5e9;
+  }
   html,body{height:100%}
   body{margin:14px;background:var(--bg);font-family:Tahoma,Arial,sans-serif;color:var(--text)}
   .wrap{max-width:1000px;margin:0 auto}
@@ -16,11 +19,13 @@
   .primary{background:var(--brand);color:#fff;border:none}
   .card{background:var(--card);box-shadow:var(--shadow);border-radius:12px;padding:12px;margin:12px 0}
   .muted{color:var(--muted);font-size:12px}
+
+  /* nav */
   .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
   .tab{padding:8px 12px;border-radius:10px;border:1px solid #cfd8e3;background:#fff;cursor:pointer}
   .tab.active{background:var(--accent);border-color:var(--accent);color:#fff}
 
-  /* plan */
+  /* tasks */
   .task{display:flex;align-items:center;justify-content:space-between;padding:12px;border:1px solid #e9eef5;border-radius:10px;margin:8px 0}
   .left{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
   .time{font-weight:bold;min-width:150px}
@@ -35,23 +40,20 @@
   @media (max-width:560px){.time{min-width:auto}}
 
   /* adhkar */
+  .adh-toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
   .dhk{border:1px solid #e6ebf2;border-radius:10px;padding:12px;margin:10px 0}
   .dhk h4{margin:0 0 8px 0;font-size:16px}
+  .dhk p{margin:6px 0}
   .dhk .controls{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:6px}
-  .counter{min-width:42px;text-align:center;border-radius:8px;border:1px solid #cfd8e3;padding:4px 8px}
+  .counter{min-width:46px;text-align:center;border-radius:8px;border:1px solid #cfd8e3;padding:4px 8px}
   .tag{display:inline-block;font-size:12px;background:#fafafa;border:1px solid #e8e8e8;border-radius:999px;padding:2px 8px;margin-inline-start:6px}
+  .catTitle{margin:12px 0 6px 0;font-weight:bold}
+  .divider{height:1px;background:#e9eef5;margin:10px 0}
+  .hidden{display:none}
 
   /* quran */
   .qrow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
-  .ayah{padding:10px 12px;border-bottom:1px solid #eef2f7;line-height:1.9}
-  .ayah .meta{font-size:12px;color:#6b7280}
-  .ayah .num{display:inline-block;background:#eef6ff;border:1px solid #cfe0ff;border-radius:999px;padding:2px 8px;margin-inline:6px}
-  .alt{margin-top:6px;color:#374151}
-  .qtools{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
-  .danger{background:#ef4444;color:#fff;border:none}
-  .success{background:#10b981;color:#fff;border:none}
-  .search{flex:1;min-width:180px}
-  .stickyTop{position:sticky;top:8px;z-index:5}
+  iframe{width:100%;height:70vh;border:none;border-radius:12px;box-shadow:var(--shadow)}
 </style>
 </head>
 <body>
@@ -69,13 +71,14 @@
     </div>
   </header>
 
+  <!-- NAV -->
   <div class="tabs">
     <button class="tab active" data-page="plan" id="tab-plan">📋 التخطيط</button>
     <button class="tab" data-page="adhkar" id="tab-adhkar">🕯️ الأذكار</button>
     <button class="tab" data-page="quran" id="tab-quran">📖 القرآن</button>
   </div>
 
-  <!-- PLAN -->
+  <!-- PAGE: PLAN -->
   <section id="page-plan" class="card">
     <div class="toolbar">
       <button id="checkAll" class="primary">✅ تحديد الكل</button>
@@ -86,36 +89,32 @@
     <div id="progress" class="status muted"></div>
   </section>
 
-  <!-- ADHKAR -->
+  <!-- PAGE: ADHKAR -->
   <section id="page-adhkar" class="card" style="display:none">
-    <div class="qrow">
+    <div class="adh-toolbar">
       <label for="slotSel" id="slotLabel">اختر الفترة:</label>
       <select id="slotSel"></select>
+      <input type="text" id="adhSearch" placeholder="بحث / Recherche / Search" />
       <button id="resetAdhkar" class="primary">↺ تصفير العدادات</button>
     </div>
     <div id="adhkarList"></div>
     <p class="muted" id="adhkarHint">يتم حفظ العدادات محليًا لكل فترة ولغة.</p>
   </section>
 
-  <!-- QURAN -->
+  <!-- PAGE: QURAN -->
   <section id="page-quran" class="card" style="display:none">
-    <div class="qrow stickyTop">
+    <div class="qrow">
       <label id="qLabel1">سورة:</label>
       <select id="surahSel"></select>
-      <label id="qLabel2">ترجمة:</label>
-      <select id="trSel">
-        <option value="none">—</option>
-        <option value="fr.hamidullah">Français (Hamidullah)</option>
-        <option value="en.sahih">English (Sahih)</option>
-      </select>
-      <input id="qSearch" class="search" type="text" placeholder="بحث / Search" />
-      <button id="loadSurah" class="primary">تحميل</button>
-      <button id="backTop" class="success">⬆️ Haut / أعلى</button>
-      <button id="clearCache" class="danger">🗑️ مسح التحميل المؤقت</button>
+      <label id="qLabel2">جزء (Juz):</label>
+      <select id="juzSel"></select>
+      <button id="openSurah" class="primary">فتح</button>
+      <button id="markRead">✅ تمّت القراءة</button>
+      <button id="resetRead">↺ تصفير</button>
     </div>
     <div class="muted" id="readStatus"></div>
-    <div id="qList"></div>
-    <p class="muted" id="qHint">يتم جلب النص من api.alquran.cloud ويُحفظ مؤقتًا محليًا للتصفح السريع.</p>
+    <iframe id="qFrame" title="Quran"></iframe>
+    <p class="muted" id="qHint">ملاحظة: يتم تضمين قارئ من quran.com. قد يطلب المتصفح السماح بالتضمين.</p>
   </section>
 
   <p class="muted" id="hint">
@@ -124,10 +123,14 @@
 </div>
 
 <script>
-/* ================= i18n data (abrégé pour la réponse) ================= */
+/* ======================= I18N & DATA ======================= */
 const T = {
-  ar:{ title:"🕰️ جدول إدارة الوقت على منهج النبي ﷺ", lang:"اللغة:", notify:"🔔 فعل الإشعارات",
+  ar:{
+    title:"🕰️ جدول إدارة الوقت على منهج النبي ﷺ",
+    lang:"اللغة:",
+    notify:"🔔 فعل الإشعارات",
     tabs:{plan:"📋 التخطيط", adhkar:"🕯️ الأذكار", quran:"📖 القرآن"},
+    // plan
     checkAll:"✅ تحديد الكل", uncheckAll:"↩️ إلغاء تحديد الكل", resetDay:"🗓️ تصفير هذا اليوم",
     hint:"ملاحظة: يتم حفظ إنجازاتك محليًا يوميًا. تغيّر اللغة يغيّر أيضًا اتجاه الصفحة ونصوص المهام.",
     notified:"✅ تم تفعيل الإشعارات", noNotif:"🚫 متصفحك لا يدعم الإشعارات",
@@ -144,281 +147,363 @@ const T = {
       {start:"23:00", end:"04:30", time:"الليل", action:"نوم مبكر + قيام الليل"}
     ],
     progress:(d,t)=>`إنجاز اليوم: ${d}/${t} (${Math.round(d*100/t)}%)`,
-    slotLabel:"اختر الفترة:", adhkarHint:"يتم حفظ العدادات محليًا لكل فترة ولغة.", resetAdhkar:"↺ تصفير العدادات",
-    slots:[{key:"morning",name:"أذكار الصباح"},{key:"afterPrayer",name:"بعد الصلوات"},{key:"evening",name:"أذكار المساء"},{key:"sleep",name:"قبل النوم"}],
-    adhkar:{ morning:[{txt:"أصبحنا وأصبح الملك لله…",count:1,ref:"مسلم"},{txt:"سيد الاستغفار…",count:1,ref:"البخاري"}],
-             afterPrayer:[{txt:"أستغفر الله (٣)…",count:1,ref:"مسلم"}],
-             evening:[{txt:"أمسينا وأمسى الملك لله…",count:1,ref:"مسلم"}],
-             sleep:[{txt:"باسمك اللهم أموت وأحيا",count:1,ref:"البخاري"}] },
-    qLabel1:"سورة:", qLabel2:"ترجمة:", load:"تحميل", back:"⬆️ أعلى", clear:"🗑️ مسح التحميل المؤقت",
-    searchPh:"بحث / Search", readSaved:s=>s
+    // adhkar
+    slotLabel:"اختر الفترة:", adhkarHint:"يتم حفظ العدادات محليًا لكل فترة ولغة.",
+    resetAdhkar:"↺ تصفير العدادات",
+    slots:[
+      {key:"all", name:"كل الأذكار"},
+      {key:"morning", name:"أذكار الصباح"},
+      {key:"afterPrayer", name:"بعد الصلوات"},
+      {key:"evening", name:"أذكار المساء"},
+      {key:"sleep", name:"قبل النوم"},
+      {key:"home", name:"البيت (دخول/خروج/طعام/لباس/سفر)"}
+    ],
+    adhkar:{
+      morning:[
+        {txt:"أصبحنا وأصبح الملك لله…", count:1, ref:"مسلم"},
+        {txt:"سيد الاستغفار: اللهم أنت ربي لا إله إلا أنت…", count:1, ref:"البخاري"},
+        {txt:"سبحان الله وبحمده", count:100, ref:"مسلم"},
+        {txt:"لا إله إلا الله وحده لا شريك له…", count:100, ref:"البخاري"}
+      ],
+      afterPrayer:[
+        {txt:"أستغفر الله (٣) ثم: اللهم أنت السلام ومنك السلام…", count:1, ref:"مسلم"},
+        {txt:"التسبيح 33، التحميد 33، التكبير 33، تمام المئة: لا إله إلا الله…", count:1, ref:"مسلم"},
+        {txt:"آية الكرسي", count:1, ref:"حسن عند بعض أهل العلم"}
+      ],
+      evening:[
+        {txt:"أمسينا وأمسى الملك لله…", count:1, ref:"مسلم"},
+        {txt:"قل هو الله أحد + المعوذتان", count:3, ref:"أبو داود"},
+        {txt:"سبحان الله وبحمده", count:100, ref:"مسلم"}
+      ],
+      sleep:[
+        {txt:"باسمك اللهم أموت وأحيا", count:1, ref:"البخاري"},
+        {txt:"آية الكرسي", count:1, ref:"البخاري"},
+        {txt:"قل هو الله أحد + المعوذتان (نفث على الكفين ومسح الجسد)", count:1, ref:"البخاري"}
+      ],
+      home:[
+        {txt:"دعاء دخول البيت: بسم الله ولجنا وبسم الله خرجنا…", count:1, ref:"أبو داود"},
+        {txt:"ذكر الطعام: بسم الله — وبعده: الحمد لله الذي أطعمنا…", count:1, ref:"أبو داود"},
+        {txt:"لبس الثوب: الحمد لله الذي كساني هذا…", count:1, ref:"أبو داود"},
+        {txt:"سفر: الله أكبر (ثلاثًا)… سبحان الذي سخر لنا هذا…", count:1, ref:"مسلم"}
+      ]
+    },
+    // quran
+    qLabel1:"سورة:", qLabel2:"جزء (Juz):", open:"فتح", markRead:"✅ تمّت القراءة", resetRead:"↺ تصفير",
+    readSaved:(s)=>`آخر قراءة محفوظة: ${s}`
   },
-  fr:{ title:"🕰️ Planning d’adorations – Méthode prophétique ﷺ", lang:"Langue :", notify:"🔔 Activer les notifications",
+  fr:{
+    title:"🕰️ Planning d’adorations – Méthode prophétique ﷺ",
+    lang:"Langue :", notify:"🔔 Activer les notifications",
     tabs:{plan:"📋 Planning", adhkar:"🕯️ Adhkâr", quran:"📖 Coran"},
     checkAll:"✅ Tout cocher", uncheckAll:"↩️ Tout décocher", resetDay:"🗓️ Réinitialiser la journée",
-    hint:"Astuce : données enregistrées localement par jour. Le changement de langue adapte texte et sens.",
+    hint:"Astuce : vos données sont enregistrées localement (par jour).",
     notified:"✅ Notifications activées", noNotif:"🚫 Notifications non supportées",
     now:"Vous êtes ici", interval:(a,b)=>`${a} – ${b}`,
     tasks:[
       {start:"04:30", end:"05:30", time:"Avant l’aube", action:"Qiyâm & rappels"},
-      {start:"05:30", end:"07:00", time:"Fajr – Lever du soleil", action:"Fajr + Coran & invocations"},
-      {start:"07:00", end:"10:00", time:"Matin", action:"Travail/Études (intention)"},
-      {start:"10:00", end:"12:30", time:"Duha", action:"2 à 4 unités"},
-      {start:"12:30", end:"15:30", time:"Dhuhr", action:"Prière + sieste"},
+      {start:"05:30", end:"07:00", time:"Fajr – Lever du soleil", action:"Prière du Fajr + Coran & invocations"},
+      {start:"07:00", end:"10:00", time:"Matin", action:"Travail/Études avec intention sincère"},
+      {start:"10:00", end:"12:30", time:"Duha", action:"2 à 4 unités de prière"},
+      {start:"12:30", end:"15:30", time:"Dhuhr", action:"Prière + petite sieste"},
       {start:"15:30", end:"18:30", time:"‘Asr – Maghrib", action:"Travail/Savoir + Sport"},
-      {start:"18:30", end:"21:00", time:"Maghrib – ‘Isha", action:"Famille + Coran"},
-      {start:"21:00", end:"23:00", time:"‘Isha", action:"Prière + Lecture"},
+      {start:"18:30", end:"21:00", time:"Maghrib – ‘Isha", action:"Temps en famille + Coran"},
+      {start:"21:00", end:"23:00", time:"‘Isha", action:"Prière + Lecture/Repos"},
       {start:"23:00", end:"04:30", time:"Nuit", action:"Coucher tôt + Qiyâm"}
     ],
     progress:(d,t)=>`Progression : ${d}/${t} (${Math.round(d*100/t)}%)`,
-    slotLabel:"Choisir un créneau :", adhkarHint:"Compteurs enregistrés localement.", resetAdhkar:"↺ Réinitialiser",
-    slots:[{key:"morning",name:"Adhkâr du matin"},{key:"afterPrayer",name:"Après les prières"},{key:"evening",name:"Adhkâr du soir"},{key:"sleep",name:"Avant de dormir"}],
-    adhkar:{ morning:[{txt:"Nous entrons au matin…",count:1,ref:"Muslim"}], afterPrayer:[{txt:"Istighfar (3)…",count:1,ref:"Muslim"}],
-             evening:[{txt:"Nous entrons au soir…",count:1,ref:"Muslim"}], sleep:[{txt:"Bismika Allahumma…",count:1,ref:"Bukhari"}]},
-    qLabel1:"Sourate :", qLabel2:"Traduction :", load:"Charger", back:"⬆️ Haut", clear:"🗑️ Vider le cache",
-    searchPh:"Rechercher", readSaved:s=>`Dernière lecture : ${s}`
+    slotLabel:"Créneau :", adhkarHint:"Les compteurs sont enregistrés localement par créneau.",
+    resetAdhkar:"↺ Réinitialiser",
+    slots:[
+      {key:"all", name:"Tous les adhkâr"},
+      {key:"morning", name:"Adhkâr du matin"},
+      {key:"afterPrayer", name:"Après les prières"},
+      {key:"evening", name:"Adhkâr du soir"},
+      {key:"sleep", name:"Avant de dormir"},
+      {key:"home", name:"Maison (entrer/sortir/repas/habit/voyage)"}
+    ],
+    adhkar:{
+      morning:[
+        {txt:"Nous entrons au matin…", count:1, ref:"Muslim"},
+        {txt:"Sayyid al-Istighfâr", count:1, ref:"Bukhari"},
+        {txt:"SubhânAllâh wa bi-hamdih", count:100, ref:"Muslim"},
+        {txt:"Lâ ilâha illâ Allâh waḥdahu…", count:100, ref:"Bukhari"}
+      ],
+      afterPrayer:[
+        {txt:"Istighfar (3) puis « Allahumma anta as-Salâm… »", count:1, ref:"Muslim"},
+        {txt:"33 tasbîh, 33 tahmîd, 33 takbîr + tamâm 100", count:1, ref:"Muslim"},
+        {txt:"Âyat al-Kursî", count:1, ref:"Hasan (selon certains)"}
+      ],
+      evening:[
+        {txt:"Nous entrons au soir…", count:1, ref:"Muslim"},
+        {txt:"Ikhlâs + Falaq + Nâs (x3)", count:3, ref:"Abu Dawud"},
+        {txt:"SubhânAllâh wa bi-hamdih", count:100, ref:"Muslim"}
+      ],
+      sleep:[
+        {txt:"Bismika Allâhumma amûtu wa ahyâ", count:1, ref:"Bukhari"},
+        {txt:"Âyat al-Kursî", count:1, ref:"Bukhari"},
+        {txt:"Ikhlâs + Falaq + Nâs (souffler et passer les mains)", count:1, ref:"Bukhari"}
+      ],
+      home:[
+        {txt:"Entrer à la maison", count:1, ref:"Abu Dawud"},
+        {txt:"Avant/après le repas", count:1, ref:"Abu Dawud"},
+        {txt:"Mettre un vêtement", count:1, ref:"Abu Dawud"},
+        {txt:"Invocation du voyage", count:1, ref:"Muslim"}
+      ]
+    },
+    qLabel1:"Sourate :", qLabel2:"Juz :", open:"Ouvrir", markRead:"✅ Lu", resetRead:"↺ Réinitialiser",
+    readSaved:(s)=>`Dernière lecture : ${s}`
   },
-  en:{ title:"🕰️ Time Management – Prophetic Way ﷺ", lang:"Language:", notify:"🔔 Enable notifications",
+  en:{
+    title:"🕰️ Time Management – Prophetic Way ﷺ",
+    lang:"Language:", notify:"🔔 Enable notifications",
     tabs:{plan:"📋 Plan", adhkar:"🕯️ Adhkar", quran:"📖 Quran"},
     checkAll:"✅ Check all", uncheckAll:"↩️ Uncheck all", resetDay:"🗓️ Reset today",
-    hint:"Tip: data is stored locally per day. Language also flips layout.",
+    hint:"Your data is stored locally per day.",
     notified:"✅ Notifications enabled", noNotif:"🚫 Notifications not supported",
     now:"You are here", interval:(a,b)=>`${a} – ${b}`,
     tasks:[
       {start:"04:30", end:"05:30", time:"Before Fajr", action:"Qiyam & remembrance"},
       {start:"05:30", end:"07:00", time:"Fajr – Sunrise", action:"Fajr + Qur’an & adhkar"},
-      {start:"07:00", end:"10:00", time:"Morning", action:"Work/Study (intention)"},
-      {start:"10:00", end:"12:30", time:"Duha", action:"2–4 units"},
+      {start:"07:00", end:"10:00", time:"Morning", action:"Work/Study with sincere intention"},
+      {start:"10:00", end:"12:30", time:"Duha", action:"2–4 units of prayer"},
       {start:"12:30", end:"15:30", time:"Dhuhr", action:"Prayer + short nap"},
-      {start:"15:30", end:"18:30", time:"Asr – Maghrib", action:"Work/Exercise"},
-      {start:"18:30", end:"21:00", time:"Maghrib – Isha", action:"Family + Qur’an"},
-      {start:"21:00", end:"23:00", time:"Isha", action:"Prayer + Reading"},
+      {start:"15:30", end:"18:30", time:"Asr – Maghrib", action:"Work/Knowledge + Exercise"},
+      {start:"18:30", end:"21:00", time:"Maghrib – Isha", action:"Family time + Qur’an"},
+      {start:"21:00", end:"23:00", time:"Isha", action:"Prayer + Reading/Rest"},
       {start:"23:00", end:"04:30", time:"Night", action:"Sleep early + Qiyam"}
     ],
-    progress:(d,t)=>`Today: ${d}/${t} (${Math.round(d*100/t)}%)`,
-    slotLabel:"Choose slot:", adhkarHint:"Counters saved locally.", resetAdhkar:"↺ Reset",
-    slots:[{key:"morning",name:"Morning adhkar"},{key:"afterPrayer",name:"After prayers"},{key:"evening",name:"Evening adhkar"},{key:"sleep",name:"Before sleep"}],
-    adhkar:{ morning:[{txt:"We enter the morning…",count:1,ref:"Muslim"}], afterPrayer:[{txt:"Istighfar (3)…",count:1,ref:"Muslim"}],
-             evening:[{txt:"We enter the evening…",count:1,ref:"Muslim"}], sleep:[{txt:"Bismika Allahumma…",count:1,ref:"Bukhari"}]},
-    qLabel1:"Surah:", qLabel2:"Translation:", load:"Load", back:"⬆️ Top", clear:"🗑️ Clear cache",
-    searchPh:"Search", readSaved:s=>`Last read: ${s}`
+    progress:(d,t)=>`Progress: ${d}/${t} (${Math.round(d*100/t)}%)`,
+    slotLabel:"Choose slot:", adhkarHint:"Counters are saved locally per slot.",
+    resetAdhkar:"↺ Reset counters",
+    slots:[
+      {key:"all", name:"All adhkar"},
+      {key:"morning", name:"Morning adhkar"},
+      {key:"afterPrayer", name:"After prayers"},
+      {key:"evening", name:"Evening adhkar"},
+      {key:"sleep", name:"Before sleep"},
+      {key:"home", name:"Home (enter/leave/food/clothes/travel)"}
+    ],
+    adhkar:{
+      morning:[
+        {txt:"We enter the morning…", count:1, ref:"Muslim"},
+        {txt:"Sayyid al-Istighfar", count:1, ref:"Bukhari"},
+        {txt:"SubhanAllah wa bihamdih", count:100, ref:"Muslim"},
+        {txt:"La ilaha illa Allah wahdahu…", count:100, ref:"Bukhari"}
+      ],
+      afterPrayer:[
+        {txt:"Istighfar (3) then: Allahumma anta as-Salam…", count:1, ref:"Muslim"},
+        {txt:"33 Tasbih, 33 Tahmid, 33 Takbir + completion to 100", count:1, ref:"Muslim"},
+        {txt:"Ayat al-Kursi", count:1, ref:"Hasan (per some scholars)"}
+      ],
+      evening:[
+        {txt:"We enter the evening…", count:1, ref:"Muslim"},
+        {txt:"Ikhlas + Falaq + Nas (x3)", count:3, ref:"Abu Dawud"},
+        {txt:"SubhanAllah wa bihamdih", count:100, ref:"Muslim"}
+      ],
+      sleep:[
+        {txt:"Bismika Allahumma amutu wa ahya", count:1, ref:"Bukhari"},
+        {txt:"Ayat al-Kursi", count:1, ref:"Bukhari"},
+        {txt:"Ikhlas + Falaq + Nas (blow and wipe)", count:1, ref:"Bukhari"}
+      ],
+      home:[
+        {txt:"Entering home", count:1, ref:"Abu Dawud"},
+        {txt:"Before/after meal", count:1, ref:"Abu Dawud"},
+        {txt:"Wearing a garment", count:1, ref:"Abu Dawud"},
+        {txt:"Travel invocation", count:1, ref:"Muslim"}
+      ]
+    },
+    qLabel1:"Surah:", qLabel2:"Juz:", open:"Open", markRead:"✅ Mark read", resetRead:"↺ Reset",
+    readSaved:(s)=>`Last reading: ${s}`
   }
 };
 
-const SURAH_NAMES = [
- "Al-Fātiḥah","Al-Baqarah","Āl ‘Imrān","An-Nisā’","Al-Mā’idah","Al-An‘ām","Al-A‘rāf","Al-Anfāl","At-Tawbah","Yūnus",
- "Hūd","Yūsuf","Ar-Ra‘d","Ibrāhīm","Al-Ḥijr","An-Naḥl","Al-Isrā’","Al-Kahf","Maryam","Ṭā Hā",
- "Al-Anbiyā’","Al-Ḥajj","Al-Mu’minūn","An-Nūr","Al-Furqān","Ash-Shu‘arā’","An-Naml","Al-Qaṣaṣ","Al-‘Ankabūt","Ar-Rūm",
- "Luqmān","As-Sajdah","Al-Aḥzāb","Saba’","Fāṭir","Yā Sīn","As-Ṣāffāt","Ṣād","Az-Zumar","Ghāfir",
- "Fuṣṣilat","Ash-Shūrā","Az-Zukhruf","Ad-Dukhān","Al-Jāثiyah","Al-Aḥqāf","Muḥammad","Al-Fatḥ","Al-Ḥujurāt","Qāf",
- "Adh-Dhāriyāt","Aṭ-Ṭūr","An-Najm","Al-Qamar","Ar-Raḥmān","Al-Wāqi‘ah","Al-Ḥadīd","Al-Mujādilah","Al-Ḥashr","Al-Mumtaḥanah",
- "Aṣ-Ṣaff","Al-Jumu‘ah","Al-Munāfiqūn","At-Taghābun","Aṭ-Ṭalāq","At-Taḥrīm","Al-Mulk","Al-Qalam","Al-Ḥāqqah","Al-Ma‘ārij",
- "Nūḥ","Al-Jinn","Al-Muzzammil","Al-Muddaththir","Al-Qiyāmah","Al-Insān","Al-Mursalāt","An-Naba’","An-Nāzi‘āt","‘Abasa",
- "At-Takwīr","Al-Infiṭār","Al-Muṭaffifīn","Al-Inshiqāq","Al-Burūj","Aṭ-Ṭāriq","Al-A‘lā","Al-Ghāshiyah","Al-Fajr","Al-Balad",
- "Ash-Shams","Al-Layl","Aḍ-Ḍuḥā","Ash-Sharḥ","At-Tīn","Al-‘Alaq","Al-Qadr","Al-Bayyinah","Az-Zalzalah","Al-‘Ādiyāt",
- "Al-Qāri‘ah","At-Takāthur","Al-‘Aṣr","Al-Humazah","Al-Fīl","Quraysh","Al-Mā‘ūn","Al-Kawthar","Al-Kāfirūn","An-Naṣr",
- "Al-Masad","Al-Ikhlāṣ","Al-Falaq","An-Nās"
-];
+// 114 surahs
+const SURAH_NAMES=[/* … même tableau que précédemment … */"Al-Fātiḥah","Al-Baqarah","Āl ‘Imrān","An-Nisā’","Al-Mā’idah","Al-An‘ām","Al-A‘rāf","Al-Anfāl","At-Tawbah","Yūnus","Hūd","Yūsuf","Ar-Ra‘d","Ibrāhīm","Al-Ḥijr","An-Naḥl","Al-Isrā’","Al-Kahf","Maryam","Ṭā Hā","Al-Anbiyā’","Al-Ḥajj","Al-Mu’minūn","An-Nūr","Al-Furqān","Ash-Shu‘arā’","An-Naml","Al-Qaṣaṣ","Al-‘Ankabūt","Ar-Rūm","Luqmān","As-Sajdah","Al-Aḥzāb","Saba’","Fāṭir","Yā Sīn","As-Ṣāffāt","Ṣād","Az-Zumar","Ghāfir","Fuṣṣilat","Ash-Shūrā","Az-Zukhruf","Ad-Dukhān","Al-Jāthiyah","Al-Aḥqāf","Muḥammad","Al-Fatḥ","Al-Ḥujurāt","Qāf","Adh-Dhāriyāt","Aṭ-Ṭūr","An-Najm","Al-Qamar","Ar-Raḥmān","Al-Wāqi‘ah","Al-Ḥadīd","Al-Mujādilah","Al-Ḥashr","Al-Mumtaḥanah","Aṣ-Ṣaff","Al-Jumu‘ah","Al-Munāfiqūn","At-Taghābun","Aṭ-Ṭalāq","At-Taḥrīm","Al-Mulk","Al-Qalam","Al-Ḥāqqah","Al-Ma‘ārij","Nūḥ","Al-Jinn","Al-Muzzammil","Al-Muddaththir","Al-Qiyāmah","Al-Insān","Al-Mursalāt","An-Naba’","An-Nāzi‘āt","‘Abasa","At-Takwīr","Al-Infiṭār","Al-Muṭaffifīn","Al-Inshiqāq","Al-Burūj","Aṭ-Ṭāriq","Al-A‘lā","Al-Ghāshiyah","Al-Fajr","Al-Balad","Ash-Shams","Al-Layl","Aḍ-Ḍuḥā","Ash-Sharḥ","At-Tīn","Al-‘Alaq","Al-Qadr","Al-Bayyinah","Az-Zalzalah","Al-‘Ādiyāt","Al-Qāri‘ah","At-Takāthur","Al-‘Aṣr","Al-Humazah","Al-Fīl","Quraysh","Al-Mā‘ūn","Al-Kawthar","Al-Kāfirūn","An-Naṣr","Al-Masad","Al-Ikhlāṣ","Al-Falaq","An-Nās"];
 
-/* ================ helpers / storage ================ */
-const $ = s => document.querySelector(s);
-const todayKey = () => new Date().toISOString().slice(0,10);
-const prefLangKey = "pref_lang";
-const planKey = lang => `done_${todayKey()}_${lang}`;
-const adhKey = (lang,slot)=>`adhkar_${todayKey()}_${lang}_${slot}`;
+/* ======================= HELPERS ======================= */
+const $=s=>document.querySelector(s);
+const todayKey=()=>new Date().toISOString().slice(0,10);
+const prefLangKey="pref_lang";
+const planStoreKey=lang=>`done_${todayKey()}_${lang}`;
+const adhkarStoreKey=(lang,slot)=>`adhkar_${todayKey()}_${lang}_${slot}`;
+const quranStoreKey=lang=>`qread_${todayKey()}_${lang}`;
+function loadJSON(k){try{return JSON.parse(localStorage.getItem(k)||"{}");}catch{return {}}}
+function saveJSON(k,v){localStorage.setItem(k,JSON.stringify(v));}
 
-function loadJSON(k){ try{return JSON.parse(localStorage.getItem(k)||"{}");}catch{return{}} }
-function saveJSON(k,v){ localStorage.setItem(k, JSON.stringify(v)); }
-
-/* ================ elements ================ */
+/* ======================= ELEMENTS ======================= */
 const titleEl=$("#title"), langSel=$("#lang"), notifyBtn=$("#notifyBtn"),
-      tabPlan=$("#tab-plan"), tabAdhkar=$("#tab-adhkar"), tabQuran=$("#tab-quran"),
-      pagePlan=$("#page-plan"), pageAdhkar=$("#page-adhkar"), pageQuran=$("#page-quran"),
-      hintEl=$("#hint");
+  tabPlan=$("#tab-plan"), tabAdhkar=$("#tab-adhkar"), tabQuran=$("#tab-quran"),
+  pagePlan=$("#page-plan"), pageAdhkar=$("#page-adhkar"), pageQuran=$("#page-quran"),
+  hintEl=$("#hint");
 
 const checkAllBtn=$("#checkAll"), uncheckAllBtn=$("#uncheckAll"), resetDayBtn=$("#resetDay"),
-      tasksEl=$("#tasks"), progressEl=$("#progress");
+  tasksEl=$("#tasks"), progressEl=$("#progress");
 
-const slotLabel=$("#slotLabel"), slotSel=$("#slotSel"), adhkarList=$("#adhkarList"),
-      resetAdhkar=$("#resetAdhkar"), adhkarHint=$("#adhkarHint");
+const slotLabel=$("#slotLabel"), slotSel=$("#slotSel"), adhSearch=$("#adhSearch"),
+  adhkarList=$("#adhkarList"), resetAdhkar=$("#resetAdhkar"), adhkarHint=$("#adhkarHint");
 
 const qLabel1=$("#qLabel1"), qLabel2=$("#qLabel2"), surahSel=$("#surahSel"),
-      trSel=$("#trSel"), qSearch=$("#qSearch"), loadSurahBtn=$("#loadSurah"),
-      backTop=$("#backTop"), clearCache=$("#clearCache"), qList=$("#qList"),
-      readStatus=$("#readStatus"), qHint=$("#qHint");
+  juzSel=$("#juzSel"), openSurah=$("#openSurah"), qFrame=$("#qFrame"),
+  markRead=$("#markRead"), resetRead=$("#resetRead"), readStatus=$("#readStatus"),
+  qHint=$("#qHint");
 
-/* ================ time utils ================ */
-function timeToDate(hhmm){ const [h,m]=hhmm.split(":").map(Number); const n=new Date(); return new Date(n.getFullYear(),n.getMonth(),n.getDate(),h,m,0,0); }
-function isNowInInterval(start,end){ const now=new Date(); let s=timeToDate(start), e=timeToDate(end); if(e<=s) e=new Date(e.getTime()+86400000); let n=now; if(now<s && e-s>43200000) n=new Date(now.getTime()+86400000); return n>=s && n<e; }
+/* ======================= TIME UTILS ======================= */
+function timeToDate(hhmm){const[h,m]=hhmm.split(":").map(n=>parseInt(n,10));const n=new Date();return new Date(n.getFullYear(),n.getMonth(),n.getDate(),h,m,0,0);}
+function isNowInInterval(start,end){const now=new Date();let s=timeToDate(start),e=timeToDate(end);if(e<=s){e=new Date(e.getTime()+24*60*60*1000);}let n=now;if(now<s&&e-s>12*60*60*1000)n=new Date(now.getTime()+24*60*60*1000);return n>=s&&n<e;}
 
-/* ================ PLAN ================ */
+/* ======================= PLAN ======================= */
 function renderPlan(lang,L){
   $("#tab-plan").textContent=L.tabs.plan;
-  checkAllBtn.textContent=L.checkAll; uncheckAllBtn.textContent=L.uncheckAll; resetDayBtn.textContent=L.resetDay;
+  checkAllBtn.textContent=L.checkAll;
+  uncheckAllBtn.textContent=L.uncheckAll;
+  resetDayBtn.textContent=L.resetDay;
 
-  const dm=loadJSON(planKey(lang)); tasksEl.innerHTML="";
+  const doneMap=loadJSON(planStoreKey(lang));
+  tasksEl.innerHTML="";
   L.tasks.forEach((t,i)=>{
-    const checked=!!dm[i]; const nowTag=isNowInInterval(t.start,t.end)?`<span class="nowTag">• ${L.now}</span>`:"";
-    const row=document.createElement("div"); row.className="task"; if(nowTag) row.classList.add("now");
-    row.innerHTML=`<div class="left">
-      <input type="checkbox" id="chk-${i}" ${checked?"checked":""}/>
-      <span class="time">${t.time}:</span>
-      <span id="txt-${i}" class="${checked?"done":""}">${t.action}</span>
-      <span class="badge">${L.interval(t.start,t.end)}</span>${nowTag}
-    </div>`;
+    const checked=!!doneMap[i];
+    const row=document.createElement("div");
+    row.className="task";
+    const nowTag=isNowInInterval(t.start,t.end)?`<span class="nowTag">• ${L.now}</span>`:"";
+    if(nowTag) row.classList.add("now");
+    row.innerHTML=`
+      <div class="left">
+        <input type="checkbox" id="chk-${i}" ${checked?"checked":""}/>
+        <span class="time">${t.time}:</span>
+        <span id="txt-${i}" class="${checked?"done":""}">${t.action}</span>
+        <span class="badge">${L.interval(t.start,t.end)}</span>
+        ${nowTag}
+      </div><div></div>`;
     tasksEl.appendChild(row);
   });
   L.tasks.forEach((_,i)=>{
     $("#chk-"+i).addEventListener("change",e=>{
-      const m=loadJSON(planKey(lang)); m[i]=e.target.checked; saveJSON(planKey(lang),m);
+      const dm=loadJSON(planStoreKey(lang)); dm[i]=e.target.checked; saveJSON(planStoreKey(lang),dm);
       $("#txt-"+i).classList.toggle("done",e.target.checked); updateProgress(lang,L);
-    })
+    });
   });
   updateProgress(lang,L);
 }
-function updateProgress(lang,L){ const m=loadJSON(planKey(lang)); const total=L.tasks.length, done=Object.values(m).filter(Boolean).length; progressEl.textContent=L.progress(done,total); }
+function updateProgress(lang,L){const dm=loadJSON(planStoreKey(lang));const total=L.tasks.length,done=Object.values(dm).filter(Boolean).length;progressEl.textContent=L.progress(done,total);}
 
-/* ================ ADHKAR ================ */
+/* ======================= ADHKAR ======================= */
 function renderAdhkar(lang,L){
   $("#tab-adhkar").textContent=L.tabs.adhkar;
   slotLabel.textContent=L.slotLabel; resetAdhkar.textContent=L.resetAdhkar; adhkarHint.textContent=L.adhkarHint;
-  slotSel.innerHTML=""; L.slots.forEach(s=>{const o=document.createElement("option"); o.value=s.key; o.textContent=s.name; slotSel.appendChild(o);});
-  const cur=localStorage.getItem("adh_slot_"+lang)||L.slots[0].key; slotSel.value=cur;
-  drawAdhkarList(lang,cur,L.adhkar[cur]||[]);
-  slotSel.onchange=()=>{localStorage.setItem("adh_slot_"+lang,slotSel.value); drawAdhkarList(lang,slotSel.value,L.adhkar[slotSel.value]||[]);};
-  resetAdhkar.onclick=()=>{localStorage.removeItem(adhKey(lang,slotSel.value)); drawAdhkarList(lang,slotSel.value,L.adhkar[slotSel.value]||[]);};
-}
-function drawAdhkarList(lang,slot,list){
-  adhkarList.innerHTML=""; const counts=loadJSON(adhKey(lang,slot));
-  list.forEach((d,i)=>{
-    const need=d.count||1, cur=counts[i]||0; const div=document.createElement("div"); div.className="dhk";
-    div.innerHTML=`<h4>${d.txt}</h4><p class="muted">${d.ref?`<span class="tag">${d.ref}</span>`:""}<span class="tag">x${need}</span></p>
-      <div class="controls">
-        <button class="primary" id="p${i}">+1</button><button id="m${i}">-1</button>
-        <span class="counter" id="c${i}">${cur}/${need}</span>
-        <button id="d${i}">✅</button><button id="r${i}">↺</button>
-      </div>`;
-    adhkarList.appendChild(div);
-    const up=v=>{const x=Math.max(0,Math.min(need,v)); counts[i]=x; saveJSON(adhKey(lang,slot),counts); $("#c"+i).textContent=`${x}/${need}`;}
-    $("#p"+i).onclick=()=>up((counts[i]||0)+1); $("#m"+i).onclick=()=>up((counts[i]||0)-1); $("#d"+i).onclick=()=>up(need); $("#r"+i).onclick=()=>up(0);
-  });
-}
 
-/* ================ QURAN (full surah loader) ================ */
-// cache local (par jour) pour aller vite une fois chargé
-const Q_CACHE_KEY = (surah,edition)=>`qcache_${todayKey()}_${edition}_${surah}`;
+  // slots + "all"
+  slotSel.innerHTML="";
+  L.slots.forEach(s=>{const opt=document.createElement("option");opt.value=s.key;opt.textContent=s.name;slotSel.appendChild(opt);});
+  const cur=localStorage.getItem("adh_slot_"+lang) || L.slots[0].key;
+  slotSel.value=cur;
 
-// récupère une édition (arabe ou traduction) puis renvoie array d’ayahs
-async function fetchEdition(surah, edition){
-  const k=Q_CACHE_KEY(surah,edition);
-  const cached = localStorage.getItem(k);
-  if(cached){ try{return JSON.parse(cached);}catch{} }
-  const url=`https://api.alquran.cloud/v1/surah/${surah}/${edition}`;
-  const res=await fetch(url);
-  if(!res.ok) throw new Error("API error");
-  const data=await res.json();
-  const ayat = (data?.data?.ayahs||[]).map(a=>({n:a.numberInSurah, text:a.text}));
-  localStorage.setItem(k, JSON.stringify(ayat));
-  return ayat;
+  drawAdhkar(lang,L,cur, adhSearch.value.trim());
+
+  slotSel.onchange=()=>{localStorage.setItem("adh_slot_"+lang,slotSel.value);drawAdhkar(lang,L,slotSel.value, adhSearch.value.trim());};
+  resetAdhkar.onclick=()=>{
+    if(slotSel.value==="all"){
+      // reset all slots
+      L.slots.filter(s=>s.key!=="all").forEach(s=>localStorage.removeItem(adhkarStoreKey(lang,s.key)));
+    }else{
+      localStorage.removeItem(adhkarStoreKey(lang,slotSel.value));
+    }
+    drawAdhkar(lang,L,slotSel.value, adhSearch.value.trim());
+  };
+  adhSearch.oninput=()=>drawAdhkar(lang,L,slotSel.value, adhSearch.value.trim());
 }
 
-function setupQuranUI(lang,L){
+function drawAdhkar(lang,L,slotKey,query){
+  adhkarList.innerHTML="";
+  const renderList=(slotKey,label,list)=>{
+    if(list.length===0) return;
+    // section title
+    if(slotKey!=="__noheader__"){
+      const h=document.createElement("div");
+      h.className="catTitle"; h.textContent=label; adhkarList.appendChild(h);
+      const divi=document.createElement("div"); divi.className="divider"; adhkarList.appendChild(divi);
+    }
+    const counts=loadJSON(adhkarStoreKey(lang,slotKey));
+    list.forEach((d,idx)=>{
+      if(query && !d.txt.toLowerCase().includes(query.toLowerCase())) return;
+      const need=d.count||1, cur=counts[idx]||0;
+      const div=document.createElement("div");
+      div.className="dhk";
+      div.innerHTML=`
+        <h4>${d.txt}</h4>
+        <p class="muted">${d.ref?`<span class="tag">${d.ref}</span>`:""}<span class="tag">x${need}</span></p>
+        <div class="controls">
+          <button class="primary" id="${slotKey}-plus-${idx}">+1</button>
+          <button id="${slotKey}-minus-${idx}">-1</button>
+          <span class="counter" id="${slotKey}-count-${idx}">${cur}/${need}</span>
+          <button id="${slotKey}-done-${idx}">✅</button>
+          <button id="${slotKey}-reset-${idx}">↺</button>
+        </div>`;
+      adhkarList.appendChild(div);
+
+      const update=(v)=>{
+        const c=Math.max(0,Math.min(need,v));
+        counts[idx]=c; saveJSON(adhkarStoreKey(lang,slotKey),counts);
+        $("#"+`${slotKey}-count-${idx}`).textContent=`${c}/${need}`;
+      };
+      $("#"+`${slotKey}-plus-${idx}`).onclick=()=>update((counts[idx]||0)+1);
+      $("#"+`${slotKey}-minus-${idx}`).onclick=()=>update((counts[idx]||0)-1);
+      $("#"+`${slotKey}-done-${idx}`).onclick=()=>update(need);
+      $("#"+`${slotKey}-reset-${idx}`).onclick=()=>update(0);
+    });
+  };
+
+  if(slotKey==="all"){
+    // show all categories consecutively
+    L.slots.filter(s=>s.key!=="all").forEach(s=>{
+      const list=(L.adhkar[s.key]||[]);
+      renderList(s.key, s.name, list);
+    });
+  }else{
+    const list=(L.adhkar[slotKey]||[]);
+    renderList(slotKey,"__noheader__", list); // no header inside single slot view
+  }
+}
+
+/* ======================= QURAN ======================= */
+function renderQuran(lang,L){
   $("#tab-quran").textContent=L.tabs.quran;
   qLabel1.textContent=L.qLabel1; qLabel2.textContent=L.qLabel2;
-  qSearch.placeholder=L.searchPh;
-  qHint.textContent = (lang==="fr") ? "Le texte est chargé depuis api.alquran.cloud et mis en cache local."
-                    : (lang==="en") ? "Text is fetched from api.alquran.cloud and cached locally."
-                    : "يتم جلب النص من api.alquran.cloud وتخزينه مؤقتًا محليًا.";
-  // remplir la liste des sourates
-  surahSel.innerHTML=""; SURAH_NAMES.forEach((nm,i)=>{const o=document.createElement("option"); o.value=String(i+1); o.textContent=`${i+1}. ${nm}`; surahSel.appendChild(o);});
-  // traduction par défaut selon langue UI
-  trSel.value = (lang==="fr") ? "fr.hamidullah" : (lang==="en" ? "en.sahih" : "none");
+  openSurah.textContent=L.open; markRead.textContent=L.markRead; resetRead.textContent=L.resetRead;
+
+  surahSel.innerHTML=""; SURAH_NAMES.forEach((name,i)=>{const o=document.createElement("option");o.value=String(i+1);o.textContent=`${i+1}. ${name}`;surahSel.appendChild(o);});
+  juzSel.innerHTML=""; for(let j=1;j<=30;j++){const o=document.createElement("option");o.value=String(j);o.textContent=`Juz ${j}`;juzSel.appendChild(o);}
+
+  const saved=localStorage.getItem(quranStoreKey(lang)); readStatus.textContent=saved?L.readSaved(saved):"";
+  openSurah.onclick=()=>{const s=surahSel.value;const url=`https://quran.com/${s}?reading=false&translations=131&locale=${lang==='ar'?'ar':(lang==='fr'?'fr':'en')}`;qFrame.src=url;};
+  markRead.onclick=()=>{const label=`Surah ${surahSel.value} / Juz ${juzSel.value}`;localStorage.setItem(quranStoreKey(lang),label);readStatus.textContent=L.readSaved(label);};
+  resetRead.onclick=()=>{localStorage.removeItem(quranStoreKey(lang));readStatus.textContent="";};
 }
 
-async function loadSurah(lang){
-  const L=T[lang]; const s=surahSel.value; const tr=trSel.value; qList.innerHTML=""; readStatus.textContent="";
-  // arabic uthmani
-  let arAyat=[], trAyat=null, err=false;
-  try{ arAyat = await fetchEdition(s,"quran-uthmani"); } catch(e){ err=true; qList.innerHTML = `<p class="muted">⚠️ ${lang==='fr'?'Erreur de chargement du texte arabe':'تعذر تحميل النص العربي'}</p>`; }
-  if(tr!=="none"){
-    try{ trAyat = await fetchEdition(s,tr); } catch(e){ /* ignore translation error */ }
-  }
-  // rendu
-  if(arAyat.length){
-    const frag = document.createDocumentFragment();
-    arAyat.forEach((a,idx)=>{
-      const div=document.createElement("div"); div.className="ayah";
-      const trLine = (trAyat && trAyat[idx]) ? `<div class="alt">${trAyat[idx].text}</div>` : "";
-      div.innerHTML = `<div class="meta"><span class="num">${a.n}</span></div><div class="ar">${a.text}</div>${trLine}`;
-      frag.appendChild(div);
-    });
-    qList.appendChild(frag);
-    readStatus.textContent = L.readSaved(`Surah ${s} — ${arAyat.length} ayat`);
-  } else if(!err){
-    qList.innerHTML = `<p class="muted">😕 ${lang==='fr'?'Aucune donnée reçue':'لا توجد بيانات'}</p>`;
-  }
-}
+/* ======================= NOTIFS & PAGES ======================= */
+function enableNotifications(L){if(!("Notification" in window)){alert(L.noNotif);return;}if(Notification.permission==="granted"){new Notification(L.notified);}else if(Notification.permission!=="denied"){Notification.requestPermission().then(p=>{if(p==="granted")new Notification(L.notified);});}}
+function showPage(key){[pagePlan,pageAdhkar,pageQuran].forEach(p=>p.style.display="none");[tabPlan,tabAdhkar,tabQuran].forEach(t=>t.classList.remove("active"));if(key==="plan"){pagePlan.style.display="block";tabPlan.classList.add("active");}if(key==="adhkar"){pageAdhkar.style.display="block";tabAdhkar.classList.add("active");}if(key==="quran"){pageQuran.style.display="block";tabQuran.classList.add("active");}localStorage.setItem("last_page",key);}
 
-function filterAyat(){
-  const term = qSearch.value.trim();
-  const items = qList.querySelectorAll(".ayah");
-  if(!term){ items.forEach(el=>el.style.display=""); return; }
-  const t = term.toLowerCase();
-  items.forEach(el=>{
-    const txt = el.textContent.toLowerCase();
-    el.style.display = txt.includes(t) ? "" : "none";
-  });
-}
-
-/* ================ NAV / LANG / INIT ================ */
-function showPage(key){
-  [pagePlan,pageAdhkar,pageQuran].forEach(p=>p.style.display="none");
-  [tabPlan,tabAdhkar,tabQuran].forEach(t=>t.classList.remove("active"));
-  if(key==="plan"){ pagePlan.style.display="block"; tabPlan.classList.add("active"); }
-  if(key==="adhkar"){ pageAdhkar.style.display="block"; tabAdhkar.classList.add("active"); }
-  if(key==="quran"){ pageQuran.style.display="block"; tabQuran.classList.add("active"); }
-  localStorage.setItem("last_page", key);
-}
-
+/* ======================= RENDER ALL / INIT ======================= */
 function renderAll(lang){
-  const rtl = (lang==="ar"); const L=T[lang];
-  document.documentElement.lang=lang; document.documentElement.dir=rtl?"rtl":"ltr"; document.body.style.direction=rtl?"rtl":"ltr";
-  titleEl.textContent=L.title; $("#langLabel").textContent=L.lang; notifyBtn.textContent=L.notify; hintEl.textContent=L.hint;
-  tabPlan.textContent=L.tabs.plan; tabAdhkar.textContent=L.tabs.adhkar; tabQuran.textContent=L.tabs.quran;
-  renderPlan(lang,L); renderAdhkar(lang,L); setupQuranUI(lang,L);
-}
-
-/* notifications */
-function enableNotifications(L){
-  if(!("Notification" in window)){ alert(L.noNotif); return; }
-  if(Notification.permission==="granted"){ new Notification(L.notified); }
-  else if(Notification.permission!=="denied"){
-    Notification.requestPermission().then(p=>{ if(p==="granted") new Notification(L.notified); });
-  }
+  const rtl=(lang==="ar"); document.documentElement.lang=lang; document.documentElement.dir=rtl?"rtl":"ltr"; document.body.style.direction=rtl?"rtl":"ltr";
+  const L=T[lang]; titleEl.textContent=L.title; $("#langLabel").textContent=L.lang; notifyBtn.textContent=L.notify; hintEl.textContent=L.hint;
+  renderPlan(lang,L); renderAdhkar(lang,L); renderQuran(lang,L);
 }
 
 document.addEventListener("DOMContentLoaded", ()=>{
   const initLang=localStorage.getItem(prefLangKey)||"ar"; langSel.value=initLang; renderAll(initLang);
   showPage(localStorage.getItem("last_page")||"plan");
-  setInterval(()=>renderPlan(langSel.value,T[langSel.value]), 60000);
+  setInterval(()=>renderPlan(langSel.value,T[langSel.value]),60*1000);
 
-  langSel.addEventListener("change", ()=>{ const lang=langSel.value; localStorage.setItem(prefLangKey,lang); renderAll(lang); });
-  notifyBtn.addEventListener("click", ()=>enableNotifications(T[langSel.value]));
-  checkAllBtn.addEventListener("click", ()=>{ const L=T[langSel.value], m={}; L.tasks.forEach((_,i)=>m[i]=true); saveJSON(planKey(langSel.value),m); renderPlan(langSel.value,L); });
-  uncheckAllBtn.addEventListener("click", ()=>{ const L=T[langSel.value], m={}; L.tasks.forEach((_,i)=>m[i]=false); saveJSON(planKey(langSel.value),m); renderPlan(langSel.value,L); });
-  resetDayBtn.addEventListener("click", ()=>{ localStorage.removeItem(planKey(langSel.value)); renderPlan(langSel.value,T[langSel.value]); });
+  langSel.addEventListener("change",()=>{const lang=langSel.value;localStorage.setItem(prefLangKey,lang);renderAll(lang);});
+  notifyBtn.addEventListener("click",()=>enableNotifications(T[langSel.value]));
+  checkAllBtn.addEventListener("click",()=>{const L=T[langSel.value],map={};L.tasks.forEach((_,i)=>map[i]=true);saveJSON(planStoreKey(langSel.value),map);renderPlan(langSel.value,L);});
+  uncheckAllBtn.addEventListener("click",()=>{const L=T[langSel.value],map={};L.tasks.forEach((_,i)=>map[i]=false);saveJSON(planStoreKey(langSel.value),map);renderPlan(langSel.value,L);});
+  resetDayBtn.addEventListener("click",()=>{localStorage.removeItem(planStoreKey(langSel.value));renderPlan(langSel.value,T[langSel.value]);});
 
-  tabPlan.onclick=()=>showPage("plan"); tabAdhkar.onclick=()=>showPage("adhkar"); tabQuran.onclick=()=>showPage("quran");
-
-  // Quran UI actions
-  loadSurahBtn.addEventListener("click", ()=>loadSurah(langSel.value));
-  qSearch.addEventListener("input", filterAyat);
-  backTop.addEventListener("click", ()=>window.scrollTo({top:0,behavior:"smooth"}));
-  clearCache.addEventListener("click", ()=>{
-    const prefix=`qcache_${todayKey()}_`;
-    Object.keys(localStorage).forEach(k=>{ if(k.startsWith(prefix)) localStorage.removeItem(k); });
-    qList.innerHTML = `<p class="muted">🗑️ Cache vidé.</p>`;
-  });
+  tabPlan.onclick=()=>showPage("plan");
+  tabAdhkar.onclick=()=>showPage("adhkar");
+  tabQuran.onclick=()=>showPage("quran");
 });
 </script>
 </body>
