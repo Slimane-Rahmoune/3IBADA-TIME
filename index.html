@@ -5,25 +5,32 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>جدول إدارة الوقت</title>
   <style>
-    :root{--bg:#eef6ff;--card:#fff;--text:#1b2a41;--muted:#5f6b7a;--shadow:0 1px 4px rgba(0,0,0,.12);}
+    :root{
+      --bg:#eef6ff;--card:#fff;--text:#1b2a41;--muted:#5f6b7a;
+      --shadow:0 1px 4px rgba(0,0,0,.12);--brand:#1e88e5;--now:#13b38b;
+    }
     html,body{height:100%}
     body{margin:14px;background:var(--bg);font-family:Tahoma,Arial,sans-serif;color:var(--text)}
-    .wrap{max-width:820px;margin:0 auto}
+    .wrap{max-width:900px;margin:0 auto}
     header{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:12px}
     h1{font-size:20px;margin:0}
     .row{display:flex;gap:10px;align-items:center}
     select,button{border:1px solid #cfd8e3;background:#fff;border-radius:8px;padding:8px 10px;cursor:pointer}
-    .primary{background:#1e88e5;color:#fff;border:none}
+    .primary{background:var(--brand);color:#fff;border:none}
     .card{background:var(--card);box-shadow:var(--shadow);border-radius:12px;padding:12px;margin:12px 0}
-    .task{display:flex;align-items:center;justify-content:space-between;padding:10px;border-bottom:1px solid #f0f0f0}
-    .task:last-child{border-bottom:none}
-    .left{display:flex;gap:10px;align-items:center}
-    .time{font-weight:bold;min-width:130px}
+    .task{display:flex;align-items:center;justify-content:space-between;padding:12px;border:1px solid #e9eef5;border-radius:10px;margin:8px 0}
+    .left{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+    .time{font-weight:bold;min-width:150px}
+    .badge{font-size:12px;background:#e8f1ff;border:1px solid #cfe0ff;border-radius:999px;padding:4px 8px}
+    .now{border-color:var(--now);box-shadow:0 0 0 2px rgba(19,179,139,.15)}
+    .now .badge{background:#e9fff7;border-color:#b9f1df}
+    .nowTag{font-size:12px;color:#0f8a6a;margin-inline-start:6px}
     .done{text-decoration:line-through;color:#777}
     .muted{color:var(--muted);font-size:12px}
-    .toolbar{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+    .toolbar{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;margin-bottom:8px}
     .status{min-height:18px;margin-top:6px}
-    @media (max-width:520px){.time{min-width:auto}}
+    input[type="checkbox"]{width:20px;height:20px;accent-color:var(--brand)}
+    @media (max-width:560px){.time{min-width:auto}}
   </style>
 </head>
 <body>
@@ -57,7 +64,7 @@
   </div>
 
   <script>
-    // ======= i18n strings =======
+    // -------------- i18n --------------
     const T = {
       ar:{
         title:"🕰️ جدول إدارة الوقت على منهج النبي ﷺ",
@@ -69,44 +76,48 @@
         hint:"ملاحظة: يتم حفظ إنجازاتك محليًا يوميًا. تغيّر اللغة يغيّر أيضًا اتجاه الصفحة ونصوص المهام.",
         notified:"✅ تم تفعيل الإشعارات",
         noNotif:"🚫 متصفحك لا يدعم الإشعارات",
+        now:"أنت الآن هنا",
+        interval:(a,b)=>`${a} – ${b}`,
         tasks:[
-          {time:"قبل الفجر", action:"قيام الليل وذكر الله"},
-          {time:"الفجر – الشروق", action:"صلاة الفجر + ذكر وقرآن"},
-          {time:"الصباح", action:"عمل/دراسة بنيّة لله"},
-          {time:"الضحى", action:"ركعتان أو أربع"},
-          {time:"الظهر", action:"صلاة + قيلولة"},
-          {time:"العصر – المغرب", action:"عمل/علم + رياضة"},
-          {time:"المغرب – العشاء", action:"جلسة عائلية + قرآن"},
-          {time:"العشاء", action:"صلاة + راحة/مطالعة"},
-          {time:"الليل", action:"نوم مبكر + قيام الليل"}
+          {start:"04:30", end:"05:30", time:"قبل الفجر", action:"قيام الليل وذكر الله"},
+          {start:"05:30", end:"07:00", time:"الفجر – الشروق", action:"صلاة الفجر + ذكر وقرآن"},
+          {start:"07:00", end:"10:00", time:"الصباح", action:"عمل/دراسة بنية لله"},
+          {start:"10:00", end:"12:30", time:"الضحى", action:"ركعتان أو أربع"},
+          {start:"12:30", end:"15:30", time:"الظهر", action:"صلاة + قيلولة"},
+          {start:"15:30", end:"18:30", time:"العصر – المغرب", action:"عمل/علم + رياضة"},
+          {start:"18:30", end:"21:00", time:"المغرب – العشاء", action:"جلسة عائلية + قرآن"},
+          {start:"21:00", end:"23:00", time:"العشاء", action:"صلاة + راحة/مطالعة"},
+          {start:"23:00", end:"04:30", time:"الليل", action:"نوم مبكر + قيام الليل"}
         ],
-        progress:(done,total)=>`إنجاز اليوم: ${done}/${total} (${Math.round(done*100/total)}%)`
+        progress:(d,t)=>`إنجاز اليوم: ${d}/${t} (${Math.round(d*100/t)}%)`
       },
       fr:{
-        title:"🕰️ Planning d’adorations – Méthode du Prophète ﷺ",
+        title:"🕰️ Planning d’adorations – Méthode prophétique ﷺ",
         lang:"Langue :",
         notify:"🔔 Activer les notifications",
         checkAll:"✅ Tout cocher",
         uncheckAll:"↩️ Tout décocher",
         resetDay:"🗓️ Réinitialiser la journée",
-        hint:"Astuce : votre progression est enregistrée localement par jour. Changer de langue adapte aussi l’orientation et les textes.",
+        hint:"Astuce : votre progression est enregistrée localement par jour. Le changement de langue adapte aussi l’orientation et les textes.",
         notified:"✅ Notifications activées",
         noNotif:"🚫 Votre navigateur ne supporte pas les notifications",
+        now:"Vous êtes ici",
+        interval:(a,b)=>`${a} – ${b}`,
         tasks:[
-          {time:"Avant l’aube", action:"Qiyâm et rappel d’Allah"},
-          {time:"Fajr – Lever du soleil", action:"Prière du Fajr + Coran & invocations"},
-          {time:"Matin", action:"Travail/études avec intention sincère"},
-          {time:"Duha", action:"2 à 4 unités de prière"},
-          {time:"Dhuhr", action:"Prière + petite sieste"},
-          {time:"‘Asr – Maghrib", action:"Travail/savoir + sport"},
-          {time:"Maghrib – ‘Isha", action:"Temps familial + Coran"},
-          {time:"‘Isha", action:"Prière + lecture/repos"},
-          {time:"Nuit", action:"Coucher tôt + Qiyâm"}
+          {start:"04:30", end:"05:30", time:"Avant l’aube", action:"Qiyâm & rappels"},
+          {start:"05:30", end:"07:00", time:"Fajr – Lever du soleil", action:"Prière du Fajr + Coran & invocations"},
+          {start:"07:00", end:"10:00", time:"Matin", action:"Travail/Études avec intention sincère"},
+          {start:"10:00", end:"12:30", time:"Duha", action:"2 à 4 unités de prière"},
+          {start:"12:30", end:"15:30", time:"Dhuhr", action:"Prière + petite sieste"},
+          {start:"15:30", end:"18:30", time:"‘Asr – Maghrib", action:"Travail/Savoir + Sport"},
+          {start:"18:30", end:"21:00", time:"Maghrib – ‘Isha", action:"Temps en famille + Coran"},
+          {start:"21:00", end:"23:00", time:"‘Isha", action:"Prière + Lecture/Repos"},
+          {start:"23:00", end:"04:30", time:"Nuit", action:"Coucher tôt + Qiyâm"}
         ],
-        progress:(done,total)=>`Progression du jour : ${done}/${total} (${Math.round(done*100/total)}%)`
+        progress:(d,t)=>`Progression du jour : ${d}/${t} (${Math.round(d*100/t)}%)`
       },
       en:{
-        title:"🕰️ Time Management (Prophetic Way)",
+        title:"🕰️ Time Management – Prophetic Way ﷺ",
         lang:"Language:",
         notify:"🔔 Enable notifications",
         checkAll:"✅ Check all",
@@ -115,82 +126,108 @@
         hint:"Tip: your progress is saved locally per day. Changing language also flips layout and texts.",
         notified:"✅ Notifications enabled",
         noNotif:"🚫 Your browser does not support Notifications",
+        now:"You are here",
+        interval:(a,b)=>`${a} – ${b}`,
         tasks:[
-          {time:"Before Fajr", action:"Qiyam (night prayer) & remembrance"},
-          {time:"Fajr – Sunrise", action:"Fajr prayer + Qur’an & adhkar"},
-          {time:"Morning", action:"Work/Study with sincere intention"},
-          {time:"Duha", action:"2–4 units of prayer"},
-          {time:"Dhuhr", action:"Prayer + short nap"},
-          {time:"Asr – Maghrib", action:"Work/Knowledge + Exercise"},
-          {time:"Maghrib – Isha", action:"Family time + Qur’an"},
-          {time:"Isha", action:"Prayer + Reading/Rest"},
-          {time:"Night", action:"Sleep early + Qiyam"}
+          {start:"04:30", end:"05:30", time:"Before Fajr", action:"Qiyam (night prayer) & remembrance"},
+          {start:"05:30", end:"07:00", time:"Fajr – Sunrise", action:"Fajr prayer + Qur’an & adhkar"},
+          {start:"07:00", end:"10:00", time:"Morning", action:"Work/Study with sincere intention"},
+          {start:"10:00", end:"12:30", time:"Duha", action:"2–4 units of prayer"},
+          {start:"12:30", end:"15:30", time:"Dhuhr", action:"Prayer + short nap"},
+          {start:"15:30", end:"18:30", time:"Asr – Maghrib", action:"Work/Knowledge + Exercise"},
+          {start:"18:30", end:"21:00", time:"Maghrib – Isha", action:"Family time + Qur’an"},
+          {start:"21:00", end:"23:00", time:"Isha", action:"Prayer + Reading/Rest"},
+          {start:"23:00", end:"04:30", time:"Night", action:"Sleep early + Qiyam"}
         ],
-        progress:(done,total)=>`Today’s progress: ${done}/${total} (${Math.round(done*100/total)}%)`
+        progress:(d,t)=>`Today’s progress: ${d}/${t} (${Math.round(d*100/t)}%)`
       }
     };
 
-    // ======= Elements =======
-    const $ = sel => document.querySelector(sel);
-    const tasksEl = $("#tasks");
-    const titleEl = $("#title");
-    const hintEl = $("#hint");
-    const notifyBtn = $("#notifyBtn");
-    const langSel = $("#lang");
-    const checkAllBtn = $("#checkAll");
-    const uncheckAllBtn = $("#uncheckAll");
-    const resetDayBtn = $("#resetDay");
-    const progressEl = $("#progress");
+    // -------------- helpers & elements --------------
+    const $ = s => document.querySelector(s);
+    const titleEl = $("#title"), hintEl = $("#hint"), tasksEl = $("#tasks"),
+      langSel = $("#lang"), notifyBtn = $("#notifyBtn"),
+      checkAllBtn = $("#checkAll"), uncheckAllBtn = $("#uncheckAll"),
+      resetDayBtn = $("#resetDay"), progressEl = $("#progress");
 
-    // ======= State / storage keys =======
-    const todayKey = () => new Date().toISOString().slice(0,10); // YYYY-MM-DD
-    const lsKey = (lang) => `done_${todayKey()}_${lang}`;
-    const langKey = "pref_lang";
+    const todayKey = () => new Date().toISOString().slice(0,10);
+    const storeKey = lang => `done_${todayKey()}_${lang}`;
+    const prefLangKey = "pref_lang";
 
-    // ======= Render =======
+    function loadDoneMap(lang){
+      try{ return JSON.parse(localStorage.getItem(storeKey(lang)) || "{}"); }
+      catch{ return {}; }
+    }
+    function saveDoneMap(lang,map){
+      localStorage.setItem(storeKey(lang), JSON.stringify(map));
+    }
+
+    // parse "HH:MM" -> Date today
+    function timeToDate(hhmm){
+      const [h,m]=hhmm.split(":").map(n=>parseInt(n,10));
+      const n=new Date();
+      return new Date(n.getFullYear(),n.getMonth(),n.getDate(),h,m,0,0);
+    }
+    // does now fall into [start,end) (end may be next day)
+    function isNowInInterval(start, end){
+      const now=new Date();
+      let s=timeToDate(start), e=timeToDate(end);
+      if(e<=s){ e=new Date(e.getTime()+24*60*60*1000); } // overnight
+      let n=now;
+      if(now< s && e.getTime()-s.getTime() > 12*60*60*1000){ // if overnight and before start, treat as next day
+        n=new Date(now.getTime()+24*60*60*1000);
+      }
+      return n>=s && n<e;
+    }
+
+    // -------------- render --------------
     function render(lang){
-      // direction & lang attr
-      const rtl = (lang === "ar");
-      document.documentElement.lang = lang;
-      document.documentElement.dir = rtl ? "rtl" : "ltr";
-      document.body.style.direction = rtl ? "rtl" : "ltr";
+      const rtl = (lang==="ar");
+      document.documentElement.lang=lang;
+      document.documentElement.dir=rtl?"rtl":"ltr";
+      document.body.style.direction=rtl?"rtl":"ltr";
 
-      const L = T[lang];
-      titleEl.textContent = L.title;
-      $("#langLabel").textContent = L.lang;
-      notifyBtn.textContent = L.notify;
-      checkAllBtn.textContent = L.checkAll;
-      uncheckAllBtn.textContent = L.uncheckAll;
-      resetDayBtn.textContent = L.resetDay;
-      hintEl.textContent = L.hint;
+      const L=T[lang];
+      titleEl.textContent=L.title;
+      $("#langLabel").textContent=L.lang;
+      notifyBtn.textContent=L.notify;
+      checkAllBtn.textContent=L.checkAll;
+      uncheckAllBtn.textContent=L.uncheckAll;
+      resetDayBtn.textContent=L.resetDay;
+      hintEl.textContent=L.hint;
 
-      // load saved done map
-      const saved = JSON.parse(localStorage.getItem(lsKey(lang)) || "{}");
+      const doneMap=loadDoneMap(lang);
+      tasksEl.innerHTML="";
 
-      // build tasks
-      tasksEl.innerHTML = "";
-      L.tasks.forEach((t, i) => {
-        const row = document.createElement("div");
-        row.className = "task";
-        row.innerHTML = `
+      L.tasks.forEach((t,i)=>{
+        const checked=!!doneMap[i];
+        const row=document.createElement("div");
+        row.className="task";
+        const intervalText=L.interval(t.start,t.end);
+        const nowTag=isNowInInterval(t.start,t.end)?`<span class="nowTag">• ${L.now}</span>`:"";
+        if(nowTag) row.classList.add("now");
+
+        row.innerHTML=`
           <div class="left">
-            <input type="checkbox" id="chk-${i}" ${saved[i] ? "checked" : ""} />
-            <span class="time">${t.time}</span>
-            <span id="txt-${i}" class="${saved[i] ? "done" : ""}">${t.action}</span>
+            <input type="checkbox" id="chk-${i}" ${checked?"checked":""} />
+            <span class="time">${t.time}:</span>
+            <span id="txt-${i}" class="${checked?"done":""}">${t.action}</span>
+            <span class="badge">${intervalText}</span>
+            ${nowTag}
           </div>
           <div></div>
         `;
         tasksEl.appendChild(row);
       });
 
-      // attach listeners to checkboxes
-      L.tasks.forEach((_, i) => {
-        $("#chk-"+i).addEventListener("change", e => {
-          const map = JSON.parse(localStorage.getItem(lsKey(lang)) || "{}");
-          const checked = e.target.checked;
-          map[i] = checked;
-          localStorage.setItem(lsKey(lang), JSON.stringify(map));
-          $("#txt-"+i).classList.toggle("done", checked);
+      // listeners
+      L.tasks.forEach((_,i)=>{
+        $("#chk-"+i).addEventListener("change", e=>{
+          const map=loadDoneMap(lang);
+          const checked=e.target.checked;
+          map[i]=checked;
+          saveDoneMap(lang,map);
+          $("#txt-"+i).classList.toggle("done",checked);
           updateProgress(lang);
         });
       });
@@ -199,63 +236,64 @@
     }
 
     function updateProgress(lang){
-      const L = T[lang];
-      const map = JSON.parse(localStorage.getItem(lsKey(lang)) || "{}");
-      const total = L.tasks.length;
-      const done = Object.values(map).filter(Boolean).length;
-      progressEl.textContent = L.progress(done, total);
+      const L=T[lang];
+      const map=loadDoneMap(lang);
+      const total=L.tasks.length;
+      const done=Object.values(map).filter(Boolean).length;
+      progressEl.textContent=L.progress(done,total);
     }
 
-    // ======= Actions =======
+    // refresh highlighting every minute
+    let timer=null;
+    function startClock(lang){
+      if(timer) clearInterval(timer);
+      timer=setInterval(()=>render(lang), 60*1000);
+    }
+
+    // -------------- actions --------------
     function enableNotifications(lang){
-      const L = T[lang];
-      if(!("Notification" in window)){
-        alert(L.noNotif); return;
-      }
-      if(Notification.permission === "granted"){
+      const L=T[lang];
+      if(!("Notification" in window)){ alert(L.noNotif); return; }
+      if(Notification.permission==="granted"){
         new Notification(L.notified);
-      }else if(Notification.permission !== "denied"){
+      }else if(Notification.permission!=="denied"){
         Notification.requestPermission().then(p=>{
           if(p==="granted") new Notification(L.notified);
         });
       }
     }
-
-    function checkAll(lang, value){
-      const L = T[lang];
-      const map = {};
-      L.tasks.forEach((_, i)=>{
-        const chk = $("#chk-"+i);
-        const txt = $("#txt-"+i);
-        chk.checked = value;
-        txt.classList.toggle("done", value);
-        map[i] = value;
+    function setAll(lang,value){
+      const L=T[lang]; const map={};
+      L.tasks.forEach((_,i)=>{
+        const chk=$("#chk-"+i), txt=$("#txt-"+i);
+        if(chk) chk.checked=value;
+        if(txt) txt.classList.toggle("done",value);
+        map[i]=value;
       });
-      localStorage.setItem(lsKey(lang), JSON.stringify(map));
-      updateProgress(lang);
+      saveDoneMap(lang,map); updateProgress(lang);
     }
-
     function resetToday(lang){
-      localStorage.removeItem(lsKey(lang));
+      localStorage.removeItem(storeKey(lang));
       render(lang);
     }
 
-    // ======= Init =======
+    // -------------- init --------------
     document.addEventListener("DOMContentLoaded", ()=>{
-      const initialLang = localStorage.getItem(langKey) || "ar";
-      langSel.value = initialLang;
+      const initialLang=localStorage.getItem(prefLangKey)||"ar";
+      langSel.value=initialLang;
       render(initialLang);
+      startClock(initialLang);
 
       langSel.addEventListener("change", ()=>{
-        const lang = langSel.value;
-        localStorage.setItem(langKey, lang);
+        const lang=langSel.value;
+        localStorage.setItem(prefLangKey,lang);
         render(lang);
+        startClock(lang);
       });
-
-      notifyBtn.addEventListener("click", ()=> enableNotifications(langSel.value));
-      checkAllBtn.addEventListener("click", ()=> checkAll(langSel.value, true));
-      uncheckAllBtn.addEventListener("click", ()=> checkAll(langSel.value, false));
-      resetDayBtn.addEventListener("click", ()=> resetToday(langSel.value));
+      notifyBtn.addEventListener("click", ()=>enableNotifications(langSel.value));
+      checkAllBtn.addEventListener("click", ()=>setAll(langSel.value,true));
+      uncheckAllBtn.addEventListener("click", ()=>setAll(langSel.value,false));
+      resetDayBtn.addEventListener("click", ()=>resetToday(langSel.value));
     });
   </script>
 </body>
