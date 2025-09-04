@@ -9,6 +9,11 @@
     --bg:#eef6ff;--card:#fff;--text:#1b2a41;--muted:#5f6b7a;--shadow:0 1px 4px rgba(0,0,0,.12);
     --brand:#1e88e5;--now:#13b38b;--accent:#0ea5e9;
   }
+  /* --- Dark mode variables --- */
+  .dark{
+    --bg:#0b1220; --card:#111827; --text:#e5eefc; --muted:#9aa4b2;
+    --shadow:0 1px 4px rgba(0,0,0,.5); --brand:#3b82f6; --now:#10b981; --accent:#38bdf8;
+  }
   html,body{height:100%}
   body{margin:14px;background:var(--bg);font-family:Tahoma,Arial,sans-serif;color:var(--text)}
   .wrap{max-width:1000px;margin:0 auto}
@@ -19,6 +24,12 @@
   .primary{background:var(--brand);color:#fff;border:none}
   .card{background:var(--card);box-shadow:var(--shadow);border-radius:12px;padding:12px;margin:12px 0}
   .muted{color:var(--muted);font-size:12px}
+  .dark body{background:var(--bg);color:var(--text)}
+  .dark .card{background:var(--card)}
+  .dark select,.dark button,.dark input[type="text"]{background:#0f172a;color:var(--text);border-color:#334155}
+  .dark .dhk,.dark .task{border-color:#233146}
+  .dark .badge{background:#0b2540;border-color:#1e3a5f;color:#cfe8ff}
+  .dark .tag{background:#132238;border-color:#1e2b46;color:#cde4ff}
 
   /* nav */
   .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
@@ -62,6 +73,7 @@
   <header>
     <h1 id="title">🕰️ جدول إدارة الوقت على منهج النبي ﷺ</h1>
     <div class="row">
+      <button id="themeBtn">🌙 الوضع الداكن</button>
       <label for="lang" id="langLabel">اللغة:</label>
       <select id="lang">
         <option value="ar">العربية</option>
@@ -128,10 +140,9 @@
 const T = {
   ar:{
     title:"🕰️ جدول إدارة الوقت على منهج النبي ﷺ",
-    lang:"اللغة:",
-    notify:"🔔 فعل الإشعارات",
+    lang:"اللغة:", notify:"🔔 فعل الإشعارات",
+    themeDark:"🌙 الوضع الداكن", themeLight:"☀️ الوضع الفاتح",
     tabs:{plan:"📋 التخطيط", adhkar:"🕯️ الأذكار", quran:"📖 القرآن"},
-    // plan
     checkAll:"✅ تحديد الكل", uncheckAll:"↩️ إلغاء تحديد الكل", resetDay:"🗓️ تصفير هذا اليوم",
     hint:"ملاحظة: يتم حفظ إنجازاتك محليًا يوميًا. تغيّر اللغة يغيّر أيضًا اتجاه الصفحة ونصوص المهام.",
     notified:"✅ تم تفعيل الإشعارات", noNotif:"🚫 متصفحك لا يدعم الإشعارات",
@@ -148,7 +159,6 @@ const T = {
       {start:"23:00", end:"04:30", time:"الليل", action:"نوم مبكر + قيام الليل"}
     ],
     progress:(d,t)=>`إنجاز اليوم: ${d}/${t} (${Math.round(d*100/t)}%)`,
-    // adhkar
     slotLabel:"اختر الفترة:", adhkarHint:"يتم حفظ العدادات محليًا لكل فترة ولغة.",
     resetAdhkar:"↺ تصفير العدادات",
     slots:[
@@ -188,13 +198,13 @@ const T = {
         {txt:"سفر: سبحان الذي سخر لنا هذا…", count:1, ref:"مسلم"}
       ]
     },
-    // quran
     qLabel1:"سورة:", qLabel2:"جزء (Juz):", open:"فتح", markRead:"✅ تمّت القراءة", resetRead:"↺ تصفير",
     readSaved:(s)=>`آخر قراءة محفوظة: ${s}`
   },
   fr:{
     title:"🕰️ Planning d’adorations – Méthode prophétique ﷺ",
     lang:"Langue :", notify:"🔔 Activer les notifications",
+    themeDark:"🌙 Mode sombre", themeLight:"☀️ Mode clair",
     tabs:{plan:"📋 Planning", adhkar:"🕯️ Adhkâr", quran:"📖 Coran"},
     checkAll:"✅ Tout cocher", uncheckAll:"↩️ Tout décocher", resetDay:"🗓️ Réinitialiser la journée",
     hint:"Astuce : vos données sont enregistrées localement (par jour).",
@@ -257,6 +267,7 @@ const T = {
   en:{
     title:"🕰️ Time Management – Prophetic Way ﷺ",
     lang:"Language:", notify:"🔔 Enable notifications",
+    themeDark:"🌙 Dark mode", themeLight:"☀️ Light mode",
     tabs:{plan:"📋 Plan", adhkar:"🕯️ Adhkar", quran:"📖 Quran"},
     checkAll:"✅ Check all", uncheckAll:"↩️ Uncheck all", resetDay:"🗓️ Reset today",
     hint:"Your data is stored locally per day.",
@@ -273,7 +284,7 @@ const T = {
       {start:"21:00", end:"23:00", time:"Isha", action:"Prayer + Reading/Rest"},
       {start:"23:00", end:"04:30", time:"Night", action:"Sleep early + Qiyam"}
     ],
-    progress:(d,t)=>`Progress: ${d}/${t} (${Math.round(d*100/t)}%)`,
+    progress:(d,t)=>`Today’s progress: ${d}/${t} (${Math.round(d*100/t)}%)`,
     slotLabel:"Choose slot:", adhkarHint:"Counters are saved locally per slot.",
     resetAdhkar:"↺ Reset counters",
     slots:[
@@ -318,7 +329,7 @@ const T = {
   }
 };
 
-// 114 surahs (abrégé pour la place)
+// 114 surahs (abrégé)
 const SURAH_NAMES=["Al-Fātiḥah","Al-Baqarah","Āl ‘Imrān","An-Nisā’","Al-Mā’idah","Al-An‘ām","Al-A‘rāf","Al-Anfāl","At-Tawbah","Yūnus","Hūd","Yūsuf","Ar-Ra‘d","Ibrāhīm","Al-Ḥijr","An-Naḥl","Al-Isrā’","Al-Kahf","Maryam","Ṭā Hā","Al-Anbiyā’","Al-Ḥajj","Al-Mu’minūn","An-Nūr","Al-Furqān","Ash-Shu‘arā’","An-Naml","Al-Qaṣaṣ","Al-‘Ankabūt","Ar-Rūm","Luqmān","As-Sajdah","Al-Aḥzāb","Saba’","Fāṭir","Yā Sīn","As-Ṣāffāt","Ṣād","Az-Zumar","Ghāfir","Fuṣṣilat","Ash-Shūrā","Az-Zukhruf","Ad-Dukhān","Al-Jāthiyah","Al-Aḥqāf","Muḥammad","Al-Fatḥ","Al-Ḥujurāt","Qāf","Adh-Dhāriyāt","Aṭ-Ṭūr","An-Najm","Al-Qamar","Ar-Raḥmān","Al-Wāqi‘ah","Al-Ḥadīd","Al-Mujādilah","Al-Ḥashr","Al-Mumtaḥanah","Aṣ-Ṣaff","Al-Jumu‘ah","Al-Munāfiqūn","At-Taghābun","Aṭ-Ṭalāq","At-Taḥrīm","Al-Mulk","Al-Qalam","Al-Ḥāqqah","Al-Ma‘ārij","Nūḥ","Al-Jinn","Al-Muzzammil","Al-Muddaththir","Al-Qiyāmah","Al-Insān","Al-Mursalāt","An-Naba’","An-Nāzi‘āt","‘Abasa","At-Takwīr","Al-Infiṭār","Al-Muṭaffifīn","Al-Inshiqāq","Al-Burūj","Aṭ-Ṭāriq","Al-A‘lā","Al-Ghāshiyah","Al-Fajr","Al-Balad","Ash-Shams","Al-Layl","Aḍ-Ḍuḥā","Ash-Sharḥ","At-Tīn","Al-‘Alaq","Al-Qadr","Al-Bayyinah","Az-Zalzalah","Al-‘Ādiyāt","Al-Qāri‘ah","At-Takāthur","Al-‘Aṣr","Al-Humazah","Al-Fīl","Quraysh","Al-Mā‘ūn","Al-Kawthar","Al-Kāfirūn","An-Naṣr","Al-Masad","Al-Ikhlāṣ","Al-Falaq","An-Nās"];
 
 /* ======================= HELPERS ======================= */
@@ -328,6 +339,7 @@ const prefLangKey="pref_lang";
 const planStoreKey=lang=>`done_${todayKey()}_${lang}`;
 const adhkarStoreKey=(lang,slot)=>`adhkar_${todayKey()}_${lang}_${slot}`;
 const quranStoreKey=lang=>`qread_${todayKey()}_${lang}`;
+const themeKey="pref_theme"; // "dark" | "light"
 function loadJSON(k){try{return JSON.parse(localStorage.getItem(k)||"{}");}catch{return {}}}
 function saveJSON(k,v){localStorage.setItem(k,JSON.stringify(v));}
 
@@ -335,7 +347,7 @@ function saveJSON(k,v){localStorage.setItem(k,JSON.stringify(v));}
 const titleEl=$("#title"), langSel=$("#lang"), notifyBtn=$("#notifyBtn"),
   tabPlan=$("#tab-plan"), tabAdhkar=$("#tab-adhkar"), tabQuran=$("#tab-quran"),
   pagePlan=$("#page-plan"), pageAdhkar=$("#page-adhkar"), pageQuran=$("#page-quran"),
-  hintEl=$("#hint");
+  hintEl=$("#hint"), themeBtn=$("#themeBtn");
 
 const checkAllBtn=$("#checkAll"), uncheckAllBtn=$("#uncheckAll"), resetDayBtn=$("#resetDay"),
   tasksEl=$("#tasks"), progressEl=$("#progress");
@@ -345,19 +357,29 @@ const slotLabel=$("#slotLabel"), slotSel=$("#slotSel"), adhSearch=$("#adhSearch"
 
 const qLabel1=$("#qLabel1"), qLabel2=$("#qLabel2"), surahSel=$("#surahSel"),
   juzSel=$("#juzSel"), openSurah=$("#openSurah"), qFrame=$("#qFrame"),
-  markRead=$("#markRead"), resetRead=$("#resetRead"), readStatus=$("#readStatus"),
-  qHint=$("#qHint");
+  markRead=$("#markRead"), resetRead=$("#resetRead"), readStatus=$("#readStatus"), qHint=$("#qHint");
+
+/* ======================= THEME ======================= */
+function getTheme(){ return localStorage.getItem(themeKey) || "light"; }
+function applyTheme(t){ if(t==="dark") document.documentElement.classList.add("dark"); else document.documentElement.classList.remove("dark"); }
+function updateThemeBtn(lang){ const L=T[lang]; const isDark=document.documentElement.classList.contains("dark"); themeBtn.textContent=isDark?L.themeLight:L.themeDark; }
+function toggleTheme(lang){ const next=getTheme()==="dark"?"light":"dark"; localStorage.setItem(themeKey,next); applyTheme(next); updateThemeBtn(lang); }
 
 /* ======================= TIME UTILS ======================= */
 function timeToDate(hhmm){const[h,m]=hhmm.split(":").map(n=>parseInt(n,10));const n=new Date();return new Date(n.getFullYear(),n.getMonth(),n.getDate(),h,m,0,0);}
-function isNowInInterval(start,end){const now=new Date();let s=timeToDate(start),e=timeToDate(end);if(e<=s){e=new Date(e.getTime()+24*60*60*1000);}let n=now;if(now<s&&e-s>12*60*60*1000)n=new Date(now.getTime()+24*60*60*1000);return n>=s&&n<e;}
+function isNowInInterval(start,end){
+  const now=new Date();
+  let s=timeToDate(start), e=timeToDate(end);
+  if(e<=s){ e=new Date(e.getTime()+24*60*60*1000); }
+  let n=now;
+  if(now<s && e-s>12*60*60*1000) n=new Date(now.getTime()+24*60*60*1000);
+  return n>=s && n<e;
+}
 
 /* ======================= PLAN ======================= */
 function renderPlan(lang,L){
   $("#tab-plan").textContent=L.tabs.plan;
-  checkAllBtn.textContent=L.checkAll;
-  uncheckAllBtn.textContent=L.uncheckAll;
-  resetDayBtn.textContent=L.resetDay;
+  checkAllBtn.textContent=L.checkAll; uncheckAllBtn.textContent=L.uncheckAll; resetDayBtn.textContent=L.resetDay;
 
   const doneMap=loadJSON(planStoreKey(lang));
   tasksEl.innerHTML="";
@@ -365,8 +387,9 @@ function renderPlan(lang,L){
     const checked=!!doneMap[i];
     const row=document.createElement("div");
     row.className="task";
-    const nowTag=isNowInInterval(t.start,t.end)?`<span class="nowTag">• ${L.now}</span>`:"";
-    if(nowTag) row.classList.add("now");
+    const inNow=isNowInInterval(t.start,t.end);
+    const nowTag=inNow?`<span class="nowTag">• ${L.now}</span>`:"";
+    if(inNow) row.classList.add("now");
     row.innerHTML=`
       <div class="left">
         <input type="checkbox" id="chk-${i}" ${checked?"checked":""}/>
@@ -374,7 +397,8 @@ function renderPlan(lang,L){
         <span id="txt-${i}" class="${checked?"done":""}">${t.action}</span>
         <span class="badge">${L.interval(t.start,t.end)}</span>
         ${nowTag}
-      </div><div></div>`;
+      </div>
+      <div></div>`;
     tasksEl.appendChild(row);
   });
   L.tasks.forEach((_,i)=>{
@@ -392,60 +416,41 @@ function renderAdhkar(lang,L){
   $("#tab-adhkar").textContent=L.tabs.adhkar;
   slotLabel.textContent=L.slotLabel; resetAdhkar.textContent=L.resetAdhkar; adhkarHint.textContent=L.adhkarHint;
 
-  // slots + "all"
-  slotSel.innerHTML="";
-  L.slots.forEach(s=>{const opt=document.createElement("option");opt.value=s.key;opt.textContent=s.name;slotSel.appendChild(opt);});
-  const cur=localStorage.getItem("adh_slot_"+lang) || L.slots[0].key;
-  slotSel.value=cur;
-
+  slotSel.innerHTML=""; L.slots.forEach(s=>{const opt=document.createElement("option");opt.value=s.key;opt.textContent=s.name;slotSel.appendChild(opt);});
+  const cur=localStorage.getItem("adh_slot_"+lang)||L.slots[0].key; slotSel.value=cur;
   drawAdhkarList(lang,L,cur, adhSearch.value.trim());
 
   slotSel.onchange=()=>{localStorage.setItem("adh_slot_"+lang,slotSel.value);drawAdhkarList(lang,L,slotSel.value, adhSearch.value.trim());};
   resetAdhkar.onclick=()=>{
-    if(slotSel.value==="all"){
-      L.slots.filter(s=>s.key!=="all").forEach(s=>localStorage.removeItem(adhkarStoreKey(lang,s.key)));
-    }else{
-      localStorage.removeItem(adhkarStoreKey(lang,slotSel.value));
-    }
+    if(slotSel.value==="all"){ L.slots.filter(s=>s.key!=="all").forEach(s=>localStorage.removeItem(adhkarStoreKey(lang,s.key))); }
+    else{ localStorage.removeItem(adhkarStoreKey(lang,slotSel.value)); }
     drawAdhkarList(lang,L,slotSel.value, adhSearch.value.trim());
   };
   adhSearch.oninput=()=>drawAdhkarList(lang,L,slotSel.value, adhSearch.value.trim());
 }
-
 function drawAdhkarList(lang,L,slotKey,query){
   adhkarList.innerHTML="";
-
-  // Helper: rend une section (avec en-tête optionnel)
-  const renderList = (storeKey, headerLabel, items) => {
-    if (!items || items.length === 0) return;
-
-    if (headerLabel) {
+  const renderList=(storeKey, headerLabel, items)=>{
+    if(!items||items.length===0) return;
+    if(headerLabel){
       const head=document.createElement("div");
       head.className="sectionHead";
       head.innerHTML=`<div class="catTitle">${headerLabel}</div>
         <div class="sectionActions">
-          <button class="primary" id="${storeKey}-all">✅ ${L.checkAll}</button>
-          <button id="${storeKey}-reset">↺ ${L.resetAdhkar}</button>
+          <button class="primary" id="${storeKey}-all">${L.checkAll}</button>
+          <button id="${storeKey}-reset">${L.resetAdhkar}</button>
         </div>`;
       adhkarList.appendChild(head);
       const divi=document.createElement("div"); divi.className="divider"; adhkarList.appendChild(divi);
 
-      // actions section
-      document.addEventListener("click", (ev)=>{
-        if(ev.target && ev.target.id===`${storeKey}-all`){
-          const counts=loadJSON(adhkarStoreKey(lang,storeKey));
-          items.forEach((d,idx)=>{counts[idx]=d.count||1;});
-          saveJSON(adhkarStoreKey(lang,storeKey),counts);
-          // rafraîchit la vue
-          drawAdhkarList(lang,L,slotKey, query);
-        }
-        if(ev.target && ev.target.id===`${storeKey}-reset`){
-          localStorage.removeItem(adhkarStoreKey(lang,storeKey));
-          drawAdhkarList(lang,L,slotKey, query);
-        }
-      }, {once:true});
+      head.querySelector(`#${storeKey}-all`).onclick=()=>{
+        const counts=loadJSON(adhkarStoreKey(lang,storeKey)); items.forEach((d,i)=>counts[i]=d.count||1);
+        saveJSON(adhkarStoreKey(lang,storeKey),counts); drawAdhkarList(lang,L,slotKey,query);
+      };
+      head.querySelector(`#${storeKey}-reset`).onclick=()=>{
+        localStorage.removeItem(adhkarStoreKey(lang,storeKey)); drawAdhkarList(lang,L,slotKey,query);
+      };
     }
-
     const counts=loadJSON(adhkarStoreKey(lang,storeKey));
     items.forEach((d,idx)=>{
       if(query && !d.txt.toLowerCase().includes(query.toLowerCase())) return;
@@ -476,15 +481,8 @@ function drawAdhkarList(lang,L,slotKey,query){
     });
   };
 
-  if (slotKey === "all") {
-    // toutes les catégories avec titre
-    L.slots.filter(s=>s.key!=="all").forEach(s=>{
-      renderList(s.key, s.name, (L.adhkar[s.key]||[]));
-    });
-  } else {
-    // un seul créneau — PAS d'en-tête (headerLabel = null)
-    renderList(slotKey, null, (L.adhkar[slotKey]||[]));
-  }
+  if(slotKey==="all"){ L.slots.filter(s=>s.key!=="all").forEach(s=>renderList(s.key,s.name,(L.adhkar[s.key]||[]))); }
+  else{ renderList(slotKey,null,(L.adhkar[slotKey]||[])); }
 }
 
 /* ======================= QURAN ======================= */
@@ -509,17 +507,28 @@ function showPage(key){[pagePlan,pageAdhkar,pageQuran].forEach(p=>p.style.displa
 /* ======================= RENDER ALL / INIT ======================= */
 function renderAll(lang){
   const rtl=(lang==="ar"); document.documentElement.lang=lang; document.documentElement.dir=rtl?"rtl":"ltr"; document.body.style.direction=rtl?"rtl":"ltr";
-  const L=T[lang]; titleEl.textContent=L.title; document.getElementById("langLabel").textContent=L.lang; notifyBtn.textContent=L.notify; hintEl.textContent=L.hint;
+  const L=T[lang];
+  titleEl.textContent=L.title; document.getElementById("langLabel").textContent=L.lang; notifyBtn.textContent=L.notify; hintEl.textContent=L.hint;
+  updateThemeBtn(lang);
   renderPlan(lang,L); renderAdhkar(lang,L); renderQuran(lang,L);
 }
 
 document.addEventListener("DOMContentLoaded", ()=>{
+  // thème
+  applyTheme(getTheme());
+
   const initLang=localStorage.getItem(prefLangKey)||"ar"; langSel.value=initLang; renderAll(initLang);
+  updateThemeBtn(initLang);
+
   showPage(localStorage.getItem("last_page")||"plan");
+
+  // rafraîchit l'indicateur "أنت الآن هنا" chaque minute
   setInterval(()=>renderPlan(langSel.value,T[langSel.value]),60*1000);
 
   langSel.addEventListener("change",()=>{const lang=langSel.value;localStorage.setItem(prefLangKey,lang);renderAll(lang);});
   notifyBtn.addEventListener("click",()=>enableNotifications(T[langSel.value]));
+  themeBtn.addEventListener("click",()=>toggleTheme(langSel.value));
+
   checkAllBtn.addEventListener("click",()=>{const L=T[langSel.value],map={};L.tasks.forEach((_,i)=>map[i]=true);saveJSON(planStoreKey(langSel.value),map);renderPlan(langSel.value,L);});
   uncheckAllBtn.addEventListener("click",()=>{const L=T[langSel.value],map={};L.tasks.forEach((_,i)=>map[i]=false);saveJSON(planStoreKey(langSel.value),map);renderPlan(langSel.value,L);});
   resetDayBtn.addEventListener("click",()=>{localStorage.removeItem(planStoreKey(langSel.value));renderPlan(langSel.value,T[langSel.value]);});
