@@ -6,7 +6,7 @@
 <title>جدول إدارة الوقت</title>
 <style>
   :root{
-    --bg:#eef6ff;--card:#fff;--text:#1b2a41;--muted:#5f6b7a;--shadow:0 1px 4px rgba(0,0,0,.12);
+    --bg:#eef6ff;--card:#fff;--text:#0f1a2b;--muted:#5f6b7a;--shadow:0 1px 4px rgba(0,0,0,.12);
     --brand:#1e88e5;--now:#13b38b;--accent:#0ea5e9;
   }
   /* --- Dark mode variables --- */
@@ -14,9 +14,11 @@
     --bg:#0b1220; --card:#111827; --text:#e5eefc; --muted:#9aa4b2;
     --shadow:0 1px 4px rgba(0,0,0,.5); --brand:#3b82f6; --now:#10b981; --accent:#38bdf8;
   }
+
   html,body{height:100%}
   body{margin:14px;background:var(--bg);font-family:Tahoma,Arial,sans-serif;color:var(--text)}
   .wrap{max-width:1000px;margin:0 auto}
+
   header{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:10px}
   h1{font-size:20px;margin:0}
   .row{display:flex;gap:10px;align-items:center}
@@ -24,9 +26,9 @@
   .primary{background:var(--brand);color:#fff;border:none}
   .card{background:var(--card);box-shadow:var(--shadow);border-radius:12px;padding:12px;margin:12px 0}
   .muted{color:var(--muted);font-size:12px}
-  .dark body{background:var(--bg);color:var(--text)}
-  .dark .card{background:var(--card)}
+
   .dark select,.dark button,.dark input[type="text"]{background:#0f172a;color:var(--text);border-color:#334155}
+  .dark .card{background:var(--card)}
   .dark .dhk,.dark .task{border-color:#233146}
   .dark .badge{background:#0b2540;border-color:#1e3a5f;color:#cfe8ff}
   .dark .tag{background:#132238;border-color:#1e2b46;color:#cde4ff}
@@ -36,11 +38,12 @@
   .tab{padding:8px 12px;border-radius:10px;border:1px solid #cfd8e3;background:#fff;cursor:pointer}
   .tab.active{background:var(--accent);border-color:var(--accent);color:#fff}
 
-  /* tasks (planning) */
+  /* planning */
   .task{display:flex;align-items:center;justify-content:space-between;padding:10px;border:1px solid #e9eef5;border-radius:10px;margin:6px 0}
   .left{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
   .time{font-weight:bold;min-width:150px}
   .badge{font-size:12px;background:#e8f1ff;border:1px solid #cfe0ff;border-radius:999px;padding:2px 8px}
+  .ltr{direction:ltr; unicode-bidi:embed;} /* <— force LTR pour les heures */
   .now{border-color:var(--now);box-shadow:0 0 0 2px rgba(19,179,139,.15)}
   .now .badge{background:#e9fff7;border-color:#b9f1df}
   .nowTag{font-size:12px;color:#0f8a6a;margin-inline-start:6px}
@@ -339,7 +342,7 @@ const prefLangKey="pref_lang";
 const planStoreKey=lang=>`done_${todayKey()}_${lang}`;
 const adhkarStoreKey=(lang,slot)=>`adhkar_${todayKey()}_${lang}_${slot}`;
 const quranStoreKey=lang=>`qread_${todayKey()}_${lang}`;
-const themeKey="pref_theme"; // "dark" | "light"
+const themeKey="pref_theme";
 function loadJSON(k){try{return JSON.parse(localStorage.getItem(k)||"{}");}catch{return {}}}
 function saveJSON(k,v){localStorage.setItem(k,JSON.stringify(v));}
 
@@ -395,7 +398,7 @@ function renderPlan(lang,L){
         <input type="checkbox" id="chk-${i}" ${checked?"checked":""}/>
         <span class="time">${t.time}:</span>
         <span id="txt-${i}" class="${checked?"done":""}">${t.action}</span>
-        <span class="badge">${L.interval(t.start,t.end)}</span>
+        <span class="badge"><span class="ltr">${t.start} – ${t.end}</span></span>
         ${nowTag}
       </div>
       <div></div>`;
@@ -522,7 +525,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
 
   showPage(localStorage.getItem("last_page")||"plan");
 
-  // rafraîchit l'indicateur "أنت الآن هنا" chaque minute
+  // rafraîchit l'indicateur du créneau toutes les minutes
   setInterval(()=>renderPlan(langSel.value,T[langSel.value]),60*1000);
 
   langSel.addEventListener("change",()=>{const lang=langSel.value;localStorage.setItem(prefLangKey,lang);renderAll(lang);});
