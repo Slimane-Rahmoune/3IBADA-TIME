@@ -8,16 +8,32 @@
   :root{
     --bg:#f5f7fb; --card:#fff; --text:#0f1a2b; --muted:#6b7280;
     --brand:#1e88e5; --now:#10b981; --shadow:0 1px 4px rgba(0,0,0,.12);
+    --accent:#0ea5e9;
   }
   html,body{height:100%}
-  body{margin:16px;background:var(--bg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--text)}
+  body{
+    margin:16px;background:var(--bg);
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    color:var(--text)
+  }
   .wrap{max-width:900px;margin:0 auto}
+
   header{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:10px}
   h1{font-size:20px;margin:0}
-  .pill{display:inline-flex;align-items:center;gap:8px;background:#eef6ff;border:1px solid #cfe0ff;color:#0f2a4a;border-radius:999px;padding:6px 12px}
+  .right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .pill{
+    display:inline-flex;align-items:center;gap:8px;
+    background:#eef6ff;border:1px solid #cfe0ff;color:#0f2a4a;border-radius:999px;padding:6px 12px
+  }
   .status{color:var(--muted);font-size:14px;margin:6px 0}
+
   .card{background:var(--card);box-shadow:var(--shadow);border-radius:12px;padding:12px;margin:12px 0}
-  .task{display:flex;align-items:center;justify-content:space-between;gap:8px;border:1px solid #e7edf6;border-radius:10px;padding:10px;margin:8px 0}
+  .legend{font-size:13px;color:var(--muted);margin-bottom:6px}
+
+  .task{
+    display:flex;align-items:center;justify-content:space-between;gap:8px;
+    border:1px solid #e7edf6;border-radius:10px;padding:10px;margin:8px 0
+  }
   .left{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
   .time{font-weight:600}
   .badge{font-size:12px;background:#e8f1ff;border:1px solid #cfe0ff;border-radius:999px;padding:2px 8px}
@@ -27,88 +43,101 @@
   .nowTag{font-size:12px;color:#0f8a6a;margin-left:6px}
   .done{text-decoration:line-through;color:#808a98}
   input[type="checkbox"]{width:20px;height:20px;accent-color:var(--brand)}
-  .legend{font-size:13px;color:var(--muted)}
+
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;margin:8px 0}
+  .btn{border:1px solid #cfd8e3;background:#fff;border-radius:8px;padding:8px 10px;cursor:pointer}
+  .btn.primary{background:var(--brand);color:#fff;border:none}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
     <h1>🕰️ Planning (adapté à ta position)</h1>
-    <div class="pill" id="cityPill">🏙️ Ville : <strong id="cityName">—</strong></div>
+    <div class="right">
+      <div class="pill" title="Ville détectée automatiquement">
+        🏙️ Ville : <strong id="cityName">—</strong>
+      </div>
+    </div>
   </header>
 
   <div class="status" id="status">⏳ Demande de géolocalisation…</div>
 
   <section class="card">
-    <div class="legend">Les créneaux sont calculés à partir de Fajr, Sunrise, Dhuhr, Asr, Maghrib, Isha (méthode Aladhan : Egypt). Mise à jour du créneau en cours toutes les minutes.</div>
+    <div class="legend">
+      Les créneaux sont calculés à partir de Fajr, Sunrise, Dhuhr, Asr, Maghrib, Isha (Aladhan, méthode <span class="ltr">4</span> = Egypt).
+      Mise à jour du créneau en cours chaque minute.
+    </div>
+
+    <div class="toolbar">
+      <button id="resetDay" class="btn">↺ Réinitialiser la progression du jour</button>
+    </div>
+
     <div id="tasks"></div>
   </section>
 </div>
 
 <script>
-/* ========= Libs utilitaires ========= */
+/* ================== Helpers ================== */
 const $ = s => document.querySelector(s);
-const toMin = s => { const [h,m] = s.split(":").map(Number); return h*60 + m; }
-const fromMin = m => { m=((m%1440)+1440)%1440; const h=Math.floor(m/60), mi=m%60; return String(h).padStart(2,"0")+":"+String(mi).padStart(2,"0"); }
+const toMin = s => { const [h,m] = s.split(":").map(Number); return h*60 + m; };
+const fromMin = m => { m=((m%1440)+1440)%1440; const h=Math.floor(m/60), mi=m%60; return String(h).padStart(2,"0")+":"+String(mi).padStart(2,"0"); };
+const addMin = (t,mins) => fromMin(toMin(t)+mins);
 const mid = (a,b) => fromMin(Math.floor((toMin(a)+toMin(b))/2));
-const addMin = (hhmm, mins) => fromMin(toMin(hhmm)+mins);
+const todayKey = () => new Date().toISOString().slice(0,10);
 
-/* ========= Tâches (FR) ========= */
+/* ================== Modèle des 9 tâches ================== */
 const TASKS = [
-  { name:"Avant Fajr", action:"Qiyâm & adhkâr" },            // 1
+  { name:"Avant Fajr", action:"Qiyâm & adhkâr" },                // 1
   { name:"Fajr → +30 min après lever", action:"Fajr + Coran & invocations" }, // 2
-  { name:"Matin (après lever+30)", action:"Travail/Études avec intention" },   // 3
-  { name:"Duha", action:"2–4 unités de prière" },            // 4
-  { name:"Dhuhr", action:"Prière + sieste courte" },         // 5
-  { name:"‘Asr → Maghrib", action:"Travail/Savoir + Sport" },// 6
-  { name:"Maghrib → ‘Isha", action:"Famille + Coran" },      // 7
-  { name:"‘Isha", action:"Prière + Lecture/Repos" },         // 8
-  { name:"Nuit", action:"Dormir tôt + Qiyâm" }               // 9
+  { name:"Matin (après lever+30)", action:"Travail/Études avec intention" },  // 3
+  { name:"Duha", action:"2–4 unités de prière" },                // 4
+  { name:"Dhuhr", action:"Prière + sieste courte" },             // 5
+  { name:"‘Asr → Maghrib", action:"Travail/Savoir + Sport" },    // 6
+  { name:"Maghrib → ‘Isha", action:"Famille + Coran" },          // 7
+  { name:"‘Isha", action:"Prière + Lecture/Repos" },             // 8
+  { name:"Nuit", action:"Dormir tôt + Qiyâm" }                   // 9
 ];
 
-/* ========= Calcul des créneaux à partir des horaires ========= */
+/* ================== Calcul des créneaux ================== */
 function buildSlots({Fajr, Sunrise, Dhuhr, Asr, Maghrib, Isha}){
-  // 1) Avant Fajr (fenêtre autour de Fajr jusqu’à Sunrise, max 60 min)
+  // 1) fenêtre autour de Fajr, max 60 min et jamais après Sunrise
   const fajrEnd = fromMin(Math.min(toMin(addMin(Fajr,60)), toMin(Sunrise)));
-  // 2) Fajr → Sunrise+30
   const afterSunrise = addMin(Sunrise, 30);
-  // 3) Matin (entre Sunrise+30 et milieu vers Dhuhr)
   const midMorning   = mid(afterSunrise, Dhuhr);
-  // 8/9) Nuit découpée autour du milieu entre Isha et Fajr+24h
-  const midIshaFajr  = mid(Isha, addMin(Fajr, 24*60));
+  const midIshaFajr  = mid(Isha, addMin(Fajr, 24*60)); // milieu entre Isha et Fajr+24h
 
   return [
-    {start:Fajr,     end:fajrEnd},         // 1 Avant Fajr
-    {start:fajrEnd,  end:afterSunrise},    // 2 Fajr → +30m
-    {start:afterSunrise, end:midMorning},  // 3 Matin
-    {start:midMorning,   end:Dhuhr},       // 4 Duha
-    {start:Dhuhr,    end:Asr},             // 5 Dhuhr
-    {start:Asr,      end:Maghrib},         // 6 Asr → Maghrib
-    {start:Maghrib,  end:Isha},            // 7 Maghrib → Isha
-    {start:Isha,     end:midIshaFajr},     // 8 Isha
+    {start:Fajr,     end:fajrEnd},              // 1 Avant Fajr
+    {start:fajrEnd,  end:afterSunrise},         // 2 Fajr → +30m
+    {start:afterSunrise, end:midMorning},       // 3 Matin
+    {start:midMorning,   end:Dhuhr},            // 4 Duha
+    {start:Dhuhr,    end:Asr},                  // 5 Dhuhr
+    {start:Asr,      end:Maghrib},              // 6 Asr → Maghrib
+    {start:Maghrib,  end:Isha},                 // 7 Maghrib → Isha
+    {start:Isha,     end:midIshaFajr},          // 8 Isha
     {start:midIshaFajr, end:addMin(Fajr,24*60)} // 9 Nuit
   ];
 }
 
-/* ========= Détection si “maintenant” ∈ [start,end[ (gère minuit) ========= */
+/* ====== Appartenance « maintenant » à un intervalle (gère minuit) ====== */
 function nowIn(start, end){
   const cur = new Date(); let c = cur.getHours()*60 + cur.getMinutes();
   let s = toMin(start), e = toMin(end);
   if (e <= s) e += 1440;  // intervalle qui traverse minuit
-  if (c < s) c += 1440;   // déplacer “maintenant” si besoin
+  if (c < s) c += 1440;   // déplacer “maintenant“ sur le même cycle si besoin
   return c >= s && c < e;
 }
 
-/* ========= Rendu ========= */
+/* ================== Rendu ================== */
 let CURRENT_SLOTS = null;
+
 function renderSlots(){
-  if(!CURRENT_SLOTS){ return; }
+  if(!CURRENT_SLOTS) return;
   const box = $("#tasks");
   box.innerHTML = "";
 
   CURRENT_SLOTS.forEach((slot, i) => {
-    const dateKey = new Date().toISOString().slice(0,10);
-    const key = `done_${dateKey}_${i}`;
+    const key = `done_${todayKey()}_${i}`;
     const checked = localStorage.getItem(key) === "1";
     const isNow = nowIn(slot.start, slot.end);
 
@@ -133,11 +162,12 @@ function renderSlots(){
   });
 }
 
-/* ========= Appels API (géoloc + reverse + timings) ========= */
+/* ================== API calls (géoloc + reverse + timings) ================== */
 async function getCityName(lat, lon){
   try{
     const resp = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=fr`);
     const j = await resp.json();
+    // On affiche la valeur la plus précise disponible
     return j.city || j.locality || j.principalSubdivision || j.countryName || "—";
   }catch{
     return "—";
@@ -147,8 +177,8 @@ async function getCityName(lat, lon){
 async function getPrayerTimings(lat, lon, method=4){
   const r = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=${method}`);
   const j = await r.json();
+  if(!j || !j.data || !j.data.timings) throw new Error("Réponse Aladhan invalide");
   const t = j.data.timings;
-  // nettoyer HH:MM
   const clean = v => (v||"").split(" ")[0].slice(0,5);
   return {
     Fajr:    clean(t.Fajr),
@@ -160,21 +190,22 @@ async function getPrayerTimings(lat, lon, method=4){
   };
 }
 
-/* ========= Initialisation ========= */
+/* ================== Initialisation ================== */
 async function init(){
   $("#status").textContent = "⏳ Demande de géolocalisation…";
   if(!("geolocation" in navigator)){
     $("#status").textContent = "❌ Géolocalisation non supportée par ce navigateur.";
     return;
   }
+
   navigator.geolocation.getCurrentPosition(async pos => {
     const { latitude, longitude } = pos.coords;
-    $("#status").textContent = "📍 Position détectée. Récupération des horaires…";
+    $("#status").textContent = "📍 Position détectée. Récupération de la ville et des horaires…";
 
     try{
       const [city, timings] = await Promise.all([
         getCityName(latitude, longitude),
-        getPrayerTimings(latitude, longitude, 4) // Egypt (bon compromis)
+        getPrayerTimings(latitude, longitude, 4) // Egypt (ID=4)
       ]);
 
       $("#cityName").textContent = city;
@@ -183,19 +214,29 @@ async function init(){
       renderSlots();
       $("#status").textContent = "✅ Créneaux mis à jour selon ta localisation.";
 
-      // Mettre à jour l’indicateur « en cours » chaque minute
+      // Mise à jour de l’indicateur « en cours » chaque minute
       setInterval(renderSlots, 60*1000);
 
     }catch(err){
       console.error(err);
-      $("#status").textContent = "⚠️ Erreur lors de la récupération des horaires.";
+      $("#status").textContent = "⚠️ Erreur lors de la récupération des horaires. Vérifie ta connexion et recharge la page.";
     }
   }, err => {
     console.warn(err);
-    $("#status").textContent = "⚠️ Accès à la géolocalisation refusé. Autorise la localisation et recharge la page.";
+    let msg = "⚠️ Accès à la géolocalisation refusé. Autorise la localisation et recharge la page.";
+    if(err && err.message) msg += " ("+err.message+")";
+    $("#status").textContent = msg;
     $("#cityName").textContent = "—";
   }, { enableHighAccuracy:true, timeout:15000 });
 }
+
+/* ================== Reset progression du jour ================== */
+$("#resetDay").addEventListener("click", ()=>{
+  for(let i=0;i<9;i++){
+    localStorage.removeItem(`done_${todayKey()}_${i}`);
+  }
+  renderSlots();
+});
 
 document.addEventListener("DOMContentLoaded", init);
 </script>
