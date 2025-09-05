@@ -3,37 +3,29 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Planning adapté à ma géolocalisation</title>
+<title>Planning par géolocalisation</title>
 <style>
   :root{
-    --bg:#f5f7fb; --card:#fff; --text:#0f1a2b; --muted:#6b7280;
+    --bg:#f5f7fb; --card:#ffffff; --text:#0f1a2b; --muted:#6b7280;
     --brand:#1e88e5; --now:#10b981; --shadow:0 1px 4px rgba(0,0,0,.12);
-    --accent:#0ea5e9;
   }
   html,body{height:100%}
   body{
-    margin:16px;background:var(--bg);
+    margin:16px; background:var(--bg);
     font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-    color:var(--text)
+    color:var(--text);
   }
   .wrap{max-width:900px;margin:0 auto}
-
   header{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:10px}
   h1{font-size:20px;margin:0}
-  .right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-  .pill{
-    display:inline-flex;align-items:center;gap:8px;
-    background:#eef6ff;border:1px solid #cfe0ff;color:#0f2a4a;border-radius:999px;padding:6px 12px
-  }
+  .pill{display:inline-flex;align-items:center;gap:8px;background:#eef6ff;border:1px solid #cfe0ff;color:#0f2a4a;border-radius:999px;padding:6px 12px}
   .status{color:var(--muted);font-size:14px;margin:6px 0}
-
   .card{background:var(--card);box-shadow:var(--shadow);border-radius:12px;padding:12px;margin:12px 0}
   .legend{font-size:13px;color:var(--muted);margin-bottom:6px}
-
-  .task{
-    display:flex;align-items:center;justify-content:space-between;gap:8px;
-    border:1px solid #e7edf6;border-radius:10px;padding:10px;margin:8px 0
-  }
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;margin:8px 0}
+  .btn{border:1px solid #cfd8e3;background:#fff;border-radius:8px;padding:8px 10px;cursor:pointer}
+  .btn.primary{background:var(--brand);color:#fff;border:none}
+  .task{display:flex;align-items:center;justify-content:space-between;gap:8px;border:1px solid #e7edf6;border-radius:10px;padding:10px;margin:8px 0}
   .left{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
   .time{font-weight:600}
   .badge{font-size:12px;background:#e8f1ff;border:1px solid #cfe0ff;border-radius:999px;padding:2px 8px}
@@ -43,20 +35,14 @@
   .nowTag{font-size:12px;color:#0f8a6a;margin-left:6px}
   .done{text-decoration:line-through;color:#808a98}
   input[type="checkbox"]{width:20px;height:20px;accent-color:var(--brand)}
-
-  .toolbar{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;margin:8px 0}
-  .btn{border:1px solid #cfd8e3;background:#fff;border-radius:8px;padding:8px 10px;cursor:pointer}
-  .btn.primary{background:var(--brand);color:#fff;border:none}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
     <h1>🕰️ Planning (adapté à ta position)</h1>
-    <div class="right">
-      <div class="pill" title="Ville détectée automatiquement">
-        🏙️ Ville : <strong id="cityName">—</strong>
-      </div>
+    <div class="pill" title="Ville détectée automatiquement">
+      🏙️ Ville : <strong id="cityName">—</strong>
     </div>
   </header>
 
@@ -69,6 +55,7 @@
     </div>
 
     <div class="toolbar">
+      <button id="retry" class="btn">↻ Réessayer la géolocalisation</button>
       <button id="resetDay" class="btn">↺ Réinitialiser la progression du jour</button>
     </div>
 
@@ -85,26 +72,29 @@ const addMin = (t,mins) => fromMin(toMin(t)+mins);
 const mid = (a,b) => fromMin(Math.floor((toMin(a)+toMin(b))/2));
 const todayKey = () => new Date().toISOString().slice(0,10);
 
-/* ================== Modèle des 9 tâches ================== */
+/* ================== Modèle des tâches ================== */
 const TASKS = [
-  { name:"Avant Fajr", action:"Qiyâm & adhkâr" },                // 1
+  { name:"Avant Fajr", action:"Qiyâm & adhkâr" },                       // 1
   { name:"Fajr → +30 min après lever", action:"Fajr + Coran & invocations" }, // 2
   { name:"Matin (après lever+30)", action:"Travail/Études avec intention" },  // 3
-  { name:"Duha", action:"2–4 unités de prière" },                // 4
-  { name:"Dhuhr", action:"Prière + sieste courte" },             // 5
-  { name:"‘Asr → Maghrib", action:"Travail/Savoir + Sport" },    // 6
-  { name:"Maghrib → ‘Isha", action:"Famille + Coran" },          // 7
-  { name:"‘Isha", action:"Prière + Lecture/Repos" },             // 8
-  { name:"Nuit", action:"Dormir tôt + Qiyâm" }                   // 9
+  { name:"Duha", action:"2–4 unités de prière" },                       // 4
+  { name:"Dhuhr", action:"Prière + sieste courte" },                    // 5
+  { name:"‘Asr → Maghrib", action:"Travail/Savoir + Sport" },           // 6
+  { name:"Maghrib → ‘Isha", action:"Famille + Coran" },                 // 7
+  { name:"‘Isha", action:"Prière + Lecture/Repos" },                    // 8
+  { name:"Nuit", action:"Dormir tôt + Qiyâm" }                          // 9
 ];
 
 /* ================== Calcul des créneaux ================== */
 function buildSlots({Fajr, Sunrise, Dhuhr, Asr, Maghrib, Isha}){
   // 1) fenêtre autour de Fajr, max 60 min et jamais après Sunrise
   const fajrEnd = fromMin(Math.min(toMin(addMin(Fajr,60)), toMin(Sunrise)));
+  // 2) Fajr → Sunrise+30
   const afterSunrise = addMin(Sunrise, 30);
+  // 3) Matin (entre Sunrise+30 et milieu vers Dhuhr)
   const midMorning   = mid(afterSunrise, Dhuhr);
-  const midIshaFajr  = mid(Isha, addMin(Fajr, 24*60)); // milieu entre Isha et Fajr+24h
+  // 8/9) Nuit partagée autour du milieu entre Isha et Fajr+24h
+  const midIshaFajr  = mid(Isha, addMin(Fajr, 24*60));
 
   return [
     {start:Fajr,     end:fajrEnd},              // 1 Avant Fajr
@@ -124,7 +114,7 @@ function nowIn(start, end){
   const cur = new Date(); let c = cur.getHours()*60 + cur.getMinutes();
   let s = toMin(start), e = toMin(end);
   if (e <= s) e += 1440;  // intervalle qui traverse minuit
-  if (c < s) c += 1440;   // déplacer “maintenant“ sur le même cycle si besoin
+  if (c < s) c += 1440;   // déplacer “maintenant” sur le même cycle si besoin
   return c >= s && c < e;
 }
 
@@ -162,12 +152,11 @@ function renderSlots(){
   });
 }
 
-/* ================== API calls (géoloc + reverse + timings) ================== */
+/* ================== API (géoloc + reverse + timings) ================== */
 async function getCityName(lat, lon){
   try{
     const resp = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=fr`);
     const j = await resp.json();
-    // On affiche la valeur la plus précise disponible
     return j.city || j.locality || j.principalSubdivision || j.countryName || "—";
   }catch{
     return "—";
@@ -190,14 +179,13 @@ async function getPrayerTimings(lat, lon, method=4){
   };
 }
 
-/* ================== Initialisation ================== */
-async function init(){
+/* ================== Géolocalisation ================== */
+async function locateAndBuild(){
   $("#status").textContent = "⏳ Demande de géolocalisation…";
   if(!("geolocation" in navigator)){
     $("#status").textContent = "❌ Géolocalisation non supportée par ce navigateur.";
     return;
   }
-
   navigator.geolocation.getCurrentPosition(async pos => {
     const { latitude, longitude } = pos.coords;
     $("#status").textContent = "📍 Position détectée. Récupération de la ville et des horaires…";
@@ -205,7 +193,7 @@ async function init(){
     try{
       const [city, timings] = await Promise.all([
         getCityName(latitude, longitude),
-        getPrayerTimings(latitude, longitude, 4) // Egypt (ID=4)
+        getPrayerTimings(latitude, longitude, 4) // Egypt
       ]);
 
       $("#cityName").textContent = city;
@@ -219,18 +207,19 @@ async function init(){
 
     }catch(err){
       console.error(err);
-      $("#status").textContent = "⚠️ Erreur lors de la récupération des horaires. Vérifie ta connexion et recharge la page.";
+      $("#status").textContent = "⚠️ Erreur lors de la récupération des horaires. Vérifie ta connexion et réessaie.";
     }
   }, err => {
     console.warn(err);
-    let msg = "⚠️ Accès à la géolocalisation refusé. Autorise la localisation et recharge la page.";
-    if(err && err.message) msg += " ("+err.message+")";
+    let msg = "⚠️ Accès à la géolocalisation refusé. Autorise la localisation (navigateur) puis clique « Réessayer ». ";
+    if(err && err.message) msg += "("+err.message+")";
     $("#status").textContent = msg;
     $("#cityName").textContent = "—";
   }, { enableHighAccuracy:true, timeout:15000 });
 }
 
-/* ================== Reset progression du jour ================== */
+/* ================== Actions UI ================== */
+$("#retry").addEventListener("click", locateAndBuild);
 $("#resetDay").addEventListener("click", ()=>{
   for(let i=0;i<9;i++){
     localStorage.removeItem(`done_${todayKey()}_${i}`);
@@ -238,7 +227,8 @@ $("#resetDay").addEventListener("click", ()=>{
   renderSlots();
 });
 
-document.addEventListener("DOMContentLoaded", init);
+/* ================== Boot ================== */
+document.addEventListener("DOMContentLoaded", locateAndBuild);
 </script>
 </body>
 </html>
