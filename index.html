@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Planning • Adhkâr • Coran (géolocalisation)</title>
+<title>Accueil • Planning • Adhkâr • Coran (géolocalisation)</title>
 <style>
   :root{
     --bg:#f5f7fb; --card:#ffffff; --text:#0f1a2b; --muted:#6b7280;
@@ -31,6 +31,12 @@
   .card{background:var(--card);box-shadow:var(--shadow);border-radius:12px;padding:12px;margin:12px 0}
   .legend{font-size:13px;color:var(--muted);margin-bottom:6px}
 
+  /* Home */
+  .hero{display:flex;flex-direction:column;gap:8px}
+  .cta{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+  .btn{border:1px solid #cfd8e3;background:#fff;border-radius:8px;padding:10px 14px;cursor:pointer}
+  .btn.primary{background:var(--brand);color:#fff;border:none}
+
   /* Planning */
   .task{display:flex;align-items:center;justify-content:space-between;gap:8px;border:1px solid #e7edf6;border-radius:10px;padding:10px;margin:8px 0}
   .left{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
@@ -43,8 +49,6 @@
   .done{text-decoration:line-through;color:#808a98}
   input[type="checkbox"]{width:20px;height:20px;accent-color:var(--brand)}
   .toolbar{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;margin:8px 0}
-  .btn{border:1px solid #cfd8e3;background:#fff;border-radius:8px;padding:8px 10px;cursor:pointer}
-  .btn.primary{background:var(--brand);color:#fff;border:none}
 
   /* Adhkâr */
   .adh-toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
@@ -66,7 +70,7 @@
 <body>
 <div class="wrap">
   <header>
-    <h1 id="title">🕰️ Planning • 🕯️ Adhkâr • 📖 Coran</h1>
+    <h1 id="title">🏠 Accueil • 🕰️ Planning • 🕯️ Adhkâr • 📖 Coran</h1>
     <div class="right">
       <label for="lang" id="langLabel">Langue :</label>
       <select id="lang">
@@ -81,16 +85,28 @@
   <div class="status" id="status">⏳ Demande de géolocalisation…</div>
 
   <div class="tabs">
-    <button class="tab active" id="tab-plan">📋 Planning</button>
+    <button class="tab active" id="tab-home">🏠 Accueil</button>
+    <button class="tab" id="tab-plan">📋 Planning</button>
     <button class="tab" id="tab-adhkar">🕯️ Adhkâr</button>
     <button class="tab" id="tab-quran">📖 Coran</button>
   </div>
 
+  <!-- HOME -->
+  <section class="card" id="page-home">
+    <div class="hero" id="homeHero">
+      <!-- contenu injecté selon la langue -->
+    </div>
+    <div class="cta">
+      <button class="btn primary" id="goPlan">➡️ Aller au Planning</button>
+      <button class="btn" id="goAdhkar">🕯️ Ouvrir Adhkâr</button>
+      <button class="btn" id="goQuran">📖 Ouvrir Coran</button>
+    </div>
+  </section>
+
   <!-- PLANNING -->
-  <section class="card" id="page-plan">
+  <section class="card" id="page-plan" style="display:none">
     <div class="legend" id="legend">
-      Créneaux calculés depuis Fajr, Sunrise, Dhuhr, Asr, Maghrib, Isha (Aladhan, méthode 4 = Egypt).
-      Mise à jour de l’indicateur « en cours » chaque minute.
+      Créneaux calculés depuis Fajr, Sunrise, Dhuhr, Asr, Maghrib, Isha (Aladhan, méthode 4 = Egypt). Mise à jour de l’indicateur « en cours » chaque minute.
     </div>
     <div class="toolbar">
       <button id="retry" class="btn">↻ Re-demander la géolocalisation</button>
@@ -129,13 +145,20 @@
 </div>
 
 <script>
-/* =================== I18N =================== */
+/* =================== I18N (inclut la page Accueil) =================== */
 const T = {
   fr:{
-    title:"🕰️ Planning • 🕯️ Adhkâr • 📖 Coran",
+    title:"🏠 Accueil • 🕰️ Planning • 🕯️ Adhkâr • 📖 Coran",
     lang:"Langue :", city:"Ville :", statusGeo:"⏳ Demande de géolocalisation…",
+    tabs:{home:"🏠 Accueil", plan:"📋 Planning", adhkar:"🕯️ Adhkâr", quran:"📖 Coran"},
+    home:{
+      h1:"Bienvenue !",
+      p1:"Je m’appelle <strong>Slimane Rahmoune</strong>. Je vous partage ici des créneaux d’adorations inspirés de la sunnah du Prophète ﷺ.",
+      p2:"Vous pouvez aussi lire le Coran, réciter les adhkâr, et suivre votre progression grâce à une checklist simple.",
+      p3:"Faites de votre mieux, régulièrement, avec sincérité — pour devenir, inchâ’Allah, des musulman(e)s exemplaires.",
+      note:"Les créneaux s’adaptent automatiquement à votre géolocalisation."
+    },
     legend:"Créneaux calculés depuis Fajr, Sunrise, Dhuhr, Asr, Maghrib, Isha (Aladhan, méthode 4 = Egypt). Mise à jour de l’indicateur « en cours » chaque minute.",
-    tabs:{plan:"📋 Planning", adhkar:"🕯️ Adhkâr", quran:"📖 Coran"},
     retry:"↻ Re-demander la géolocalisation", resetDay:"↺ Réinitialiser la progression du jour",
     now:"Créneau en cours",
     tasks:[
@@ -158,10 +181,17 @@ const T = {
     loadErr:"⚠️ Erreur lors de la récupération des horaires. Vérifie ta connexion et réessaie."
   },
   ar:{
-    title:"🕰️ التخطيط • 🕯️ الأذكار • 📖 القرآن",
+    title:"🏠 الصفحة الرئيسية • 🕰️ التخطيط • 🕯️ الأذكار • 📖 القرآن",
     lang:"اللغة:", city:"المدينة:", statusGeo:"⏳ جارِ طلب تحديد الموقع…",
+    tabs:{home:"🏠 الرئيسية", plan:"📋 التخطيط", adhkar:"🕯️ الأذكار", quran:"📖 القرآن"},
+    home:{
+      h1:"مرحبًا!",
+      p1:"أنا <strong>سليمان رحمون</strong>، أشارككم هنا فتراتٍ للعبادات على منهج السنة للنبي ﷺ.",
+      p2:"يمكنكم قراءة القرآن، وذكر الأذكار، ومتابعة الإنجاز عبر قائمة تحقق بسيطة.",
+      p3:"ابذلوا جهدكم بانتظام وإخلاص — لتكونوا بإذن الله مسلمين ومسلمات قدوة.",
+      note:"تتكيّف الفترات تلقائيًا بحسب موقعكم الجغرافي."
+    },
     legend:"يتم حساب الفترات من الفجر، الشروق، الظهر، العصر، المغرب، العشاء (Aladhan، الطريقة 4=مصر). يُحدَّث مؤشر «أنت الآن هنا» كل دقيقة.",
-    tabs:{plan:"📋 التخطيط", adhkar:"🕯️ الأذكار", quran:"📖 القرآن"},
     retry:"↻ إعادة طلب الموقع", resetDay:"↺ تصفير إنجاز اليوم",
     now:"أنت الآن هنا",
     tasks:[
@@ -184,10 +214,17 @@ const T = {
     loadErr:"⚠️ خطأ في جلب الأوقات. تحقق من الاتصال ثم أعد المحاولة."
   },
   en:{
-    title:"🕰️ Plan • 🕯️ Adhkar • 📖 Quran",
+    title:"🏠 Home • 🕰️ Plan • 🕯️ Adhkar • 📖 Quran",
     lang:"Language:", city:"City:", statusGeo:"⏳ Requesting geolocation…",
+    tabs:{home:"🏠 Home", plan:"📋 Plan", adhkar:"🕯️ Adhkar", quran:"📖 Quran"},
+    home:{
+      h1:"Welcome!",
+      p1:"I’m <strong>Slimane Rahmoune</strong>. I’m sharing worship time slots inspired by the Prophetic ﷺ way.",
+      p2:"You can also read the Qur’an, recite adhkâr, and track progress with a simple checklist.",
+      p3:"Do your best, consistently and sincerely — to become exemplary Muslim(s), in shâ’ Allâh.",
+      note:"Slots adapt automatically to your geolocation."
+    },
     legend:"Slots built from Fajr, Sunrise, Dhuhr, Asr, Maghrib, Isha (Aladhan, method 4 = Egypt). Current-slot indicator updates every minute.",
-    tabs:{plan:"📋 Plan", adhkar:"🕯️ Adhkar", quran:"📖 Quran"},
     retry:"↻ Request geolocation again", resetDay:"↺ Reset today’s progress",
     now:"You are here",
     tasks:[
@@ -279,6 +316,22 @@ function nowIn(start,end){
   let s=toMin(start),e=toMin(end); if(e<=s)e+=1440; if(c<s)c+=1440; return c>=s && c<e;
 }
 
+/* =================== Rendering: Home =================== */
+function renderHome(){
+  const L=T[CURR_LANG];
+  const hero=$q("#homeHero");
+  hero.innerHTML=`
+    <h2>${L.home.h1}</h2>
+    <p>${L.home.p1}</p>
+    <p>${L.home.p2}</p>
+    <p>${L.home.p3}</p>
+    <p class="status">💡 ${L.home.note}</p>
+  `;
+  $q("#goPlan").textContent = (CURR_LANG==="ar")?"➡️ اذهب إلى التخطيط":(CURR_LANG==="fr")?"➡️ Aller au Planning":"➡️ Go to Planning";
+  $q("#goAdhkar").textContent = (CURR_LANG==="ar")?"🕯️ فتح الأذكار":(CURR_LANG==="fr")?"🕯️ Ouvrir Adhkâr":"🕯️ Open Adhkar";
+  $q("#goQuran").textContent = (CURR_LANG==="ar")?"📖 فتح القرآن":(CURR_LANG==="fr")?"📖 Ouvrir Coran":"📖 Open Quran";
+}
+
 /* =================== Rendering: Planning =================== */
 function renderPlan(){
   const L=T[CURR_LANG];
@@ -325,7 +378,6 @@ function renderAdhkar(){
   $q("#resetAdhkar").textContent=L.adh.reset;
   $q("#adhHint").textContent=L.adh.hint;
 
-  // Slots/catégories
   const groups = [
     {key:"all", name:L.adh.groups.all},
     {key:"morning", name:L.adh.groups.morning},
@@ -349,7 +401,7 @@ function renderAdhkar(){
         head.className="sectionHead";
         head.innerHTML=`<div class="catTitle">${title}</div>
           <div class="sectionActions">
-            <button class="btn primary" id="${key}-all">${L.tabs.plan.includes("📋")? "✅ Tout cocher":"✅"}</button>
+            <button class="btn primary" id="${key}-all">✅</button>
             <button class="btn" id="${key}-reset">${L.adh.reset}</button>
           </div>`;
         box.appendChild(head);
@@ -416,7 +468,7 @@ function renderAdhkar(){
 }
 
 /* =================== Rendering: Quran =================== */
-const SURAH_NAMES=["Al-Fātiḥah","Al-Baqarah","Āl ‘Imrān","An-Nisā’","Al-Mā’idah","Al-An‘ām","Al-A‘rāf","Al-Anfāl","At-Tawbah","Yūnus","Hūd","Yūsuf","Ar-Ra‘d","Ibrāhīm","Al-Ḥijr","An-Naḥl","Al-Isrā’","Al-Kahf","Maryam","Ṭā Hā","Al-Anbiyā’","Al-Ḥajj","Al-Mu’minūn","An-Nūr","Al-Furqān","Ash-Shu‘arā’","An-Naml","Al-Qaṣaṣ","Al-‘Ankabūt","Ar-Rūm","Luqmān","As-Sajdah","Al-Aḥzāb","Saba’","Fāṭir","Yā Sīn","As-Ṣāffāt","Ṣād","Az-Zumar","Ghāfir","Fuṣṣilat","Ash-Shūrā","Az-Zukhruf","Ad-Dukhān","Al-Jāthiyah","Al-Aḥqāf","Muḥammad","Al-Fatḥ","Al-Ḥujurāt","Qāf","Adh-Dhāriyāt","Aṭ-Ṭūr","An-Najm","Al-Qamar","Ar-Raḥمān","Al-Wāqi‘ah","Al-Ḥadīd","Al-Mujādilah","Al-Ḥashr","Al-Mumtaḥanah","Aṣ-Ṣaff","Al-Jumu‘ah","Al-Munāfiqūn","At-Taghābun","Aṭ-Ṭalāq","At-Taḥrīm","Al-Mulk","Al-Qalam","Al-Ḥāqqah","Al-Ma‘ārij","Nūḥ","Al-Jinn","Al-Muzzammil","Al-Muddaththir","Al-Qiyāmah","Al-Insān","Al-Mursalāt","An-Naba’","An-Nāzi‘āt","‘Abasa","At-Takwīر","Al-Infiṭār","Al-Muṭaffifīn","Al-Inshiqāq","Al-Burūj","Aṭ-Ṭāriq","Al-A‘lā","Al-Ghāshiyah","Al-Fajr","Al-Balad","Ash-Shams","Al-Layl","Aḍ-Ḍuḥā","Ash-Sharḥ","At-Tīn","Al-‘Alaq","Al-Qadr","Al-Bayyinah","Az-Zalzalah","Al-‘Ādiyāt","Al-Qāri‘ah","At-Takāthur","Al-‘Aṣr","Al-Humazah","Al-Fīl","Quraysh","Al-Mā‘ūn","Al-Kawthar","Al-Kāfirūn","An-Naṣr","Al-Masad","Al-Ikhlāṣ","Al-Falaq","An-Nās"];
+const SURAH_NAMES=["Al-Fātiḥah","Al-Baqarah","Āl ‘Imrān","An-Nisā’","Al-Mā’idah","Al-An‘ām","Al-A‘rāf","Al-Anfāl","At-Tawbah","Yūnus","Hūd","Yūsuf","Ar-Ra‘d","Ibrāhīm","Al-Ḥijr","An-Naḥl","Al-Isrā’","Al-Kahf","Maryam","Ṭā Hā","Al-Anbiyā’","Al-Ḥajj","Al-Mu’minūn","An-Nūr","Al-Furqān","Ash-Shu‘arā’","An-Naml","Al-Qaṣaṣ","Al-‘Ankabūt","Ar-Rūm","Luqmān","As-Sajdah","Al-Aḥzāb","Saba’","Fāṭir","Yā Sīn","As-Ṣāffāt","Ṣād","Az-Zumar","Ghāfir","Fuṣṣilat","Ash-Shūrā","Az-Zukhruf","Ad-Dukhān","Al-Jāthiyah","Al-Aḥqāf","Muḥammad","Al-Fatḥ","Al-Ḥujurāt","Qāf","Adh-Dhāriyāt","Aṭ-Ṭūr","An-Najm","Al-Qamar","Ar-Raḥmān","Al-Wāqi‘ah","Al-Ḥadīd","Al-Mujādilah","Al-Ḥashr","Al-Mumtaḥanah","Aṣ-Ṣaff","Al-Jumu‘ah","Al-Munāfiqūn","At-Taghābun","Aṭ-Ṭalāq","At-Taḥrīm","Al-Mulk","Al-Qalam","Al-Ḥāqqah","Al-Ma‘ārij","Nūḥ","Al-Jinn","Al-Muzzammil","Al-Muddaththir","Al-Qiyāmah","Al-Insān","Al-Mursalāt","An-Naba’","An-Nāzi‘āt","‘Abasa","At-Takwīر","Al-Infiṭār","Al-Muṭaffifīn","Al-Inshiqāq","Al-Burūj","Aṭ-Ṭāriq","Al-A‘lā","Al-Ghāshiyah","Al-Fajr","Al-Balad","Ash-Shams","Al-Layl","Aḍ-Ḍuḥā","Ash-Sharḥ","At-Tīn","Al-‘Alaq","Al-Qadr","Al-Bayyinah","Az-Zalzalah","Al-‘Ādiyāt","Al-Qāri‘ah","At-Takāthur","Al-‘Aṣr","Al-Humazah","Al-Fīل","Quraysh","Al-Mā‘ūn","Al-Kawthar","Al-Kāfirūn","An-Naṣr","Al-Masad","Al-Ikhlāṣ","Al-Falaq","An-Nās"];
 
 function quranStoreKey(){ return `qread_${todayKey()}_${CURR_LANG}`; }
 
@@ -461,18 +513,23 @@ function applyLanguage(){
   $q("#status").textContent=L.statusGeo;
 
   // Tabs labels
+  $q("#tab-home").textContent=L.tabs.home;
   $q("#tab-plan").textContent=L.tabs.plan;
   $q("#tab-adhkar").textContent=L.tabs.adhkar;
   $q("#tab-quran").textContent=L.tabs.quran;
 
-  // Re-render pages (texts)
-  renderPlan(); renderAdhkar(); renderQuran();
+  // Render pages
+  renderHome();
+  renderPlan();
+  renderAdhkar();
+  renderQuran();
 }
 
 /* =================== Page navigation =================== */
 function showPage(key){
-  ["page-plan","page-adhkar","page-quran"].forEach(id=>{$q("#"+id).style.display="none";});
-  ["tab-plan","tab-adhkar","tab-quran"].forEach(id=>$q("#"+id).classList.remove("active"));
+  ["page-home","page-plan","page-adhkar","page-quran"].forEach(id=>{$q("#"+id).style.display="none";});
+  ["tab-home","tab-plan","tab-adhkar","tab-quran"].forEach(id=>$q("#"+id).classList.remove("active"));
+  if(key==="home"){ $q("#page-home").style.display="block"; $q("#tab-home").classList.add("active"); }
   if(key==="plan"){ $q("#page-plan").style.display="block"; $q("#tab-plan").classList.add("active"); }
   if(key==="adhkar"){ $q("#page-adhkar").style.display="block"; $q("#tab-adhkar").classList.add("active"); }
   if(key==="quran"){ $q("#page-quran").style.display="block"; $q("#tab-quran").classList.add("active"); }
@@ -513,8 +570,8 @@ document.addEventListener("DOMContentLoaded", ()=>{
   $q("#lang").value = CURR_LANG;
   applyLanguage();
 
-  // restore last page
-  showPage(localStorage.getItem("last_page") || "plan");
+  // default to Home (or last page)
+  showPage(localStorage.getItem("last_page") || "home");
 
   // geolocate immediately
   locateAndBuild();
@@ -529,9 +586,15 @@ document.addEventListener("DOMContentLoaded", ()=>{
   });
 
   // nav
+  $q("#tab-home").onclick=()=>showPage("home");
   $q("#tab-plan").onclick=()=>showPage("plan");
   $q("#tab-adhkar").onclick=()=>showPage("adhkar");
   $q("#tab-quran").onclick=()=>showPage("quran");
+
+  // home CTAs
+  $q("#goPlan").onclick=()=>showPage("plan");
+  $q("#goAdhkar").onclick=()=>showPage("adhkar");
+  $q("#goQuran").onclick=()=>showPage("quran");
 
   // planning actions
   $q("#retry").onclick=locateAndBuild;
