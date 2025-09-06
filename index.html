@@ -4,7 +4,6 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Accueil • Planning • Adhkâr • Coran • Qibla 3D • Adhân</title>
-<link rel="manifest" href="manifest.webmanifest">
 <style>
   :root{
     --bg:#f5f7fb; --card:#ffffff; --text:#0f1a2b; --muted:#6b7280;
@@ -84,7 +83,8 @@
   .adhan-row{background:#fff;border:1px solid #e7edf6;border-radius:12px;box-shadow:var(--shadow)}
   .adhan-row td{padding:10px 8px;vertical-align:middle}
   .pill-small{font-size:12px;background:#eef6ff;border:1px solid #cfe0ff;border-radius:999px;padding:2px 8px;display:inline-block}
-  .sel{min-width:160px}
+  .sel{min-width:180px}
+  .mute{opacity:.5}
 </style>
 </head>
 <body>
@@ -105,16 +105,16 @@
   <div class="status" id="status">⏳ Demande de géolocalisation…</div>
 
   <div class="tabs">
-    <button class="tab" id="tab-home">🏠 Accueil</button>
+    <button class="tab active" id="tab-home">🏠 Accueil</button>
     <button class="tab" id="tab-plan">📋 Planning</button>
     <button class="tab" id="tab-adhkar">🕯️ Adhkâr</button>
     <button class="tab" id="tab-quran">📖 Coran</button>
     <button class="tab" id="tab-qibla">🧭 Qibla 3D</button>
-    <button class="tab active" id="tab-adhan">🔔 Horaires & Adhân</button>
+    <button class="tab" id="tab-adhan">🔔 Horaires & Adhân</button>
   </div>
 
   <!-- HOME -->
-  <section class="card" id="page-home" style="display:none">
+  <section class="card" id="page-home">
     <div class="hero" id="homeHero"></div>
     <div class="cta">
       <button class="btn primary" id="goPlan">➡️ Planning</button>
@@ -154,11 +154,15 @@
       <select id="surahSel"></select>
       <label id="qLabel2">Juz :</label>
       <select id="juzSel"></select>
+      <label id="reciterLabel">Récitateur :</label>
+      <select id="reciterSel"></select>
       <button id="openSurah" class="btn primary"></button>
+      <button id="playAudio" class="btn">▶️ Audio</button>
       <button id="markRead" class="btn"></button>
       <button id="resetRead" class="btn"></button>
     </div>
     <div class="status" id="readStatus"></div>
+    <audio id="qAudio" preload="none" controls style="width:100%;margin:8px 0"></audio>
     <iframe id="qFrame" title="Quran"></iframe>
   </section>
 
@@ -181,7 +185,7 @@
   </section>
 
   <!-- HORAIRES & ADHAN -->
-  <section class="card" id="page-adhan">
+  <section class="card" id="page-adhan" style="display:none">
     <div class="adhan-bar">
       <button class="btn primary" id="reqNotify">🔔 Autoriser les notifications</button>
       <button class="btn" id="resync">↻ Reprogrammer les adhân</button>
@@ -193,14 +197,14 @@
         <tr>
           <th>📿 Prière</th>
           <th>⏰ Horaire</th>
-          <th>🔧 Réglage</th>
+          <th>🔔 Mode</th>
+          <th>🗣️ Muezzin</th>
           <th>▶️ Test</th>
         </tr>
       </thead>
       <tbody id="adhanRows"></tbody>
     </table>
-    <audio id="adhanAudio" preload="auto"
-      src="https://cdn.islamic.network/audio/adhan/mp3/azan1.mp3"></audio>
+    <audio id="adhanAudio" preload="auto"></audio>
   </section>
 </div>
 
@@ -212,50 +216,197 @@ const T={
       tabs:{home:"🏠 Accueil",plan:"📋 Planning",adhkar:"🕯️ Adhkâr",quran:"📖 Coran",qibla:"🧭 Qibla 3D",adhan:"🔔 Horaires & Adhân"},
       home:{h1:"Bienvenue !",
         p1:"Je m’appelle <strong>Slimane Rahmoune</strong>. Je vous partage ici des créneaux d’adorations inspirés de la sunnah du Prophète ﷺ.",
-        p2:"Vous pouvez aussi lire le Coran, réciter les adhkâr, et suivre votre progression grâce à une checklist simple.",
-        ded:"<strong>Cette application est une <em>sadaqa jâriya</em> dédiée à ma défunte et chère tante BEN BOURENANE TOUNSIA</strong> — qu’Allah lui fasse miséricorde. <br>Merci de l’utiliser pour écouter et lire le Coran, réciter les adhkâr et suivre les adorations du Prophète ﷺ.",
-        p3:"Faites de votre mieux, régulièrement, avec sincérité — pour devenir, inchâ’Allah, des musulman(e)s exemplaires.",
+        p2:"Vous pouvez lire le Coran, réciter les adhkâr, et suivre votre progression via une checklist simple.",
+        ded:"<strong>Cette application est une <em>sadaqa jâriya</em> dédiée à ma défunte et chère tante BEN BOURENANE TOUNSIA</strong> — qu’Allah lui fasse miséricorde. Merci de l’utiliser pour écouter et lire le Coran, réciter les adhkâr et suivre les adorations du Prophète ﷺ.",
+        p3:"Faites de votre mieux, régulièrement et sincèrement — pour devenir, in châ’ Allâh, des musulman(e)s exemplaires.",
         note:"Les créneaux s’adaptent automatiquement à votre géolocalisation."
       },
       legend:"Créneaux calculés via Aladhan (méthode 4 = Egypt). Indicateur « en cours » actualisé chaque minute.",
       retry:"↻ Re-demander la géolocalisation", resetDay:"↺ Réinitialiser la progression du jour", now:"Créneau en cours",
-      adh:{slot:"Créneau :",reset:"↺ Réinitialiser les compteurs",hint:"Les compteurs sont sauvegardés localement, par jour et par créneau.",
+      tasks:[
+        { name:"Avant Fajr",        action:"Qiyâm & adhkâr" },
+        { name:"Fajr → +30 min",    action:"Fajr + Coran & invocations" },
+        { name:"Matin",             action:"Travail/Études avec intention" },
+        { name:"Duha",              action:"2–4 unités de prière" },
+        { name:"Dhuhr",             action:"Prière + sieste courte" },
+        { name:"‘Asr → Maghrib",    action:"Travail/Savoir + Sport" },
+        { name:"Maghrib → ‘Isha",   action:"Famille + Coran" },
+        { name:"‘Isha",             action:"Prière + Lecture/Repos" },
+        { name:"Nuit",              action:"Dormir tôt + Qiyâm" }
+      ],
+      adh:{slot:"Créneau :",reset:"↺ Réinitialiser les compteurs",hint:"Les compteurs sont sauvegardés localement (par jour et par créneau).",
            groups:{all:"Tous", morning:"Matin", afterPrayer:"Après les prières", evening:"Soir", sleep:"Avant de dormir", home:"Maison"}},
-      q:{s:"Sourate :",j:"Juz :",open:"Ouvrir",mark:"✅ Marquer lu",reset:"↺ Réinitialiser",last:s=>`Dernière lecture : ${s}`},
+      q:{s:"Sourate :",j:"Juz :",open:"Ouvrir",mark:"✅ Marquer lu",reset:"↺ Réinitialiser",last:s=>`Dernière lecture : ${s}`, reciter:"Récitateur :"},
       qibla:{hint:"Sur iPhone/iPad, appuyez sur « Activer la boussole » pour autoriser le capteur.", label:"Kaaba"},
-      adhan:{legend:"Réglez l’adhân par prière : Désactivé / Son / Vibreur. Les notifications locales nécessitent l’autorisation du navigateur.",
+      adhan:{legend:"Réglez l’adhân par prière : Désactivé / Son / Vibreur. Choisissez aussi le muezzin.",
              off:"Désactivé", sound:"Adhân (son)", vibrate:"Vibreur",
              notifAsk:"🔔 Autoriser les notifications",
-             next:t=>`Prochain adhân programmé : ${t}`}
+             muezzin:"Muezzin :", next:t=>`Prochain adhân programmé : ${t}`}
   },
   ar:{title:"🏠 الرئيسية • 🕰️ التخطيط • 🕯️ الأذكار • 📖 القرآن • 🧭 القبلة 3D • 🔔 الأذان",
       lang:"اللغة:", city:"المدينة:", statusGeo:"⏳ جارٍ طلب تحديد الموقع…",
       tabs:{home:"🏠 الرئيسية",plan:"📋 التخطيط",adhkar:"🕯️ الأذكار",quran:"📖 القرآن",qibla:"🧭 القبلة 3D",adhan:"🔔 الأوقات والأذان"},
-      home:{h1:"مرحبًا!",p1:"أنا <strong>سليمان رحمون</strong>…",p2:"اقرؤوا القرآن…",ded:"<strong>هذا التطبيق صدقة جارية…</strong>",p3:"",note:""},
-      legend:"يتم الحساب عبر Aladhan (الطريقة 4).", retry:"↻ إعادة طلب الموقع", resetDay:"↺ تصفير إنجاز اليوم", now:"أنت الآن هنا",
-      adh:{slot:"الفترة:",reset:"↺ تصفير العدادات",hint:"",groups:{all:"الكل",morning:"الصباح",afterPrayer:"بعد الصلوات",evening:"المساء",sleep:"قبل النوم",home:"البيت"}},
-      q:{s:"سورة:",j:"جزء:",open:"فتح",mark:"✅ تمّت القراءة",reset:"↺ تصفير",last:s=>`آخر قراءة: ${s}`},
+      home:{h1:"مرحبًا!",
+        p1:"أنا <strong>سليمان رحمون</strong>. أشارككم فتراتٍ للعبادات على منهج السنة للنبي ﷺ.",
+        p2:"يمكنكم قراءة القرآن، وذكر الأذكار، ومتابعة الإنجاز عبر قائمة تحقق بسيطة.",
+        ded:"<strong>هذا التطبيق صدقة جارية لعمّتي الحبيبة المتوفاة BEN BOURENANE TOUNSIA</strong> — نسأل الله أن يرحمها. نرجو استعماله لسماع وقراءة القرآن، وذكر الأذكار، واتباع عبادات النبي ﷺ.",
+        p3:"ابذلوا جهدكم بانتظام وإخلاصًا لتكونوا بإذن الله مسلمين وقدوات.",
+        note:"تتكيّف الفترات تلقائيًا بحسب موقعكم."
+      },
+      legend:"حُسِبت الفترات عبر Aladhan (الطريقة ٤ = مصر). يُحدّث مؤشر «أنت الآن هنا» كل دقيقة.",
+      retry:"↻ إعادة طلب الموقع", resetDay:"↺ تصفير إنجاز اليوم", now:"أنت الآن هنا",
+      tasks:[
+        { name:"قبل الفجر",        action:"قيام الليل وذكر الله" },
+        { name:"الفجر → +30 دقيقة", action:"فجر + قرآن وأدعية" },
+        { name:"الصباح",           action:"عمل/دراسة بنية" },
+        { name:"الضحى",            action:"ركعتان إلى أربع" },
+        { name:"الظهر",            action:"صلاة + قيلولة" },
+        { name:"العصر → المغرب",   action:"عمل/علم + رياضة" },
+        { name:"المغرب → العشاء",  action:"جلسة عائلية + قرآن" },
+        { name:"العشاء",           action:"صلاة + قراءة/راحة" },
+        { name:"الليل",            action:"نوم مبكر + قيام" }
+      ],
+      adh:{slot:"الفترة:",reset:"↺ تصفير العدادات",hint:"يُحفظ العدّ محليًا (لكل يوم وفترة).",
+           groups:{all:"الكل", morning:"أذكار الصباح", afterPrayer:"بعد الصلوات", evening:"أذكار المساء", sleep:"قبل النوم", home:"البيت"}},
+      q:{s:"سورة:",j:"جزء:",open:"فتح",mark:"✅ تمّت القراءة",reset:"↺ تصفير",last:s=>`آخر قراءة: ${s}`, reciter:"القارئ:"},
       qibla:{hint:"على أجهزة Apple اضغط «تفعيل البوصلة».", label:"الكعبة"},
-      adhan:{legend:"اضبط الأذان لكل صلاة: إيقاف / صوت / اهتزاز.", off:"إيقاف", sound:"الأذان (صوت)", vibrate:"اهتزاز", notifAsk:"🔔 السماح بالإشعارات", next:t=>`الأذان القادم: ${t}`}
+      adhan:{legend:"اضبط الأذان لكل صلاة: إيقاف / صوت / اهتزاز، واختر المؤذّن.",
+             off:"إيقاف", sound:"الأذان (صوت)", vibrate:"اهتزاز",
+             notifAsk:"🔔 السماح بالإشعارات",
+             muezzin:"المؤذّن:", next:t=>`الأذان القادم: ${t}`}
   },
   en:{title:"🏠 Home • 🕰️ Plan • 🕯️ Adhkar • 📖 Quran • 🧭 Qibla 3D • 🔔 Adhan",
       lang:"Language:", city:"City:", statusGeo:"⏳ Requesting geolocation…",
       tabs:{home:"🏠 Home",plan:"📋 Plan",adhkar:"🕯️ Adhkar",quran:"📖 Quran",qibla:"🧭 Qibla 3D",adhan:"🔔 Timings & Adhan"},
-      home:{h1:"Welcome!",p1:"I’m <strong>Slimane Rahmoune</strong>…",p2:"Read Qur’an, recite adhkar…",ded:"<strong>This app is a sadaqah jariyah…</strong>",p3:"",note:""},
-      legend:"Slots via Aladhan (method 4).", retry:"↻ Request geolocation again", resetDay:"↺ Reset today’s progress", now:"You are here",
-      adh:{slot:"Slot:",reset:"↺ Reset counters",hint:"",groups:{all:"All",morning:"Morning",afterPrayer:"After prayers",evening:"Evening",sleep:"Before sleep",home:"Home"}},
-      q:{s:"Surah:",j:"Juz:",open:"Open",mark:"✅ Mark read",reset:"↺ Reset",last:s=>`Last reading: ${s}`},
-      qibla:{hint:"On iOS, press “Enable compass”.", label:"Kaaba"},
-      adhan:{legend:"Per-prayer setting: Off / Sound / Vibrate. Local notifications need permission.",
-             off:"Off", sound:"Adhan (sound)", vibrate:"Vibrate", notifAsk:"🔔 Allow notifications", next:t=>`Next adhan scheduled: ${t}`}
+      home:{h1:"Welcome!",
+        p1:"I’m <strong>Slimane Rahmoune</strong>. I share worship time slots inspired by the Prophetic ﷺ way.",
+        p2:"You can read Qur’an, recite adhkār, and track progress with a simple checklist.",
+        ded:"<strong>This app is a sadaqah jariyah dedicated to my beloved late aunt BEN BOURENANE TOUNSIA</strong>. Please use it to listen to and read the Qur’an, recite adhkār, and follow the Prophet’s ﷺ acts of worship.",
+        p3:"Do your best, consistently and sincerely — to become exemplary Muslims, in shā’ Allāh.",
+        note:"Slots adapt automatically to your geolocation."
+      },
+      legend:"Slots via Aladhan (method 4 = Egypt). Current-slot indicator updates every minute.",
+      retry:"↻ Request geolocation again", resetDay:"↺ Reset today’s progress", now:"You are here",
+      tasks:[
+        { name:"Before Fajr",        action:"Qiyām & adhkār" },
+        { name:"Fajr → +30 min",     action:"Fajr + Qur’an & invocations" },
+        { name:"Morning",            action:"Work/Study with intention" },
+        { name:"Duha",               action:"2–4 rak‘āt" },
+        { name:"Dhuhr",              action:"Prayer + short nap" },
+        { name:"‘Asr → Maghrib",     action:"Work/Knowledge + Exercise" },
+        { name:"Maghrib → ‘Isha",    action:"Family + Qur’an" },
+        { name:"‘Isha",              action:"Prayer + Reading/Rest" },
+        { name:"Night",              action:"Sleep early + Qiyām" }
+      ],
+      adh:{slot:"Slot:",reset:"↺ Reset counters",hint:"Counters are saved locally (per day and slot).",
+           groups:{all:"All", morning:"Morning", afterPrayer:"After prayers", evening:"Evening", sleep:"Before sleep", home:"Home"}},
+      q:{s:"Surah:",j:"Juz:",open:"Open",mark:"✅ Mark read",reset:"↺ Reset",last:s=>`Last reading: ${s}`, reciter:"Reciter:"},
+      qibla:{hint:"On iOS, tap “Enable compass”.", label:"Kaaba"},
+      adhan:{legend:"Set adhan per prayer: Off / Sound / Vibrate. Choose the muezzin too.",
+             off:"Off", sound:"Adhan (sound)", vibrate:"Vibrate",
+             notifAsk:"🔔 Allow notifications",
+             muezzin:"Muezzin:", next:t=>`Next adhan scheduled: ${t}`}
   }
 };
 
-/* ====== Adhkâr datasets (abrégé) ====== */
+/* ====== Adhkâr datasets (sélection complète et utile) ====== */
 const ADH_DB={
-  fr:{morning:[{txt:"Nous entrons au matin…",count:1,ref:"Muslim"}],afterPrayer:[{txt:"Istighfar (3)…",count:1,ref:"Muslim"}],evening:[{txt:"Nous entrons au soir…",count:1,ref:"Muslim"}],sleep:[{txt:"Bismika Allâhumma…",count:1,ref:"Bukhari"}],home:[{txt:"Entrer à la maison",count:1,ref:"Abu Dawud"}]},
-  ar:{morning:[{txt:"أصبحنا وأصبح الملك لله…",count:1,ref:"مسلم"}],afterPrayer:[{txt:"أستغفر الله (٣)…",count:1,ref:"مسلم"}],evening:[{txt:"أمسينا…",count:1,ref:"مسلم"}],sleep:[{txt:"باسمك اللهم…",count:1,ref:"البخاري"}],home:[{txt:"دعاء دخول البيت…",count:1,ref:"أبو داود"}]},
-  en:{morning:[{txt:"We enter the morning…",count:1,ref:"Muslim"}],afterPrayer:[{txt:"Istighfar (3)…",count:1,ref:"Muslim"}],evening:[{txt:"We enter the evening…",count:1,ref:"Muslim"}],sleep:[{txt:"Bismika Allahumma…",count:1,ref:"Bukhari"}],home:[{txt:"Entering home",count:1,ref:"Abu Dawud"}]}
+  ar:{
+    morning:[
+      {txt:"أصبحنا وأصبح الملك لله، والحمد لله... اللهم إني أسألك خير هذا اليوم...",count:1,ref:"مسلم"},
+      {txt:"سيد الاستغفار: اللهم أنت ربي لا إله إلا أنت، خلقتني وأنا عبدك...",count:1,ref:"البخاري"},
+      {txt:"اللهم بك أصبحنا وبك أمسينا وبك نحيا وبك نموت وإليك النشور",count:1,ref:"أبو داود"},
+      {txt:"حسبي الله لا إله إلا هو عليه توكلت وهو رب العرش العظيم",count:7,ref:"أبو داود"},
+      {txt:"سبحان الله وبحمده",count:100,ref:"مسلم"},
+      {txt:"لا إله إلا الله وحده لا شريك له، له الملك وله الحمد وهو على كل شيء قدير",count:100,ref:"البخاري"}
+    ],
+    afterPrayer:[
+      {txt:"أستغفر الله (٣) ثم: اللهم أنت السلام ومنك السلام تباركت يا ذا الجلال والإكرام",count:1,ref:"مسلم"},
+      {txt:"سبحان الله 33، الحمد لله 33، الله أكبر 33، تمام المئة: لا إله إلا الله وحده...",count:1,ref:"مسلم"},
+      {txt:"آية الكرسي",count:1,ref:"صحيح"}
+    ],
+    evening:[
+      {txt:"أمسينا وأمسى الملك لله... اللهم ما أمسى بي من نعمة فمنك وحدك...",count:1,ref:"مسلم"},
+      {txt:"قل هو الله أحد، قل أعوذ برب الفلق، قل أعوذ برب الناس (٣ مرات)",count:3,ref:"أبو داود"},
+      {txt:"سبحان الله وبحمده",count:100,ref:"مسلم"}
+    ],
+    sleep:[
+      {txt:"باسمك اللهم أموت وأحيا",count:1,ref:"البخاري"},
+      {txt:"اللهم قني عذابك يوم تبعث عبادك",count:1,ref:"الترمذي"},
+      {txt:"آية الكرسي",count:1,ref:"البخاري"},
+      {txt:"آخر آيتين من سورة البقرة",count:1,ref:"البخاري"}
+    ],
+    home:[
+      {txt:"ذكر دخول البيت: بسم الله، اللهم إني أسألك خير المولج...",count:1,ref:"أبو داود"},
+      {txt:"دعاء الطعام: اللهم بارك لنا فيه وأطعمنا خيرا منه / الحمد لله الذي أطعمنا...",count:1,ref:"أبو داود"},
+      {txt:"لبس الثوب: الحمد لله الذي كساني...",count:1,ref:"أبو داود"},
+      {txt:"دعاء السفر: سبحان الذي سخر لنا هذا...",count:1,ref:"مسلم"}
+    ]
+  },
+  fr:{
+    morning:[
+      {txt:"Nous entrons au matin et la royauté appartient à Allah... Ô Allah, je Te demande le bien de ce jour...",count:1,ref:"Muslim"},
+      {txt:"Sayyid al-Istighfâr : Ô Allah, Tu es mon Seigneur, nul dieu sauf Toi...",count:1,ref:"Bukhari"},
+      {txt:"Par Ta grâce nous entrons au matin...",count:1,ref:"Abu Dawud"},
+      {txt:"« Hasbiya-llâh lâ ilâha illâ Huwa... »",count:7,ref:"Abu Dawud"},
+      {txt:"SubhânAllâh wa bihamdih",count:100,ref:"Muslim"},
+      {txt:"Lâ ilâha illâ Allâh waḥdahu lâ sharîka lah...",count:100,ref:"Bukhari"}
+    ],
+    afterPrayer:[
+      {txt:"Istighfâr (3) puis : Allâhumma anta as-Salâm wa minka as-Salâm...",count:1,ref:"Muslim"},
+      {txt:"33 Tasbîh, 33 Taḥmîd, 33 Takbîr + complément à 100",count:1,ref:"Muslim"},
+      {txt:"Âyat al-Kursî",count:1,ref:"Sahîh"}
+    ],
+    evening:[
+      {txt:"Nous entrons au soir et la royauté appartient à Allah...",count:1,ref:"Muslim"},
+      {txt:"Al-Ikhlâs, Al-Falaq, An-Nâs (×3)",count:3,ref:"Abu Dawud"},
+      {txt:"SubhânAllâh wa bihamdih",count:100,ref:"Muslim"}
+    ],
+    sleep:[
+      {txt:"Bismika Allâhumma amûtu wa aḥyâ",count:1,ref:"Bukhari"},
+      {txt:"Protège-moi de Ton châtiment le Jour où Tu ressusciteras Tes serviteurs",count:1,ref:"Tirmidhî"},
+      {txt:"Âyat al-Kursî",count:1,ref:"Bukhari"},
+      {txt:"Les deux dernières versets d’Al-Baqarah",count:1,ref:"Bukhari"}
+    ],
+    home:[
+      {txt:"En entrant à la maison...",count:1,ref:"Abu Dawud"},
+      {txt:"Avant/après le repas…",count:1,ref:"Abu Dawud"},
+      {txt:"Mettre un vêtement…",count:1,ref:"Abu Dawud"},
+      {txt:"Invocation du voyage…",count:1,ref:"Muslim"}
+    ]
+  },
+  en:{
+    morning:[
+      {txt:"We enter the morning and the dominion is Allah’s... O Allah, I ask You the good of this day...",count:1,ref:"Muslim"},
+      {txt:"Sayyid al-Istighfar: O Allah, You are my Lord; none has the right to be worshipped but You...",count:1,ref:"Bukhari"},
+      {txt:"By Your grace we enter the morning...",count:1,ref:"Abu Dawud"},
+      {txt:"Hasbiyallāh lā ilāha illā Huwa...",count:7,ref:"Abu Dawud"},
+      {txt:"SubhanAllāh wa bihamdih",count:100,ref:"Muslim"},
+      {txt:"Lā ilāha illā Allāh waḥdahu lā sharīka lah...",count:100,ref:"Bukhari"}
+    ],
+    afterPrayer:[
+      {txt:"Istighfar (3) then: Allāhumma anta as-Salām wa minka as-Salām...",count:1,ref:"Muslim"},
+      {txt:"33 Tasbih, 33 Tahmid, 33 Takbir + completion to 100",count:1,ref:"Muslim"},
+      {txt:"Ayat al-Kursi",count:1,ref:"Sahih"}
+    ],
+    evening:[
+      {txt:"We enter the evening and the dominion is Allah’s...",count:1,ref:"Muslim"},
+      {txt:"Ikhlās, Falaq, Nās (×3)",count:3,ref:"Abu Dawud"},
+      {txt:"SubhanAllāh wa bihamdih",count:100,ref:"Muslim"}
+    ],
+    sleep:[
+      {txt:"Bismika Allāhumma amūtu wa aḥyā",count:1,ref:"Bukhari"},
+      {txt:"O Allah, protect me from Your punishment on the Day You resurrect Your servants",count:1,ref:"Tirmidhi"},
+      {txt:"Ayat al-Kursi",count:1,ref:"Bukhari"},
+      {txt:"Last two verses of Al-Baqarah",count:1,ref:"Bukhari"}
+    ],
+    home:[
+      {txt:"Entering home dhikr…",count:1,ref:"Abu Dawud"},
+      {txt:"Before/after meal…",count:1,ref:"Abu Dawud"},
+      {txt:"Wearing a garment…",count:1,ref:"Abu Dawud"},
+      {txt:"Travel supplication…",count:1,ref:"Muslim"}
+    ]
+  }
 };
 
 /* =================== Utils / Time =================== */
@@ -270,59 +421,35 @@ function nowIn(start,end){const d=new Date();let c=d.getHours()*60+d.getMinutes(
 /* =================== Global state =================== */
 let CURR_LANG=localStorage.getItem("pref_lang")||"fr";
 let CURRENT_SLOTS=null;
-let USER_POS=null;
 let QIBLA_BRG=null;
 let PRAYER_TIMINGS=null;
 let ADHAN_TIMER=null;
 
-/* =================== APIs + Correctifs =================== */
-// 1) Reverse geocode -> {city, country}
-async function getCityName(lat, lon, lang){
+/* =================== APIs =================== */
+// reverse geocode
+async function reverseCity(lat, lon, lang){
   try{
-    const resp = await fetch(
-      `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=${lang==='ar'?'ar':lang==='fr'?'fr':'en'}`,
-      {cache:"no-store"}
-    );
-    const j = await resp.json();
-    return {
-      city: j.city || j.locality || j.principalSubdivision || j.countryName || "—",
-      country: j.countryName || ""
-    };
-  }catch{
-    return { city:"—", country:"" };
-  }
+    const u=`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=${lang==='ar'?'ar':lang==='fr'?'fr':'en'}`;
+    const r=await fetch(u,{cache:"no-store"}); const j=await r.json();
+    return {city:j.city||j.locality||j.principalSubdivision||j.countryName||"—", country:j.countryName||""};
+  }catch{return {city:"—", country:""};}
 }
-
-// 2) Timings with fallback to timingsByCity
-async function getPrayerTimings(lat, lon, cityGuess=null, countryGuess=null) {
-  const tryByCoords = async () => {
-    const url = `https://api.aladhan.com/v1/timings?latitude=${encodeURIComponent(lat)}&longitude=${encodeURIComponent(lon)}&method=4`;
-    const r   = await fetch(url, {cache:"no-store"});
-    const j   = await r.json();
-    const t   = j?.data?.timings;
-    if (!t) throw new Error("Aladhan/timings sans 'timings'");
-    const clean = v => (v||"").split(" ")[0].slice(0,5);
+// timings with fallback
+async function getTimings(lat, lon, cityGuess=null, countryGuess=null){
+  const clean=v=>(v||"").split(" ")[0].slice(0,5);
+  const tryCoords=async()=>{
+    const r=await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=4`,{cache:"no-store"});
+    const j=await r.json(); const t=j?.data?.timings; if(!t) throw 0;
     return {Fajr:clean(t.Fajr),Sunrise:clean(t.Sunrise),Dhuhr:clean(t.Dhuhr),Asr:clean(t.Asr),Maghrib:clean(t.Maghrib),Isha:clean(t.Isha)};
   };
-  const tryByCity = async () => {
-    if (!cityGuess) throw new Error("Pas de ville pour timingsByCity");
-    const q = `https://api.aladhan.com/v1/timingsByCity?city=${encodeURIComponent(cityGuess)}${countryGuess?`&country=${encodeURIComponent(countryGuess)}`:''}&method=4`;
-    const r = await fetch(q, {cache:"no-store"});
-    const j = await r.json();
-    const t = j?.data?.timings;
-    if (!t) throw new Error("Aladhan/timingsByCity sans 'timings'");
-    const clean = v => (v||"").split(" ")[0].slice(0,5);
+  const tryCity=async()=>{
+    if(!cityGuess) throw 0;
+    const r=await fetch(`https://api.aladhan.com/v1/timingsByCity?city=${encodeURIComponent(cityGuess)}${countryGuess?`&country=${encodeURIComponent(countryGuess)}`:''}&method=4`,{cache:"no-store"});
+    const j=await r.json(); const t=j?.data?.timings; if(!t) throw 0;
     return {Fajr:clean(t.Fajr),Sunrise:clean(t.Sunrise),Dhuhr:clean(t.Dhuhr),Asr:clean(t.Asr),Maghrib:clean(t.Maghrib),Isha:clean(t.Isha)};
   };
-  try {
-    return await tryByCoords();
-  } catch (e1) {
-    console.warn("timings par coordonnées a échoué → repli par ville", e1);
-    try { return await tryByCity(); }
-    catch (e2) { console.error("timings par ville a échoué", e2); throw e1; }
-  }
+  try{ return await tryCoords(); } catch{ return await tryCity(); }
 }
-
 function buildSlots({Fajr,Sunrise,Dhuhr,Asr,Maghrib,Isha}){
   const fajrEnd=fromMin(Math.min(toMin(addMin(Fajr,60)),toMin(Sunrise)));
   const afterSunrise=addMin(Sunrise,30);
@@ -345,13 +472,16 @@ function buildSlots({Fajr,Sunrise,Dhuhr,Asr,Maghrib,Isha}){
 function renderHome(){
   const L=T[CURR_LANG];
   $("#homeHero").innerHTML=`<h2>${L.home.h1}</h2>
-  <p>${L.home.p1}</p><p>${L.home.p2}</p>${L.home.ded?`<p>${L.home.ded}</p>`:""}<p>${L.home.p3}</p>
-  <p class="status">💡 ${L.home.note}</p>`;
-  $("#goPlan").textContent=(CURR_LANG==="ar")?"➡️ التخطيط":(CURR_LANG==="fr")?"➡️ Planning":"➡️ Plan";
-  $("#goAdhkar").textContent=(CURR_LANG==="ar")?"🕯️ الأذكار":"🕯️ Adhkâr";
-  $("#goQuran").textContent=(CURR_LANG==="ar")?"📖 القرآن":"📖 Coran";
-  $("#goQibla").textContent=T[CURR_LANG].tabs.qibla;
-  $("#goAdhan").textContent=T[CURR_LANG].tabs.adhan;
+    <p>${L.home.p1}</p>
+    <p>${L.home.p2}</p>
+    <p>${L.home.ded}</p>
+    <p>${L.home.p3}</p>
+    <p class="status">💡 ${L.home.note}</p>`;
+  $("#goPlan").textContent=L.tabs.plan.replace("📋 ","➡️ ");
+  $("#goAdhkar").textContent=L.tabs.adhkar;
+  $("#goQuran").textContent=L.tabs.quran;
+  $("#goQibla").textContent=L.tabs.qibla;
+  $("#goAdhan").textContent=L.tabs.adhan;
 }
 
 /* =================== Planning =================== */
@@ -422,17 +552,42 @@ function renderAdhkar(){
 }
 
 /* =================== Quran =================== */
-const SURAH_NAMES=["Al-Fātiḥah","Al-Baqarah","Āl ‘Imrān","An-Nisā’","Al-Mā’idah","Al-An‘ām","Al-A‘rāf","Al-Anfāl","At-Tawbah","Yūnus","Hūd","Yūsuf","Ar-Ra‘d","Ibrāhīm","Al-Ḥijr","An-Naḥl","Al-Isrā’","Al-Kahf","Maryam","Ṭā Hā","Al-Anbiyā’","Al-Ḥajj","Al-Mu’minūn","An-Nūr","Al-Furqān","Ash-Shu‘arā’","An-Naml","Al-Qaṣaṣ","Al-‘Ankabūt","Ar-Rūm","Luqmān","As-Sajdah","Al-Aḥzāb","Saba’","Fāṭir","Yā Sīn","As-Ṣāffāt","Ṣād","Az-Zumar","Ghāfir","Fuṣṣilat","Ash-Shūrā","Az-Zukhruf","Ad-Dukhān","Al-Jāثiyah","Al-Aḥqāf","Muḥammad","Al-Fatḥ","Al-Ḥujurāt","Qāf","Adh-Dhāriyāt","Aṭ-Ṭūr","An-Najm","Al-Qamar","Ar-Raḥmān","Al-Wāqi‘ah","Al-Ḥadīd","Al-Mujādilah","Al-Ḥashr","Al-Mumtaḥanah","Aṣ-Ṣaff","Al-Jumu‘ah","Al-Munāfiقūn","At-Taghābun","Aṭ-Ṭلāق","At-Taḥرīm","Al-Mulk","Al-Qalam","Al-Ḥāqqah","Al-Ma‘ārij","Nūḥ","Al-Jinn","Al-Muzzammil","Al-Muddathثir","Al-Qiyāmah","Al-Insān","Al-Mursalāt","An-Naba’","An-Nāzi‘āt","‘Abasa","At-Takوير","Al-Infiṭār","Al-Muṭaffifīn","Al-Inshiqāq","Al-Burūج","Aṭ-Ṭāriق","Al-A‘lā","Al-Ghāshiyah","Al-Fajr","Al-Balad","Ash-Shams","Al-Layl","Aḍ-Ḍuḥى","Ash-Shرح","At-Tīn","Al-‘Alaq","Al-Qadr","Al-Bayyinah","Az-Zalzalah","Al-‘Ādiyāt","Al-Qāri‘ah","At-Takāthur","Al-‘Aṣr","Al-Humazah","Al-Fīل","Quraysh","Al-Mā‘ūn","Al-Kawthar","Al-Kāfirūn","An-Naṣr","Al-Masad","Al-Ikhlāṣ","Al-Falaq","An-Nās"];
+const SURAH_NAMES=[ /* 1..114 clean list (abrégé ici pour la place) */
+"Al-Fātiḥah","Al-Baqarah","Āl ‘Imrān","An-Nisā’","Al-Mā’idah","Al-An‘ām","Al-A‘rāf","Al-Anfāl","At-Tawbah","Yūnus","Hūd","Yūsuf","Ar-Ra‘d","Ibrāhīm","Al-Ḥijr","An-Naḥl","Al-Isrā’","Al-Kahf","Maryam","Ṭā Hā","Al-Anbiyā’","Al-Ḥajj","Al-Mu’minūn","An-Nūr","Al-Furqān","Ash-Shu‘arā’","An-Naml","Al-Qaṣaṣ","Al-‘Ankabūt","Ar-Rūm","Luqmān","As-Sajdah","Al-Aḥzāb","Saba’","Fāṭir","Yā Sīn","Aṣ-Ṣāffāt","Ṣād","Az-Zumar","Ghāfir","Fuṣṣilat","Ash-Shūrā","Az-Zukhruf","Ad-Dukhān","Al-Jāthiyah","Al-Aḥqāf","Muḥammad","Al-Fatḥ","Al-Ḥujurāt","Qāf","Adh-Dhāriyāt","Aṭ-Ṭūr","An-Najm","Al-Qamar","Ar-Raḥmān","Al-Wāqi‘ah","Al-Ḥadīd","Al-Mujādilah","Al-Ḥashr","Al-Mumtaḥanah","Aṣ-Ṣaff","Al-Jumu‘ah","Al-Munāfiqūn","At-Taghābun","Aṭ-Ṭalāq","At-Taḥrīm","Al-Mulk","Al-Qalam","Al-Ḥāqqah","Al-Ma‘ārij","Nūḥ","Al-Jinn","Al-Muzzammil","Al-Muddaththir","Al-Qiyāmah","Al-Insān","Al-Mursalāt","An-Naba’","An-Nāzi‘āt","‘Abasa","At-Takwīr","Al-Infiṭār","Al-Muṭaffifīn","Al-Inshiqāq","Al-Burūj","Aṭ-Ṭāriq","Al-A‘lā","Al-Ghāshiyah","Al-Fajr","Al-Balad","Ash-Shams","Al-Layl","Aḍ-Ḍuḥā","Ash-Sharḥ","At-Tīn","Al-‘Alaq","Al-Qadr","Al-Bayyinah","Az-Zalzalah","Al-‘Ādiyāt","Al-Qāri‘ah","At-Takāthur","Al-‘Aṣr","Al-Humazah","Al-Fīl","Quraysh","Al-Mā‘ūn","Al-Kawthar","Al-Kāfirūn","An-Naṣr","Al-Masad","Al-Ikhlāṣ","Al-Falaq","An-Nās"];
+// Reciters (stable mp3quran mirrors)
+const RECITERS=[
+  {id:"afs",  name:"Mishary Al-Afasy", base:"https://server8.mp3quran.net/afs/"},   // 001.mp3 ...
+  {id:"hus",  name:"Al-Husary (Murattal)", base:"https://server8.mp3quran.net/husr/"},
+  {id:"minsh",name:"Minshawi (Murattal)",  base:"https://server8.mp3quran.net/minsh/"},
+  {id:"sds",  name:"Saad Al-Ghamdi",      base:"https://server8.mp3quran.net/sds/"}
+];
+
 function qKey(){return `qread_${todayKey()}_${CURR_LANG}`;}
 function renderQuran(){
   const L=T[CURR_LANG];
   $("#qLabel1").textContent=L.q.s; $("#qLabel2").textContent=L.q.j;
   $("#openSurah").textContent=L.q.open; $("#markRead").textContent=L.q.mark; $("#resetRead").textContent=L.q.reset;
-  const sSel=$("#surahSel"); sSel.innerHTML=""; SURAH_NAMES.forEach((n,i)=>{const o=document.createElement("option");o.value=String(i+1);o.textContent=`${i+1}. ${n}`;sSel.appendChild(o);});
+  $("#reciterLabel").textContent=L.q.reciter;
+
+  const sSel=$("#surahSel"); sSel.innerHTML=""; SURAH_NAMES.forEach((n,i)=>{const o=document.createElement("option");o.value=String(i+1).padStart(3,"0");o.textContent=`${i+1}. ${n}`;sSel.appendChild(o);});
   const jSel=$("#juzSel"); jSel.innerHTML=""; for(let j=1;j<=30;j++){const o=document.createElement("option");o.value=String(j);o.textContent=`Juz ${j}`;jSel.appendChild(o);}
+  const rSel=$("#reciterSel"); rSel.innerHTML=""; RECITERS.forEach(r=>{const o=document.createElement("option");o.value=r.id;o.textContent=r.name;rSel.appendChild(o);});
+
   const saved=localStorage.getItem(qKey()); $("#readStatus").textContent=saved?L.q.last(saved):"";
-  $("#openSurah").onclick=()=>{$("#qFrame").src=`https://quran.com/${sSel.value}?reading=false&locale=${CURR_LANG==='ar'?'ar':(CURR_LANG==='fr'?'fr':'en')}`;};
-  $("#markRead").onclick=()=>{const label=`Surah ${sSel.value} / Juz ${jSel.value}`;localStorage.setItem(qKey(),label);$("#readStatus").textContent=L.q.last(label);};
+  $("#openSurah").onclick=()=>{
+    const surahNum=parseInt(sSel.value,10);
+    const url=`https://quran.com/${surahNum}?reading=false&locale=${CURR_LANG==='ar'?'ar':(CURR_LANG==='fr'?'fr':'en')}`;
+    $("#qFrame").src=url;
+  };
+  $("#playAudio").onclick=()=>{
+    const rec=RECITERS.find(r=>r.id===$("#reciterSel").value);
+    const mp3=`${rec.base}${sSel.value}.mp3`;
+    const a=$("#qAudio"); a.src=mp3; a.play().catch(()=>{});
+  };
+  $("#markRead").onclick=()=>{
+    const label=`Surah ${parseInt(sSel.value,10)} / Juz ${jSel.value} – ${$("#reciterSel").selectedOptions[0].text}`;
+    localStorage.setItem(qKey(),label); $("#readStatus").textContent=L.q.last(label);
+  };
   $("#resetRead").onclick=()=>{localStorage.removeItem(qKey());$("#readStatus").textContent="";};
 }
 
@@ -443,20 +598,35 @@ function onOrient(e){let heading;if(e.webkitCompassHeading!==undefined) heading=
 
 /* =================== HORAIRES & ADHAN =================== */
 const PRAYERS_ORDER=["Fajr","Dhuhr","Asr","Maghrib","Isha"];
+const MUEZZINS=[
+  {id:"azan1",name:"Madinah style",url:"https://cdn.islamic.network/audio/adhan/mp3/azan1.mp3"},
+  {id:"azan2",name:"Makkah style", url:"https://cdn.islamic.network/audio/adhan/mp3/azan2.mp3"},
+  {id:"azan3",name:"Misri",        url:"https://cdn.islamic.network/audio/adhan/mp3/azan3.mp3"},
+  {id:"azan4",name:"Maghribi",     url:"https://cdn.islamic.network/audio/adhan/mp3/azan4.mp3"},
+  {id:"azan5",name:"Short",        url:"https://cdn.islamic.network/audio/adhan/mp3/azan5.mp3"}
+];
 function adhanSettingKey(p){return `adhan_setting_${p}`;} // 'off' | 'sound' | 'vibrate'
 function getAdhanSetting(p){return localStorage.getItem(adhanSettingKey(p))||"off";}
 function setAdhanSetting(p,val){localStorage.setItem(adhanSettingKey(p),val);scheduleNextAdhan();}
+function muezzinKey(p){return `adhan_muezzin_${p}`;}
+function getMuezzin(p){return localStorage.getItem(muezzinKey(p))||MUEZZINS[0].id;}
+function setMuezzin(p,id){localStorage.setItem(muezzinKey(p),id);}
 
+async function ensureNotifPermission(){
+  if(!('Notification' in window)) return false;
+  if(Notification.permission==="granted") return true;
+  if(Notification.permission==="denied") return false;
+  const res=await Notification.requestPermission(); return res==="granted";
+}
 function renderAdhanPage(){
   const L=T[CURR_LANG];
   $("#legendAdhan").textContent=L.adhan.legend;
   $("#reqNotify").textContent=L.adhan.notifAsk;
   const rows=$("#adhanRows"); rows.innerHTML="";
-  if(!PRAYER_TIMINGS){ rows.innerHTML=`<tr class="adhan-row"><td colspan="4" style="padding:14px">—</td></tr>`; return; }
-  const locale=CURR_LANG==='ar'?'ar-DZ':(CURR_LANG==='fr'?'fr-FR':'en-US');
+  if(!PRAYER_TIMINGS){ rows.innerHTML=`<tr class="adhan-row"><td colspan="5" style="padding:14px">—</td></tr>`; return; }
 
   PRAYERS_ORDER.forEach(p=>{
-    const time=PRAYER_TIMINGS[p]; const set=getAdhanSetting(p);
+    const time=PRAYER_TIMINGS[p]; const set=getAdhanSetting(p); const mz=getMuezzin(p);
     const tr=document.createElement("tr"); tr.className="adhan-row";
     tr.innerHTML=`<td><strong>${p}</strong></td>
       <td><span class="pill-small ltr">${time}</span></td>
@@ -467,21 +637,29 @@ function renderAdhanPage(){
           <option value="vibrate">${L.adhan.vibrate}</option>
         </select>
       </td>
+      <td>
+        <select id="mue-${p}" class="sel">
+          ${MUEZZINS.map(m=>`<option value="${m.id}">${m.name}</option>`).join("")}
+        </select>
+      </td>
       <td><button class="btn" id="test-${p}">Test</button></td>`;
     rows.appendChild(tr);
     $(`#sel-${p}`).value=set;
+    $(`#mue-${p}`).value=mz;
     $(`#sel-${p}`).addEventListener("change",(e)=>setAdhanSetting(p,e.target.value));
+    $(`#mue-${p}`).addEventListener("change",(e)=>setMuezzin(p,e.target.value));
     $(`#test-${p}`).onclick=()=>triggerAdhan(p,true);
+    // si OFF, griser le muezzin
+    const toggle=()=>{$(`#mue-${p}`).disabled=getAdhanSetting(p)!=="sound";$(`#mue-${p}`).classList.toggle("mute",$(`#mue-${p}`).disabled);};
+    toggle(); $(`#sel-${p}`).addEventListener("change",toggle);
   });
 }
-
-/* compute next adhan according to settings */
 function nextAdhanInfo(){
   if(!PRAYER_TIMINGS) return null;
   const now=new Date(); const nowM=now.getHours()*60+now.getMinutes();
   let bestDiff=1e9, label=null, at=null;
   for(const p of PRAYERS_ORDER){
-    const setting=getAdhanSetting(p); if(setting==="off") continue;
+    if(getAdhanSetting(p)==="off") continue;
     const [h,m]=PRAYER_TIMINGS[p].split(":").map(Number);
     let mins=h*60+m, diff=mins-nowM; if(diff<=0) diff+=1440;
     if(diff<bestDiff){bestDiff=diff;label=p;at=new Date(now.getTime()+diff*60000);}
@@ -489,30 +667,6 @@ function nextAdhanInfo(){
   if(!label) return null;
   return {label, when:at};
 }
-
-async function ensureSW(){ if('serviceWorker' in navigator){ try{ await navigator.serviceWorker.register('sw.js'); }catch{} } }
-async function ensureNotifPermission(){
-  if(!('Notification' in window)) return false;
-  if(Notification.permission==="granted") return true;
-  if(Notification.permission==="denied") return false;
-  const res=await Notification.requestPermission(); return res==="granted";
-}
-
-async function triggerAdhan(prayer, isTest=false){
-  const setting=getAdhanSetting(prayer);
-  if(setting==="off") return;
-  try{
-    const reg=await navigator.serviceWorker.getRegistration();
-    if(reg && Notification.permission==="granted"){
-      reg.showNotification(isTest?`Test Adhân – ${prayer}`:`Adhân – ${prayer}`, {body:isTest?"Essai de notification":`C’est l’heure de ${prayer}`, icon:"icons/icon-192.png", vibrate: setting==="vibrate" ? [200,100,200,100,300] : [120]});
-    }
-  }catch{}
-  if(setting==="vibrate" && navigator.vibrate){ navigator.vibrate([200,100,200,100,300]); }
-  if(setting==="sound"){
-    const a=$("#adhanAudio"); try{ a.currentTime=0; await a.play(); }catch(e){ /* l'utilisateur doit interagir d'abord sur iOS */ }
-  }
-}
-
 function clearAdhanTimer(){ if(ADHAN_TIMER){ clearTimeout(ADHAN_TIMER); ADHAN_TIMER=null; } }
 function scheduleNextAdhan(){
   clearAdhanTimer();
@@ -521,6 +675,19 @@ function scheduleNextAdhan(){
   $("#nextAdhanMsg").textContent=T[CURR_LANG].adhan.next(info.when.toLocaleTimeString());
   const delay=Math.max(0, info.when.getTime()-Date.now());
   ADHAN_TIMER=setTimeout(async()=>{ await triggerAdhan(info.label,false); scheduleNextAdhan(); }, delay);
+}
+function triggerAdhan(prayer, isTest=false){
+  const setting=getAdhanSetting(prayer);
+  if(setting==="off") return;
+  if(Notification.permission==="granted"){
+    new Notification(isTest?`Test Adhân – ${prayer}`:`Adhân – ${prayer}`, {body:isTest?"Essai de notification":`C’est l’heure de ${prayer}`});
+  }
+  if(setting==="vibrate" && navigator.vibrate){ navigator.vibrate([200,100,200,100,300]); }
+  if(setting==="sound"){
+    const mzId=getMuezzin(prayer);
+    const src=(MUEZZINS.find(m=>m.id===mzId)||MUEZZINS[0]).url;
+    const a=$("#adhanAudio"); a.src=src; a.currentTime=0; a.play().catch(()=>{});
+  }
 }
 
 /* =================== Language & Tabs =================== */
@@ -534,41 +701,41 @@ function applyLanguage(){
   $("#qiblaHint").textContent=L.qibla.hint; $("#qLabel").textContent=L.qibla.label;
   renderHome(); renderPlan(); renderAdhkar(); renderQuran(); renderAdhanPage();
 }
-
-/* =================== Navigation =================== */
 function showPage(key){
   ["home","plan","adhkar","quran","qibla","adhan"].forEach(k=>{$(`#page-${k}`).style.display="none"; $(`#tab-${k}`).classList.remove("active");});
   $(`#page-${key}`).style.display="block"; $(`#tab-${key}`).classList.add("active");
   localStorage.setItem("last_page",key);
 }
 
-/* =================== Geolocation bootstrap =================== */
+/* =================== Geolocation bootstrap (demande systématique) =================== */
 async function locateAndBuild(){
   const L=T[CURR_LANG]; $("#status").textContent=L.statusGeo;
-  if(!("geolocation" in navigator)){ $("#status").textContent=L.geoNo||"Géoloc non supportée"; return; }
+  if(!("geolocation" in navigator)){ $("#status").textContent="❌ "+(L.geoNo||"Géolocalisation non supportée"); return; }
   navigator.geolocation.getCurrentPosition(async pos=>{
-    const {latitude,longitude}=pos.coords; USER_POS={lat:latitude,lon:longitude};
+    const {latitude,longitude}=pos.coords;
     $("#status").textContent="📍 …";
     try{
-      const [city,timings]=await Promise.all([getCityName(latitude,longitude,CURR_LANG), getPrayerTimings(latitude,longitude)]);
-      $("#cityName").textContent=city; PRAYER_TIMINGS=timings; CURRENT_SLOTS=buildSlots(timings);
+      const place=await reverseCity(latitude,longitude,CURR_LANG);
+      const timings=await getTimings(latitude,longitude,place.city,place.country);
+      $("#cityName").textContent=place.city;
+      PRAYER_TIMINGS=timings; CURRENT_SLOTS=buildSlots(timings);
       QIBLA_BRG=computeQiblaBearing(latitude,longitude);
       $("#qiblaInfo").textContent=`Qibla : ${Math.round(QIBLA_BRG)}° • Cap : —°`;
       renderPlan(); renderAdhanPage(); scheduleNextAdhan();
-      $("#status").textContent=L.geoOk||"OK";
+      $("#status").textContent="✅ OK";
       setInterval(renderPlan,60*1000);
-    }catch(e){ console.error(e); $("#status").textContent=L.loadErr||"Erreur de chargement"; }
-  }, err=>{ console.warn(err); $("#status").textContent=L.geoDenied||"Accès refusé"; $("#cityName").textContent="—"; }, {enableHighAccuracy:true, timeout:15000});
+    }catch(e){ console.error(e); $("#status").textContent="⚠️ Erreur de chargement des horaires"; }
+  }, err=>{ console.warn(err); $("#status").textContent="⚠️ Accès localisation refusé"; $("#cityName").textContent="—"; }, {enableHighAccuracy:true, timeout:15000});
 }
 
 /* =================== Boot =================== */
 document.addEventListener("DOMContentLoaded", async ()=>{
   $("#lang").value=CURR_LANG;
   applyLanguage();
-  const last=localStorage.getItem("last_page")||"adhan"; showPage(last);
-  await ensureSW();
+  showPage(localStorage.getItem("last_page")||"home");
+
+  // géoloc demandée immédiatement
   locateAndBuild();
-  startCompass();
 
   $("#lang").addEventListener("change", ()=>{ CURR_LANG=$("#lang").value; localStorage.setItem("pref_lang",CURR_LANG); applyLanguage(); locateAndBuild(); });
 
@@ -590,6 +757,8 @@ document.addEventListener("DOMContentLoaded", async ()=>{
 
   $("#reqNotify").onclick=ensureNotifPermission;
   $("#resync").onclick=scheduleNextAdhan;
+
+  startCompass();
 });
 </script>
 </body>
