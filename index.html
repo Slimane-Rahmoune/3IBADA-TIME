@@ -251,7 +251,7 @@ const T={
   }
 };
 
-/* ====== Adhkâr datasets (abrégé pour conserver la taille) ====== */
+/* ====== Adhkâr datasets (abrégé) ====== */
 const ADH_DB={
   fr:{morning:[{txt:"Nous entrons au matin…",count:1,ref:"Muslim"}],afterPrayer:[{txt:"Istighfar (3)…",count:1,ref:"Muslim"}],evening:[{txt:"Nous entrons au soir…",count:1,ref:"Muslim"}],sleep:[{txt:"Bismika Allâhumma…",count:1,ref:"Bukhari"}],home:[{txt:"Entrer à la maison",count:1,ref:"Abu Dawud"}]},
   ar:{morning:[{txt:"أصبحنا وأصبح الملك لله…",count:1,ref:"مسلم"}],afterPrayer:[{txt:"أستغفر الله (٣)…",count:1,ref:"مسلم"}],evening:[{txt:"أمسينا…",count:1,ref:"مسلم"}],sleep:[{txt:"باسمك اللهم…",count:1,ref:"البخاري"}],home:[{txt:"دعاء دخول البيت…",count:1,ref:"أبو داود"}]},
@@ -275,16 +275,54 @@ let QIBLA_BRG=null;
 let PRAYER_TIMINGS=null;
 let ADHAN_TIMER=null;
 
-/* =================== APIs =================== */
-async function getCityName(lat,lon,lang){
-  try{const r=await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=${lang==='ar'?'ar':lang==='fr'?'fr':'en'}`);const j=await r.json();return j.city||j.locality||j.principalSubdivision||j.countryName||"—";}catch{return "—";}
+/* =================== APIs + Correctifs =================== */
+// 1) Reverse geocode -> {city, country}
+async function getCityName(lat, lon, lang){
+  try{
+    const resp = await fetch(
+      `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=${lang==='ar'?'ar':lang==='fr'?'fr':'en'}`,
+      {cache:"no-store"}
+    );
+    const j = await resp.json();
+    return {
+      city: j.city || j.locality || j.principalSubdivision || j.countryName || "—",
+      country: j.countryName || ""
+    };
+  }catch{
+    return { city:"—", country:"" };
+  }
 }
-async function getPrayerTimings(lat,lon){
-  const r=await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=4`);
-  const j=await r.json(); const t=j?.data?.timings; if(!t) throw new Error("Invalid timings");
-  const clean=v=>(v||"").split(" ")[0].slice(0,5);
-  return {Fajr:clean(t.Fajr),Sunrise:clean(t.Sunrise),Dhuhr:clean(t.Dhuhr),Asr:clean(t.Asr),Maghrib:clean(t.Maghrib),Isha:clean(t.Isha)};
+
+// 2) Timings with fallback to timingsByCity
+async function getPrayerTimings(lat, lon, cityGuess=null, countryGuess=null) {
+  const tryByCoords = async () => {
+    const url = `https://api.aladhan.com/v1/timings?latitude=${encodeURIComponent(lat)}&longitude=${encodeURIComponent(lon)}&method=4`;
+    const r   = await fetch(url, {cache:"no-store"});
+    const j   = await r.json();
+    const t   = j?.data?.timings;
+    if (!t) throw new Error("Aladhan/timings sans 'timings'");
+    const clean = v => (v||"").split(" ")[0].slice(0,5);
+    return {Fajr:clean(t.Fajr),Sunrise:clean(t.Sunrise),Dhuhr:clean(t.Dhuhr),Asr:clean(t.Asr),Maghrib:clean(t.Maghrib),Isha:clean(t.Isha)};
+  };
+  const tryByCity = async () => {
+    if (!cityGuess) throw new Error("Pas de ville pour timingsByCity");
+    const q = `https://api.aladhan.com/v1/timingsByCity?city=${encodeURIComponent(cityGuess)}${countryGuess?`&country=${encodeURIComponent(countryGuess)}`:''}&method=4`;
+    const r = await fetch(q, {cache:"no-store"});
+    const j = await r.json();
+    const t = j?.data?.timings;
+    if (!t) throw new Error("Aladhan/timingsByCity sans 'timings'");
+    const clean = v => (v||"").split(" ")[0].slice(0,5);
+    return {Fajr:clean(t.Fajr),Sunrise:clean(t.Sunrise),Dhuhr:clean(t.Dhuhr),Asr:clean(t.Asr),Maghrib:clean(t.Maghrib),Isha:clean(t.Isha)};
+  };
+  try {
+    return await tryByCoords();
+  } catch (e1) {
+    console.warn("timings par coordonnées a échoué → repli par ville", e1);
+    try { return await tryByCity(); }
+    catch (e2) { console.error("timings par ville a échoué", e2); throw e1; }
+  }
 }
+
 function buildSlots({Fajr,Sunrise,Dhuhr,Asr,Maghrib,Isha}){
   const fajrEnd=fromMin(Math.min(toMin(addMin(Fajr,60)),toMin(Sunrise)));
   const afterSunrise=addMin(Sunrise,30);
