@@ -155,6 +155,7 @@ const T = {
       h1:"Bienvenue !",
       p1:"Je m’appelle <strong>Slimane Rahmoune</strong>. Je vous partage ici des créneaux d’adorations inspirés de la sunnah du Prophète ﷺ.",
       p2:"Vous pouvez aussi lire le Coran, réciter les adhkâr, et suivre votre progression grâce à une checklist simple.",
+      ded:"<strong>Cette application est une <em>sadaqa jâriya</em> dédiée à ma défunte et chère tante BEN BOURENANE TOUNSIA</strong> — qu’Allah lui fasse miséricorde. <br>Merci de l’utiliser pour écouter et lire le Coran, réciter les adhkâr et suivre les adorations du Prophète ﷺ.",
       p3:"Faites de votre mieux, régulièrement, avec sincérité — pour devenir, inchâ’Allah, des musulman(e)s exemplaires.",
       note:"Les créneaux s’adaptent automatiquement à votre géolocalisation."
     },
@@ -188,6 +189,7 @@ const T = {
       h1:"مرحبًا!",
       p1:"أنا <strong>سليمان رحمون</strong>، أشارككم هنا فتراتٍ للعبادات على منهج السنة للنبي ﷺ.",
       p2:"يمكنكم قراءة القرآن، وذكر الأذكار، ومتابعة الإنجاز عبر قائمة تحقق بسيطة.",
+      ded:"<strong>هذا التطبيق صدقة جارية لعمّتي الحبيبة المرحومة BEN BOURENANE TOUNSIA</strong> — رحمها الله. <br>نرجو استعماله لسماع وقراءة القرآن، وذكر الأذكار، واتباع عبادات النبي ﷺ.",
       p3:"ابذلوا جهدكم بانتظام وإخلاص — لتكونوا بإذن الله مسلمين ومسلمات قدوة.",
       note:"تتكيّف الفترات تلقائيًا بحسب موقعكم الجغرافي."
     },
@@ -221,6 +223,7 @@ const T = {
       h1:"Welcome!",
       p1:"I’m <strong>Slimane Rahmoune</strong>. I’m sharing worship time slots inspired by the Prophetic ﷺ way.",
       p2:"You can also read the Qur’an, recite adhkâr, and track progress with a simple checklist.",
+      ded:"<strong>This app is a <em>sadaqah jariyah</em> dedicated to my beloved late aunt BEN BOURENANE TOUNSIA</strong> — may Allah have mercy on her. <br>Please use it to listen to and read the Qur’an, recite adhkār, and follow the Prophet’s ﷺ acts of worship.",
       p3:"Do your best, consistently and sincerely — to become exemplary Muslim(s), in shâ’ Allâh.",
       note:"Slots adapt automatically to your geolocation."
     },
@@ -324,6 +327,7 @@ function renderHome(){
     <h2>${L.home.h1}</h2>
     <p>${L.home.p1}</p>
     <p>${L.home.p2}</p>
+    ${L.home.ded ? `<p>${L.home.ded}</p>` : ""}
     <p>${L.home.p3}</p>
     <p class="status">💡 ${L.home.note}</p>
   `;
@@ -468,7 +472,7 @@ function renderAdhkar(){
 }
 
 /* =================== Rendering: Quran =================== */
-const SURAH_NAMES=["Al-Fātiḥah","Al-Baqarah","Āl ‘Imrān","An-Nisā’","Al-Mā’idah","Al-An‘ām","Al-A‘rāf","Al-Anfāl","At-Tawbah","Yūnus","Hūd","Yūsuf","Ar-Ra‘d","Ibrāhīm","Al-Ḥijr","An-Naḥl","Al-Isrā’","Al-Kahf","Maryam","Ṭā Hā","Al-Anbiyā’","Al-Ḥajj","Al-Mu’minūn","An-Nūr","Al-Furqān","Ash-Shu‘arā’","An-Naml","Al-Qaṣaṣ","Al-‘Ankabūt","Ar-Rūm","Luqmān","As-Sajdah","Al-Aḥzāb","Saba’","Fāṭir","Yā Sīn","As-Ṣāffāt","Ṣād","Az-Zumar","Ghāfir","Fuṣṣilat","Ash-Shūrā","Az-Zukhruf","Ad-Dukhān","Al-Jāthiyah","Al-Aḥqāf","Muḥammad","Al-Fatḥ","Al-Ḥujurāt","Qāf","Adh-Dhāriyāt","Aṭ-Ṭūr","An-Najm","Al-Qamar","Ar-Raḥmān","Al-Wāqi‘ah","Al-Ḥadīd","Al-Mujādilah","Al-Ḥashr","Al-Mumtaḥanah","Aṣ-Ṣaff","Al-Jumu‘ah","Al-Munāfiqūn","At-Taghābun","Aṭ-Ṭalāq","At-Taḥrīm","Al-Mulk","Al-Qalam","Al-Ḥāqqah","Al-Ma‘ārij","Nūḥ","Al-Jinn","Al-Muzzammil","Al-Muddaththir","Al-Qiyāmah","Al-Insān","Al-Mursalāt","An-Naba’","An-Nāzi‘āt","‘Abasa","At-Takwīر","Al-Infiṭār","Al-Muṭaffifīn","Al-Inshiqāq","Al-Burūj","Aṭ-Ṭāriq","Al-A‘lā","Al-Ghāshiyah","Al-Fajr","Al-Balad","Ash-Shams","Al-Layl","Aḍ-Ḍuḥā","Ash-Sharḥ","At-Tīn","Al-‘Alaq","Al-Qadr","Al-Bayyinah","Az-Zalzalah","Al-‘Ādiyāt","Al-Qāri‘ah","At-Takāthur","Al-‘Aṣr","Al-Humazah","Al-Fīل","Quraysh","Al-Mā‘ūn","Al-Kawthar","Al-Kāfirūn","An-Naṣr","Al-Masad","Al-Ikhlāṣ","Al-Falaq","An-Nās"];
+const SURAH_NAMES=["Al-Fātiḥah","Al-Baqarah","Āl ‘Imrān","An-Nisā’","Al-Mā’idah","Al-An‘ām","Al-A‘rāf","Al-Anfāl","At-Tawbah","Yūnus","Hūd","Yūsuf","Ar-Ra‘d","Ibrāhīm","Al-Ḥijr","An-Naḥl","Al-Isrā’","Al-Kahf","Maryam","Ṭā Hā","Al-Anbiyā’","Al-Ḥajj","Al-Mu’minūn","An-Nūr","Al-Furqān","Ash-Shu‘arā’","An-Naml","Al-Qaṣaṣ","Al-‘Ankabūt","Ar-Rūm","Luqmān","As-Sajdah","Al-Aḥzāb","Saba’","Fāṭir","Yā Sīn","As-Ṣāffāt","Ṣād","Az-Zumar","Ghāfir","Fuṣṣilat","Ash-Shūrā","Az-Zukhruf","Ad-Dukhān","Al-Jāthiyah","Al-Aḥqāf","Muḥammad","Al-Fatḥ","Al-Ḥujurāt","Qāf","Adh-Dhāriyāt","Aṭ-Ṭūr","An-Najm","Al-Qamar","Ar-Raḥmān","Al-Wāqi‘ah","Al-Ḥadīd","Al-Mujādilah","Al-Ḥashr","Al-Mumtaḥanah","Aṣ-Ṣaff","Al-Jumu‘ah","Al-Munāfiقūn","At-Taghābun","Aṭ-Ṭلāق","At-Taḥrīm","Al-Mulk","Al-Qalam","Al-Ḥāqqah","Al-Ma‘ārij","Nūḥ","Al-Jinn","Al-Muzzammil","Al-Muddathثir","Al-Qiyāmah","Al-Insān","Al-Mursalāt","An-Naba’","An-Nāzi‘āt","‘Abasa","At-Takوير","Al-Infiṭār","Al-Muṭaffifīn","Al-Inshiqāq","Al-Burūj","Aṭ-Ṭāriq","Al-A‘lā","Al-Ghāshiyah","Al-Fajr","Al-Balad","Ash-Shams","Al-Layl","Aḍ-Ḍuḥā","Ash-Sharḥ","At-Tīn","Al-‘Alaq","Al-Qadr","Al-Bayyinah","Az-Zalzalah","Al-‘Ādiyāt","Al-Qāri‘ah","At-Takāthur","Al-‘Aṣr","Al-Humazah","Al-Fīل","Quraysh","Al-Mā‘ūn","Al-Kawthar","Al-Kāfirūn","An-Naṣr","Al-Masad","Al-Ikhlāṣ","Al-Falaq","An-Nās"];
 
 function quranStoreKey(){ return `qread_${todayKey()}_${CURR_LANG}`; }
 
