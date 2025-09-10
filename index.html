@@ -377,23 +377,181 @@ const T={
   }
 };
 
-/* ====== Adhkâr (résumés utiles) ====== */
-const ADH_DB={ /* identique à la version précédente complète pour les 3 langues (abrégé ici pour la lisibilité) */
-  ar:{morning:[{txt:"أصبحنا وأصبح الملك لله...",count:1,ref:"مسلم"},{txt:"سيد الاستغفار...",count:1,ref:"البخاري"},{txt:"حسبي الله...",count:7,ref:"أبو داود"},{txt:"سبحان الله وبحمده",count:100,ref:"مسلم"},{txt:"لا إله إلا الله وحده...",count:100,ref:"البخاري"}],
-      afterPrayer:[{txt:"أستغفر الله (٣)...",count:1,ref:"مسلم"},{txt:"33/33/33 + تمام المئة",count:1,ref:"مسلم"},{txt:"آية الكرسي",count:1,ref:"صحيح"}],
-      evening:[{txt:"أمسينا...",count:1,ref:"مسلم"},{txt:"الإخلاص والفلق والناس ×3",count:3,ref:"أبو داود"},{txt:"سبحان الله وبحمده",count:100,ref:"مسلم"}],
-      sleep:[{txt:"باسمك اللهم أموت وأحيا",count:1,ref:"البخاري"},{txt:"آية الكرسي",count:1,ref:"البخاري"},{txt:"آخر آيتين من البقرة",count:1,ref:"البخاري"}],
-      home:[{txt:"دعاء دخول البيت...",count:1,ref:"أبو داود"},{txt:"دعاء الطعام...",count:1,ref:"أبو داود"},{txt:"لبس الثوب...",count:1,ref:"أبو داود"},{txt:"دعاء السفر...",count:1,ref:"مسلم"}]},
-  fr:{morning:[{txt:"Nous entrons au matin...",count:1,ref:"Muslim"},{txt:"Sayyid al-Istighfâr...",count:1,ref:"Bukhari"},{txt:"Hasbiyallâh...",count:7,ref:"Abu Dawud"},{txt:"SubhânAllâh wa bihamdih",count:100,ref:"Muslim"},{txt:"Lâ ilâha illâ Allâh...",count:100,ref:"Bukhari"}],
-      afterPrayer:[{txt:"Istighfar (3) + Allahumma anta as-Salâm...",count:1,ref:"Muslim"},{txt:"33/33/33 + 100",count:1,ref:"Muslim"},{txt:"Âyat al-Kursî",count:1,ref:"Sahîh"}],
-      evening:[{txt:"Nous entrons au soir...",count:1,ref:"Muslim"},{txt:"Ikhlâs + Falaq + Nâs ×3",count:3,ref:"Abu Dawud"},{txt:"SubhânAllâh wa bihamdih",count:100,ref:"Muslim"}],
-      sleep:[{txt:"Bismika Allâhumma...",count:1,ref:"Bukhari"},{txt:"Âyat al-Kursî",count:1,ref:"Bukhari"},{txt:"Deux derniers versets d’Al-Baqarah",count:1,ref:"Bukhari"}],
-      home:[{txt:"Entrer à la maison...",count:1,ref:"Abu Dawud"},{txt:"Avant/après le repas...",count:1,ref:"Abu Dawud"},{txt:"Mettre un vêtement...",count:1,ref:"Abu Dawud"},{txt:"Invocation du voyage...",count:1,ref:"Muslim"}]},
-  en:{morning:[{txt:"We enter the morning...",count:1,ref:"Muslim"},{txt:"Sayyid al-Istighfar...",count:1,ref:"Bukhari"},{txt:"Hasbiyallāh...",count:7,ref:"Abu Dawud"},{txt:"SubhanAllāh wa bihamdih",count:100,ref:"Muslim"},{txt:"Lā ilāha illā Allāh...",count:100,ref:"Bukhari"}],
-      afterPrayer:[{txt:"Istighfar (3) + Allahumma anta as-Salām...",count:1,ref:"Muslim"},{txt:"33/33/33 + 100",count:1,ref:"Muslim"},{txt:"Ayat al-Kursi",count:1,ref:"Sahih"}],
-      evening:[{txt:"We enter the evening...",count:1,ref:"Muslim"},{txt:"Ikhlās + Falaq + Nās ×3",count:3,ref:"Abu Dawud"},{txt:"SubhanAllāh wa bihamdih",count:100,ref:"Muslim"}],
-      sleep:[{txt:"Bismika Allāhumma...",count:1,ref:"Bukhari"},{txt:"Ayat al-Kursi",count:1,ref:"Bukhari"},{txt:"Last two verses of Al-Baqarah",count:1,ref:"Bukhari"}],
-      home:[{txt:"Entering home dhikr...",count:1,ref:"Abu Dawud"},{txt:"Before/after meal...",count:1,ref:"Abu Dawud"},{txt:"Wearing a garment...",count:1,ref:"Abu Dawud"},{txt:"Travel supplication...",count:1,ref:"Muslim"}]}
+/* ====== Adhkâr complets (ar / fr / en) ====== */
+const ADH_DB = {
+  ar: {
+    morning: [
+      { txt:"آية الكرسي (ٱللَّهُ لَا إِلَـٰهَ إِلَّا هُوَ... البقرة:255)", count:1, ref:"صحيح" },
+      { txt:"قُلْ هُوَ ٱللَّهُ أَحَدٌ + قُلْ أَعُوذُ بِرَبِّ ٱلْفَلَقِ + قُلْ أَعُوذُ بِرَبِّ ٱلنَّاسِ (كل سورة ×3)", count:3, ref:"أبو داود" },
+      { txt:"سيد الاستغفار: اللهم أنت ربي لا إله إلا أنت، خلقتني وأنا عبدك... (مرة)", count:1, ref:"البخاري" },
+      { txt:"أصبحنا وأصبح الملك لله، والحمد لله، لا إله إلا الله وحده لا شريك له... (مرة)", count:1, ref:"أبو داود" },
+      { txt:"رضيت بالله ربًّا وبالإسلام دينًا وبمحمد ﷺ نبيًّا (ثلاثًا)", count:3, ref:"أبو داود" },
+      { txt:"اللهم ما أصبح بي من نعمةٍ أو بأحدٍ من خلقك فمنك وحدك لا شريك لك فلك الحمد ولك الشكر (مرة)", count:1, ref:"أبو داود" },
+      { txt:"حسبي الله لا إله إلا هو عليه توكلت وهو رب العرش العظيم (سبع مرات)", count:7, ref:"أبو داود" },
+      { txt:"سبحان الله وبحمده (مائة مرة)", count:100, ref:"مسلم" },
+      { txt:"لا إله إلا الله وحده لا شريك له، له الملك وله الحمد وهو على كل شيء قدير (مائة)", count:100, ref:"البخاري" },
+      { txt:"بسم الله الذي لا يضر مع اسمه شيء في الأرض ولا في السماء وهو السميع العليم (ثلاثًا)", count:3, ref:"أبو داود" },
+      { txt:"أعوذ بكلمات الله التامات من شر ما خلق (ثلاثًا)", count:3, ref:"مسلم" },
+      { txt:"اللهم إني أسألك علماً نافعاً ورزقاً طيباً وعملاً متقبلاً (بعد الفجر)", count:1, ref:"أحمد" },
+      { txt:"اللهم عافني في بدني، اللهم عافني في سمعي، اللهم عافني في بصري (ثلاثًا)", count:3, ref:"أبو داود" },
+      { txt:"اللهم إني أعوذ بك من الكفر والفقر، وأعوذ بك من عذاب القبر (مرة)", count:1, ref:"أبو داود" },
+      { txt:"اللهم صلِّ وسلم على نبينا محمد (عشرًا)", count:10, ref:"حسن" },
+      { txt:"خواتيم الحشر: لو أنزلنا هذا القرآن... إلى آخر السورة (مرة)", count:1, ref:"حسن" }
+    ],
+    evening: [
+      { txt:"آية الكرسي (مرة)", count:1, ref:"صحيح" },
+      { txt:"الإخلاص + الفلق + الناس (×3)", count:3, ref:"أبو داود" },
+      { txt:"أمسينا وأمسى الملك لله... (مرة)", count:1, ref:"أبو داود" },
+      { txt:"رضيت بالله ربًا... (ثلاثًا)", count:3, ref:"أبو داود" },
+      { txt:"بسم الله الذي لا يضر... (ثلاثًا)", count:3, ref:"أبو داود" },
+      { txt:"أعوذ بكلمات الله التامات... (ثلاثًا)", count:3, ref:"مسلم" },
+      { txt:"سبحان الله وبحمده (مائة)", count:100, ref:"مسلم" },
+      { txt:"لا إله إلا الله وحده... (مائة)", count:100, ref:"البخاري" },
+      { txt:"حسبي الله لا إله إلا هو... (سبعًا)", count:7, ref:"أبو داود" },
+      { txt:"اللهم صلِّ وسلم على نبينا محمد (عشرًا)", count:10, ref:"حسن" },
+      { txt:"آخر آيتين من البقرة (آمن الرسول... لا يكلف الله نفسًا) (مرة)", count:1, ref:"البخاري" }
+    ],
+    afterPrayer: [
+      { txt:"أستغفر الله (ثلاثًا) ثم: اللهم أنت السلام ومنك السلام تباركت يا ذا الجلال والإكرام", count:1, ref:"مسلم" },
+      { txt:"تسبيح 33 + تحميد 33 + تكبير 34 (تمام المائة: لا إله إلا الله وحده لا شريك له...)", count:1, ref:"مسلم" },
+      { txt:"آية الكرسي بعد كل صلاة", count:1, ref:"حسن" },
+      { txt:"بعد الفجر والمغرب: اللهم أجرني من النار (سبع مرات)", count:7, ref:"أبو داود" }
+    ],
+    sleep: [
+      { txt:"باسمك اللهم أموت وأحيا", count:1, ref:"البخاري" },
+      { txt:"آية الكرسي", count:1, ref:"البخاري" },
+      { txt:"الإخلاص والفلق والناس (×3) مع النفث في الكفين ومسح الجسد", count:3, ref:"البخاري" },
+      { txt:"آخر آيتين من البقرة", count:1, ref:"البخاري" },
+      { txt:"تسبح فاطمة: 33 تسبيح + 33 تحميد + 34 تكبير", count:1, ref:"البخاري" },
+      { txt:"اللهم أسلمت نفسي إليك، وفوضت أمري إليك... (دعاء الاضطجاع)", count:1, ref:"البخاري" }
+    ],
+    home: [
+      { txt:"عند دخول البيت: بسم الله، اللهم إني أسألك خير المولج وخير المخرج... وباسم الله ولجنا وباسم الله خرجنا وعلى ربنا توكلنا", count:1, ref:"أبو داود" },
+      { txt:"عند الخروج: بسم الله، توكلت على الله، ولا حول ولا قوة إلا بالله", count:1, ref:"الترمذي" },
+      { txt:"دخول الخلاء: بسم الله، اللهم إني أعوذ بك من الخبث والخبائث", count:1, ref:"البخاري" },
+      { txt:"الخروج من الخلاء: غفرانك", count:1, ref:"الترمذي" },
+      { txt:"قبل الأكل: بسم الله. فإن نسي قال: بسم الله أوله وآخره", count:1, ref:"أبو داود" },
+      { txt:"بعد الأكل: الحمد لله الذي أطعمني هذا ورزقنيه من غير حولٍ مني ولا قوة", count:1, ref:"أبو داود" },
+      { txt:"لبس الثوب: الحمد لله الذي كساني هذا ورزقنيه...", count:1, ref:"أبو داود" },
+      { txt:"دعاء السفر/الركوب: سبحان الذي سخر لنا هذا وما كنا له مقرنين...", count:1, ref:"مسلم" }
+    ]
+  },
+
+  fr: {
+    morning: [
+      { txt:"Âyat al-Kursî (Coran 2:255)", count:1, ref:"Sahîh" },
+      { txt:"Ikhlâs + Falaq + Nâs (×3 chacune)", count:3, ref:"Abû Dâwûd" },
+      { txt:"Sayyid al-Istighfâr (Ô Allah, Tu es mon Seigneur...)", count:1, ref:"Bukhârî" },
+      { txt:"Nous entrons au matin, le royaume appartient à Allah...", count:1, ref:"Abû Dâwûd" },
+      { txt:"Je suis satisfait d’Allah comme Seigneur, de l’Islam comme religion, et de Muhammad ﷺ comme Prophète (×3)", count:3, ref:"Abû Dâwûd" },
+      { txt:"Ô Allah, tout bienfait dont je jouis ce matin provient de Toi seul... (×1)", count:1, ref:"Abû Dâwûd" },
+      { txt:"Hasbiyallâh lâ ilâha illâ Huwa... (×7)", count:7, ref:"Abû Dâwûd" },
+      { txt:"SubhânAllâh wa bihamdih (×100)", count:100, ref:"Muslim" },
+      { txt:"Lâ ilâha illâ Allâh waḥdahu lâ sharîkalahu... (×100)", count:100, ref:"Bukhârî" },
+      { txt:"Bismillâh alladhî lâ yaḍurru ma‘a-smihi shay’... (×3)", count:3, ref:"Abû Dâwûd" },
+      { txt:"Je cherche refuge dans les paroles parfaites d’Allah... (×3)", count:3, ref:"Muslim" },
+      { txt:"Ô Allah, accorde-moi un savoir utile, une subsistance licite et des œuvres acceptées (après Fajr)", count:1, ref:"Ahmad" },
+      { txt:"Ô Allah, préserve-moi dans mon corps, mon ouïe et ma vue (×3)", count:3, ref:"Abû Dâwûd" },
+      { txt:"Ô Allah, je cherche refuge auprès de Toi contre la mécréance et la pauvreté... (×1)", count:1, ref:"Abû Dâwûd" },
+      { txt:"Prière sur le Prophète ﷺ (×10)", count:10, ref:"Hasan" },
+      { txt:"Derniers versets de la sourate Al-Hashr (×1)", count:1, ref:"Hasan" }
+    ],
+    evening: [
+      { txt:"Âyat al-Kursî (×1)", count:1, ref:"Sahîh" },
+      { txt:"Ikhlâs + Falaq + Nâs (×3)", count:3, ref:"Abû Dâwûd" },
+      { txt:"Nous entrons au soir... (×1)", count:1, ref:"Abû Dâwûd" },
+      { txt:"Je suis satisfait d’Allah... (×3)", count:3, ref:"Abû Dâwûd" },
+      { txt:"Bismillâh alladhî lâ yaḍurru... (×3)", count:3, ref:"Abû Dâwûd" },
+      { txt:"Refuge dans les paroles parfaites d’Allah (×3)", count:3, ref:"Muslim" },
+      { txt:"SubhânAllâh wa bihamdih (×100)", count:100, ref:"Muslim" },
+      { txt:"Lâ ilâha illâ Allâh waḥdahu... (×100)", count:100, ref:"Bukhârî" },
+      { txt:"Hasbiyallâh... (×7)", count:7, ref:"Abû Dâwûd" },
+      { txt:"Prière sur le Prophète ﷺ (×10)", count:10, ref:"Hasan" },
+      { txt:"Deux derniers versets d’Al-Baqarah (×1)", count:1, ref:"Bukhârî" }
+    ],
+    afterPrayer: [
+      { txt:"Istighfâr (×3) puis : Allâhumma anta as-Salâm... (×1)", count:1, ref:"Muslim" },
+      { txt:"33 tasbîḥ + 33 taḥmîd + 34 takbîr (compléter 100)", count:1, ref:"Muslim" },
+      { txt:"Âyat al-Kursî après chaque prière", count:1, ref:"Hasan" },
+      { txt:"Après Fajr & Maghrib : Allâhumma ajirnî mina n-nâr (×7)", count:7, ref:"Abû Dâwûd" }
+    ],
+    sleep: [
+      { txt:"Bismika Allâhumma amûtu wa aḥyâ (×1)", count:1, ref:"Bukhârî" },
+      { txt:"Âyat al-Kursî (×1)", count:1, ref:"Bukhârî" },
+      { txt:"Ikhlâs + Falaq + Nâs (×3) avec soufflement dans les mains", count:3, ref:"Bukhârî" },
+      { txt:"Deux derniers versets d’Al-Baqarah (×1)", count:1, ref:"Bukhârî" },
+      { txt:"Tasbîḥ de Fâṭimah : 33-33-34 (×1)", count:1, ref:"Bukhârî" },
+      { txt:"Ô Allah, je me soumets à Toi... (invocation en s’allongeant)", count:1, ref:"Bukhârî" }
+    ],
+    home: [
+      { txt:"En entrant : Bismillâh... wa ‘alâ Rabbina tawakkalnâ (×1)", count:1, ref:"Abû Dâwûd" },
+      { txt:"En sortant : Bismillâh, tawakkaltu ‘alâ-Llâh, lâ ḥawla wa lâ quwwata illâ bi-Llâh (×1)", count:1, ref:"Tirmidhî" },
+      { txt:"Entrée aux toilettes : Bismillâh, Allâhumma innî a‘ûdhu bika mina l-khubthi wa l-khabâ’ith", count:1, ref:"Bukhârî" },
+      { txt:"Sortie des toilettes : Ghufrânak", count:1, ref:"Tirmidhî" },
+      { txt:"Avant de manger : Bismillâh. (Sinon : Bismillâhi awwalahu wa âkhirahu)", count:1, ref:"Abû Dâwûd" },
+      { txt:"Après le repas : Al-ḥamdu lillâh alladhî aṭ‘amanî hâdhâ...", count:1, ref:"Abû Dâwûd" },
+      { txt:"Mettre un vêtement : Al-ḥamdu lillâh alladhî kasânî hâdhâ...", count:1, ref:"Abû Dâwûd" },
+      { txt:"Voyage / conduite : Subḥânalladhî sakhkhara lanâ hâdhâ...", count:1, ref:"Muslim" }
+    ]
+  },
+
+  en: {
+    morning: [
+      { txt:"Ayat al-Kursi (2:255)", count:1, ref:"Sahih" },
+      { txt:"Ikhlas + Falaq + Nas (×3 each)", count:3, ref:"Abu Dawud" },
+      { txt:"Sayyid al-Istighfar (O Allah, You are my Lord...)", count:1, ref:"Bukhari" },
+      { txt:"We have reached the morning, and the dominion belongs to Allah...", count:1, ref:"Abu Dawud" },
+      { txt:"I am pleased with Allah as Lord, Islam as religion and Muhammad ﷺ as Prophet (×3)", count:3, ref:"Abu Dawud" },
+      { txt:"O Allah, whatever blessing I/my creation have this morning is from You alone...", count:1, ref:"Abu Dawud" },
+      { txt:"Hasbiyallāh lā ilāha illā Huwa... (×7)", count:7, ref:"Abu Dawud" },
+      { txt:"SubhanAllāh wa bihamdih (×100)", count:100, ref:"Muslim" },
+      { txt:"Lā ilāha illā Allāh waḥdahu lā sharīkalahu... (×100)", count:100, ref:"Bukhari" },
+      { txt:"In the Name of Allah with Whose Name nothing is harmed... (×3)", count:3, ref:"Abu Dawud" },
+      { txt:"I seek refuge in Allah’s perfect words from the evil He created (×3)", count:3, ref:"Muslim" },
+      { txt:"O Allah, grant me beneficial knowledge, lawful provision and accepted deeds (after Fajr)", count:1, ref:"Ahmad" },
+      { txt:"O Allah, grant me wellness in body, hearing and sight (×3)", count:3, ref:"Abu Dawud" },
+      { txt:"O Allah, I seek refuge in You from disbelief and poverty... (×1)", count:1, ref:"Abu Dawud" },
+      { txt:"Send salat upon the Prophet ﷺ (×10)", count:10, ref:"Hasan" },
+      { txt:"Last verses of Surah Al-Hashr (×1)", count:1, ref:"Hasan" }
+    ],
+    evening: [
+      { txt:"Ayat al-Kursi (×1)", count:1, ref:"Sahih" },
+      { txt:"Ikhlas + Falaq + Nas (×3)", count:3, ref:"Abu Dawud" },
+      { txt:"We have reached the evening... (×1)", count:1, ref:"Abu Dawud" },
+      { txt:"Pleased with Allah... (×3)", count:3, ref:"Abu Dawud" },
+      { txt:"In the Name of Allah with Whose Name nothing is harmed (×3)", count:3, ref:"Abu Dawud" },
+      { txt:"Refuge in Allah’s perfect words (×3)", count:3, ref:"Muslim" },
+      { txt:"SubhanAllāh wa bihamdih (×100)", count:100, ref:"Muslim" },
+      { txt:"Lā ilāha illā Allāh waḥdahu... (×100)", count:100, ref:"Bukhari" },
+      { txt:"Hasbiyallāh... (×7)", count:7, ref:"Abu Dawud" },
+      { txt:"Send salat upon the Prophet ﷺ (×10)", count:10, ref:"Hasan" },
+      { txt:"Last two verses of Al-Baqarah (×1)", count:1, ref:"Bukhari" }
+    ],
+    afterPrayer: [
+      { txt:"Astaghfirullah (×3) then: Allahumma anta as-Salam... (×1)", count:1, ref:"Muslim" },
+      { txt:"33 SubhanAllah + 33 Alhamdulillah + 34 Allahu Akbar (complete 100)", count:1, ref:"Muslim" },
+      { txt:"Ayat al-Kursi after each prayer", count:1, ref:"Hasan" },
+      { txt:"After Fajr & Maghrib: Allahumma ajirni mina n-nar (×7)", count:7, ref:"Abu Dawud" }
+    ],
+    sleep: [
+      { txt:"Bismika Allahumma amutu wa ahya (×1)", count:1, ref:"Bukhari" },
+      { txt:"Ayat al-Kursi (×1)", count:1, ref:"Bukhari" },
+      { txt:"Ikhlas + Falaq + Nas (×3) with blowing in hands", count:3, ref:"Bukhari" },
+      { txt:"Last two verses of Al-Baqarah (×1)", count:1, ref:"Bukhari" },
+      { txt:"Fatimah tasbih: 33-33-34 (×1)", count:1, ref:"Bukhari" },
+      { txt:"O Allah, I submit my soul to You... (bedtime supplication)", count:1, ref:"Bukhari" }
+    ],
+    home: [
+      { txt:"Entering home: Bismillah... wa ‘alâ Rabbinâ tawakkalnâ (×1)", count:1, ref:"Abu Dawud" },
+      { txt:"Leaving home: Bismillah, tawakkaltu ‘alâ-llâh, la hawla wa la quwwata illâ billâh", count:1, ref:"Tirmidhi" },
+      { txt:"Entering restroom: Bismillah, Allahumma innî a‘udhu bika...", count:1, ref:"Bukhari" },
+      { txt:"Leaving restroom: Ghufranak", count:1, ref:"Tirmidhi" },
+      { txt:"Before eating: Bismillah. If forgotten: Bismillāhi awwalahu wa âkhirahu", count:1, ref:"Abu Dawud" },
+      { txt:"After eating: Al-ḥamdu lillāh alladhî aṭ‘amanî hādhā...", count:1, ref:"Abu Dawud" },
+      { txt:"Wearing a garment: Al-ḥamdu lillāh alladhî kasānî hādhā...", count:1, ref:"Abu Dawud" },
+      { txt:"Travel/riding: Subhānalladhī sakhkhara lanā hādhā...", count:1, ref:"Muslim" }
+    ]
+  }
 };
 
 /* =================== Utils / Time =================== */
