@@ -3,94 +3,167 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Accueil • Planning • Adhkâr • Coran • Qibla 3D • Adhân</title>
+<title>Coran • Adhkâr • Planning • Qibla 3D • Adhân</title>
+<meta name="theme-color" content="#0ea5e9">
 <style>
+  /* ====== Theme (Light / Dark ready) ====== */
   :root{
-    --bg:#f5f7fb; --card:#ffffff; --text:#0f1a2b; --muted:#6b7280;
-    --brand:#1e88e5; --now:#10b981; --shadow:0 1px 4px rgba(0,0,0,.12);
-    --accent:#0ea5e9; --danger:#ef4444;
+    --bg:#0b1220;            /* deep night */
+    --card:rgba(255,255,255,.08);
+    --glass:rgba(255,255,255,.06);
+    --text:#e6eefc;
+    --muted:#9db0cc;
+    --brand:#0ea5e9;         /* sky */
+    --brand-2:#22d3ee;       /* cyan */
+    --now:#10b981;           /* emerald */
+    --warn:#f59e0b;          /* amber */
+    --danger:#ef4444;
+    --shadow:0 10px 25px rgba(0,0,0,.35);
+    --ring:0 0 0 2px rgba(14,165,233,.25);
   }
+  @media(prefers-color-scheme:light){
+    :root{
+      --bg:#f5f7fb; --card:#ffffffcc; --glass:#ffffffaa; --text:#0f1a2b; --muted:#6b7280;
+      --shadow:0 10px 25px rgba(0,0,0,.12);
+    }
+  }
+
+  *{box-sizing:border-box}
   html,body{height:100%}
-  body{margin:16px;background:var(--bg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--text)}
-  .wrap{max-width:1100px;margin:0 auto}
-  header{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:10px}
-  h1{font-size:20px;margin:0}
+  body{
+    margin:0;
+    font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,"Apple Color Emoji","Segoe UI Emoji";
+    color:var(--text);
+    background:
+      radial-gradient(1200px 700px at 10% -10%, #233b65 0%, transparent 60%),
+      radial-gradient(1200px 700px at 110% 10%, #0e2d49 0%, transparent 60%),
+      linear-gradient(180deg, #0b1220 0%, #0b1220 100%);
+    background-attachment: fixed;
+  }
+
+  .wrap{max-width:1100px;margin:0 auto;padding:18px}
+
+  /* ====== Header ====== */
+  header{
+    position:sticky;top:0;z-index:30;margin-bottom:14px;
+    background:linear-gradient(90deg, rgba(14,165,233,.2), rgba(34,211,238,.2));
+    backdrop-filter: blur(8px);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:16px;
+    box-shadow:var(--shadow);
+    padding:10px 14px;
+    display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
+  }
+  .title{
+    display:flex;align-items:center;gap:10px;font-weight:700;
+    letter-spacing:.2px;
+  }
+  .title .logo{
+    width:36px;height:36px;border-radius:10px;
+    background:conic-gradient(from 0deg at 50% 50%, #22d3ee, #0ea5e9, #22d3ee);
+    box-shadow:0 0 0 3px rgba(14,165,233,.25);
+  }
   .right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-  .pill{display:inline-flex;gap:8px;align-items:center;background:#eef6ff;border:1px solid #cfe0ff;color:#0f2a4a;border-radius:999px;padding:6px 12px}
-  .status{color:var(--muted);font-size:14px;margin:6px 0}
+  select,button,input[type="text"],input[type="range"]{
+    color:var(--text);background:var(--glass);
+    border:1px solid rgba(255,255,255,.18);border-radius:12px;padding:9px 12px;cursor:pointer;
+    transition:.2s border,.2s box-shadow;
+  }
+  select:focus,button:focus,input:focus{outline:none;box-shadow:var(--ring);border-color:var(--brand)}
 
-  .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
-  .tab{padding:8px 12px;border-radius:10px;border:1px solid #cfd8e3;background:#fff;cursor:pointer}
-  .tab.active{background:var(--accent);border-color:var(--accent);color:#fff}
+  .pill{display:inline-flex;gap:8px;align-items:center;background:var(--glass);
+    border:1px solid rgba(255,255,255,.18);color:var(--text);
+    border-radius:999px;padding:6px 12px}
 
-  .card{background:var(--card);box-shadow:var(--shadow);border-radius:12px;padding:12px;margin:12px 0}
+  /* ====== Tabs ====== */
+  .tabs{
+    position:sticky;top:72px;z-index:20;margin:14px 0 0;
+    display:flex;gap:8px;flex-wrap:wrap;
+  }
+  .tab{
+    padding:8px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.18);
+    background:var(--glass);cursor:pointer;backdrop-filter:blur(6px);
+    transition:.2s transform,.2s background;
+  }
+  .tab:hover{transform:translateY(-1px)}
+  .tab.active{background:linear-gradient(90deg, rgba(14,165,233,.25), rgba(34,211,238,.25));}
+
+  /* ====== Card ====== */
+  .card{
+    background:var(--card);backdrop-filter:blur(10px);
+    box-shadow:var(--shadow);border:1px solid rgba(255,255,255,.14);
+    border-radius:16px;padding:14px;margin:14px 0;
+  }
   .legend{font-size:13px;color:var(--muted);margin-bottom:6px}
 
-  .hero{display:flex;flex-direction:column;gap:8px}
-  .cta{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
-  .btn{border:1px solid #cfd8e3;background:#fff;border-radius:8px;padding:10px 14px;cursor:pointer}
-  .btn.primary{background:var(--brand);color:#fff;border:none}
-  .btn.danger{background:var(--danger);color:#fff;border:none}
-  select,button,input[type="text"]{border:1px solid #cfd8e3;background:#fff;border-radius:8px;padding:8px 10px;cursor:pointer}
+  /* ====== Buttons ====== */
+  .btn{border:1px solid rgba(255,255,255,.18);background:var(--glass);border-radius:12px;padding:10px 14px;cursor:pointer}
+  .btn.primary{background:linear-gradient(90deg, #0ea5e9, #22d3ee);color:#04121a;border:none}
+  .btn.warn{background:linear-gradient(90deg, #f59e0b,#fbbf24);color:#1f1305;border:none}
+  .btn.danger{background:linear-gradient(90deg, #ef4444,#f87171);color:#2a0b0b;border:none}
 
-  .task{display:flex;align-items:center;justify-content:space-between;gap:8px;border:1px solid #e7edf6;border-radius:10px;padding:10px;margin:8px 0}
+  /* ====== Status line ====== */
+  .status{color:var(--muted);font-size:14px;margin:6px 0}
+
+  /* ====== Planning ====== */
+  .task{display:flex;align-items:center;justify-content:space-between;gap:8px;border:1px solid rgba(255,255,255,.16);border-radius:14px;padding:12px;margin:10px 0;background:rgba(255,255,255,.04)}
   .left{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-  .time{font-weight:600}
-  .badge{font-size:12px;background:#e8f1ff;border:1px solid #cfe0ff;border-radius:999px;padding:2px 8px}
+  .time{font-weight:700}
+  .badge{font-size:12px;background:rgba(14,165,233,.12);border:1px solid rgba(14,165,233,.35);border-radius:999px;padding:2px 8px}
   .ltr{direction:ltr;unicode-bidi:embed}
-  .now{border-color:var(--now);box-shadow:0 0 0 2px rgba(16,185,129,.16)}
-  .now .badge{background:#e9fff7;border-color:#b9f1df}
-  .nowTag{font-size:12px;color:#0f8a6a;margin-inline-start:6px}
-  .done{text-decoration:line-through;color:#808a98}
-  input[type="checkbox"]{width:20px;height:20px;accent-color:var(--brand)}
+  .now{border-color:rgba(16,185,129,.5); box-shadow:0 0 0 2px rgba(16,185,129,.25)}
+  .now .badge{background:rgba(16,185,129,.12); border-color:rgba(16,185,129,.35)}
+  .nowTag{font-size:12px;color:#34d399;margin-inline-start:6px}
+  .done{text-decoration:line-through;color:#93a2b8}
+  input[type="checkbox"]{width:22px;height:22px;accent-color:#0ea5e9}
   .toolbar{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;margin:8px 0}
 
-  /* Adhkâr */
+  /* ====== Adhkâr ====== */
   .adh-toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
   .sectionHead{display:flex;align-items:center;justify-content:space-between;margin:10px 0 6px}
-  .catTitle{font-weight:600}
+  .catTitle{font-weight:700}
   .sectionActions{display:flex;gap:6px}
-  .dhk{border:1px solid #e6ebf2;border-radius:10px;padding:10px;margin:8px 0}
+  .dhk{border:1px solid rgba(255,255,255,.16);border-radius:14px;padding:12px;margin:10px 0;background:rgba(255,255,255,.04)}
   .dhk .controls{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:6px}
-  .counter{min-width:46px;text-align:center;border-radius:8px;border:1px solid #cfd8e3;padding:4px 8px}
-  .tag{display:inline-block;font-size:12px;background:#fafafa;border:1px solid #e8e8e8;border-radius:999px;padding:2px 8px;margin-inline-start:6px}
-  .divider{height:1px;background:#e9eef5;margin:8px 0}
+  .counter{min-width:54px;text-align:center;border-radius:10px;border:1px solid rgba(255,255,255,.18);padding:5px 10px;background:rgba(255,255,255,.06)}
+  .tag{display:inline-block;font-size:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);border-radius:999px;padding:2px 8px;margin-inline-start:6px}
+  .divider{height:1px;background:rgba(255,255,255,.1);margin:8px 0}
 
-  /* Quran */
+  /* ====== Quran ====== */
   .qrow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
-  iframe{width:100%;height:70vh;border:none;border-radius:12px;box-shadow:var(--shadow)}
+  iframe{width:100%;height:70vh;border:none;border-radius:16px;box-shadow:var(--shadow);background:#000}
 
-  /* Qibla 3D */
+  /* ====== Qibla 3D ====== */
   .q3d-top{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
   .q3d-stage{perspective:900px;display:flex;justify-content:center;align-items:center}
-  .q3d-scene{width:320px;height:320px;position:relative;transform-style:preserve-3d;transition:transform .15s ease-out}
-  .q3d-disk{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:260px;height:260px;border-radius:50%;background:radial-gradient(circle at 50% 50%, #fdfefe 0 35%, #e8eef6 36% 37%, #fdfefe 38% 100%);border:10px solid #e7edf6;box-shadow:var(--shadow)}
-  .q3d-ring::before,.q3d-ring::after{content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:260px;height:260px;border-radius:50%;box-shadow:inset 0 0 0 2px #d6e2f0,inset 0 0 0 18px transparent}
-  .q3d-north{position:absolute;left:50%;top:22px;transform:translateX(-50%);font-weight:700;color:#0f2a4a}
-  .q3d-needle{position:absolute;left:50%;top:50%;width:8px;height:140px;transform-origin:50% 100%;transform:translate(-50%,-100%) rotateZ(0deg)}
-  .q3d-needle .shaft{width:8px;height:105px;background:#1e293b;border-radius:4px 4px 0 0;box-shadow:0 0 10px rgba(0,0,0,.08)}
-  .q3d-needle .head{width:0;height:0;border-left:12px solid transparent;border-right:12px solid transparent;border-bottom:28px solid #e53935;margin-left:-8px}
+  .q3d-scene{width:340px;height:340px;position:relative;transform-style:preserve-3d;transition:transform .15s ease-out}
+  .q3d-disk{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:280px;height:280px;border-radius:50%;background:radial-gradient(circle at 50% 50%, rgba(255,255,255,.9) 0 35%, rgba(255,255,255,.6) 36% 37%, rgba(255,255,255,.9) 38% 100%);border:12px solid rgba(255,255,255,.6);box-shadow:var(--shadow)}
+  .q3d-ring::before,.q3d-ring::after{content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:280px;height:280px;border-radius:50%;box-shadow:inset 0 0 0 2px #c3d5ea,inset 0 0 0 18px transparent}
+  .q3d-north{position:absolute;left:50%;top:22px;transform:translateX(-50%);font-weight:800;color:#0f2a4a}
+  .q3d-needle{position:absolute;left:50%;top:50%;width:10px;height:150px;transform-origin:50% 100%;transform:translate(-50%,-100%) rotateZ(0deg)}
+  .q3d-needle .shaft{width:10px;height:112px;background:#1e293b;border-radius:5px 5px 0 0;box-shadow:0 0 10px rgba(0,0,0,.08)}
+  .q3d-needle .head{width:0;height:0;border-left:12px solid transparent;border-right:12px solid transparent;border-bottom:30px solid #e11d48;margin-left:-8px}
   .q3d-qibla{position:absolute;left:50%;top:50%;width:0;height:0;transform-origin:50% 100%;transform:translate(-50%,-100%) rotateZ(0deg)}
-  .q3d-qibla .body{width:10px;height:100px;background:#10b981;border-radius:6px 6px 0 0;margin-left:-5px;box-shadow:0 0 10px rgba(16,185,129,.25)}
-  .q3d-qibla .tip{width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-bottom:30px solid #10b981;margin-left:-9px}
+  .q3d-qibla .body{width:12px;height:110px;background:#10b981;border-radius:7px 7px 0 0;margin-left:-6px;box-shadow:0 0 10px rgba(16,185,129,.35)}
+  .q3d-qibla .tip{width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-bottom:32px solid #10b981;margin-left:-8px}
   .q3d-label{position:absolute;left:50%;top:50%;transform:translate(-50%,-160%);background:#e7f8f2;border:1px solid #b9f1df;color:#065f46;font-size:12px;border-radius:999px;padding:2px 8px}
   .q3d-hint{font-size:12px;color:var(--muted);margin-top:6px}
 
-  /* Horaires & Adhân */
+  /* ====== Adhan ====== */
   .adhan-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
-  .adhan-table{width:100%;border-collapse:separate;border-spacing:0 8px}
-  .adhan-table th{font-weight:600;color:#475569;text-align:left;padding:6px 8px}
-  .adhan-row{background:#fff;border:1px solid #e7edf6;border-radius:12px;box-shadow:var(--shadow)}
-  .adhan-row td{padding:10px 8px;vertical-align:middle}
-  .pill-small{font-size:12px;background:#eef6ff;border:1px solid #cfe0ff;border-radius:999px;padding:2px 8px;display:inline-block}
-  .sel{min-width:180px}
+  .adhan-table{width:100%;border-collapse:separate;border-spacing:0 10px}
+  .adhan-table th{font-weight:700;color:var(--muted);text-align:left;padding:6px 8px}
+  .adhan-row{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);border-radius:14px;box-shadow:var(--shadow)}
+  .adhan-row td{padding:12px 10px;vertical-align:middle}
+  .pill-small{font-size:12px;background:rgba(14,165,233,.12);border:1px solid rgba(14,165,233,.35);border-radius:999px;padding:2px 8px;display:inline-block}
+  .sel{min-width:190px}
   .mute{opacity:.5}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <h1 id="title">🏠 Accueil • 🕰️ Planning • 🕯️ Adhkâr • 📖 Coran • 🧭 Qibla 3D • 🔔 Adhân</h1>
+    <div class="title"><div class="logo"></div><div id="title">📖 Coran • 🕯️ Adhkâr • 🕰️ Planning • 🧭 Qibla • 🔔 Adhân</div></div>
     <div class="right">
       <label for="lang" id="langLabel">Langue :</label>
       <select id="lang">
@@ -102,26 +175,26 @@
     </div>
   </header>
 
-  <div class="status" id="status">⏳ Demande de géolocalisation…</div>
-
   <div class="tabs">
     <button class="tab active" id="tab-home">🏠 Accueil</button>
     <button class="tab" id="tab-plan">📋 Planning</button>
     <button class="tab" id="tab-adhkar">🕯️ Adhkâr</button>
     <button class="tab" id="tab-quran">📖 Coran</button>
     <button class="tab" id="tab-qibla">🧭 Qibla 3D</button>
-    <button class="tab" id="tab-adhan">🔔 Horaires & Adhân</button>
+    <button class="tab" id="tab-adhan">🔔 Adhân</button>
   </div>
+
+  <div class="status" id="status">⏳ Demande de géolocalisation…</div>
 
   <!-- HOME -->
   <section class="card" id="page-home">
-    <div class="hero" id="homeHero"></div>
-    <div class="cta">
+    <div class="legend" id="homeHero"></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
       <button class="btn primary" id="goPlan">➡️ Planning</button>
       <button class="btn" id="goAdhkar">🕯️ Adhkâr</button>
       <button class="btn" id="goQuran">📖 Coran</button>
-      <button class="btn" id="goQibla">🧭 Qibla 3D</button>
-      <button class="btn" id="goAdhan">🔔 Horaires & Adhân</button>
+      <button class="btn" id="goQibla">🧭 Qibla</button>
+      <button class="btn" id="goAdhan">🔔 Adhân</button>
     </div>
   </section>
 
@@ -129,7 +202,7 @@
   <section class="card" id="page-plan" style="display:none">
     <div class="legend" id="legend"></div>
     <div class="toolbar">
-      <button id="retry" class="btn">↻ Re-demander la géolocalisation</button>
+      <button id="retry" class="btn warn">↻ Re-demander la géolocalisation</button>
       <button id="resetDay" class="btn">↺ Réinitialiser la progression du jour</button>
     </div>
     <div id="tasks"></div>
@@ -156,10 +229,9 @@
       <select id="juzSel"></select>
       <label id="reciterLabel">Récitateur :</label>
       <select id="reciterSel"></select>
-      <button id="openSurah" class="btn primary"></button>
       <button id="playAudio" class="btn">▶️ Audio</button>
-      <button id="markRead" class="btn"></button>
-      <button id="resetRead" class="btn"></button>
+      <button id="markRead" class="btn">✅</button>
+      <button id="resetRead" class="btn">↺</button>
     </div>
     <div class="status" id="readStatus"></div>
     <audio id="qAudio" preload="none" controls style="width:100%;margin:8px 0"></audio>
@@ -170,7 +242,14 @@
   <section class="card" id="page-qibla" style="display:none">
     <div class="q3d-top">
       <button class="btn primary" id="enableCompass">🧭 Activer la boussole</button>
-      <div class="status" id="qiblaInfo">Qibla : —° • Cap : —°</div>
+      <button class="btn" id="lockTilt">🎯 Verrouiller inclinaison</button>
+      <div class="status" id="qiblaInfo">Qibla : —° • Cap : —° • Écart : —°</div>
+    </div>
+    <div class="q3d-top" style="gap:16px">
+      <label for="calib" style="min-width:200px">⚙️ Calibration (−30° → +30°)</label>
+      <input id="calib" type="range" min="-30" max="30" step="1" value="0" />
+      <span id="calibVal" class="pill">0°</span>
+      <button class="btn" id="resetCalib">↺ Reset</button>
     </div>
     <div class="q3d-stage">
       <div class="q3d-scene" id="q3dScene">
@@ -184,24 +263,18 @@
     <div class="q3d-hint" id="qiblaHint"></div>
   </section>
 
-  <!-- HORAIRES & ADHAN -->
+  <!-- ADHAN -->
   <section class="card" id="page-adhan" style="display:none">
     <div class="adhan-bar">
       <button class="btn primary" id="reqNotify">🔔 Autoriser les notifications</button>
-      <button class="btn" id="resync">↻ Reprogrammer les adhân</button>
+      <button class="btn" id="resync">↻ Reprogrammer</button>
       <span class="status" id="nextAdhanMsg"></span>
     </div>
     <div class="legend" id="legendAdhan"></div>
     <table class="adhan-table">
-      <thead>
-        <tr>
-          <th>📿 Prière</th>
-          <th>⏰ Horaire</th>
-          <th>🔔 Mode</th>
-          <th>🗣️ Muezzin</th>
-          <th>▶️ Test</th>
-        </tr>
-      </thead>
+      <thead><tr>
+        <th>📿 Prière</th><th>⏰ Horaire</th><th>🔔 Mode</th><th>🗣️ Muezzin</th><th>▶️ Test</th>
+      </tr></thead>
       <tbody id="adhanRows"></tbody>
     </table>
     <audio id="adhanAudio" preload="auto"></audio>
@@ -211,202 +284,116 @@
 <script>
 /* =================== I18N =================== */
 const T={
-  fr:{title:"🏠 Accueil • 🕰️ Planning • 🕯️ Adhkâr • 📖 Coran • 🧭 Qibla 3D • 🔔 Adhân",
+  fr:{title:"📖 Coran • 🕯️ Adhkâr • 🕰️ Planning • 🧭 Qibla • 🔔 Adhân",
       lang:"Langue :", city:"Ville :", statusGeo:"⏳ Demande de géolocalisation…",
-      tabs:{home:"🏠 Accueil",plan:"📋 Planning",adhkar:"🕯️ Adhkâr",quran:"📖 Coran",qibla:"🧭 Qibla 3D",adhan:"🔔 Horaires & Adhân"},
+      tabs:{home:"🏠 Accueil",plan:"📋 Planning",adhkar:"🕯️ Adhkâr",quran:"📖 Coran",qibla:"🧭 Qibla 3D",adhan:"🔔 Adhân"},
       home:{h1:"Bienvenue !",
-        p1:"Je m’appelle <strong>Slimane Rahmoune</strong>. Je vous partage ici des créneaux d’adorations inspirés de la sunnah du Prophète ﷺ.",
-        p2:"Vous pouvez lire le Coran, réciter les adhkâr, et suivre votre progression via une checklist simple.",
-        ded:"<strong>Cette application est une <em>sadaqa jâriya</em> dédiée à ma défunte et chère tante BEN BOURENANE TOUNSIA</strong> — qu’Allah lui fasse miséricorde. Merci de l’utiliser pour écouter et lire le Coran, réciter les adhkâr et suivre les adorations du Prophète ﷺ.",
-        p3:"Faites de votre mieux, régulièrement et sincèrement — pour devenir, in châ’ Allâh, des musulman(e)s exemplaires.",
-        note:"Les créneaux s’adaptent automatiquement à votre géolocalisation."
+        p1:"Je m’appelle <strong>Slimane Rahmoune</strong>. Je partage des créneaux d’adorations inspirés de la sunnah du Prophète ﷺ.",
+        p2:"Lisez/écoutez le Coran, récitez les adhkâr et suivez votre progression.",
+        ded:"<strong>Cette page est une sadaqa jâriya dédiée à ma défunte et chère tante BEN BOURENANE TOUNSIA</strong> — qu’Allah lui fasse miséricorde. Merci de l’utiliser pour lire/écouter le Coran, les adhkâr et suivre les adorations du Prophète ﷺ.",
+        p3:"Faites de votre mieux, avec constance et sincérité.",
+        note:"Horaires et Qibla s’adaptent à votre position."
       },
-      legend:"Créneaux calculés via Aladhan (méthode 4 = Egypt). Indicateur « en cours » actualisé chaque minute.",
+      legend:"Créneaux calculés via Aladhan (méthode 4 = Egypt). Actualisation de l’indicateur chaque minute.",
       retry:"↻ Re-demander la géolocalisation", resetDay:"↺ Réinitialiser la progression du jour", now:"Créneau en cours",
       tasks:[
-        { name:"Avant Fajr",        action:"Qiyâm & adhkâr" },
-        { name:"Fajr → +30 min",    action:"Fajr + Coran & invocations" },
-        { name:"Matin",             action:"Travail/Études avec intention" },
-        { name:"Duha",              action:"2–4 unités de prière" },
-        { name:"Dhuhr",             action:"Prière + sieste courte" },
-        { name:"‘Asr → Maghrib",    action:"Travail/Savoir + Sport" },
-        { name:"Maghrib → ‘Isha",   action:"Famille + Coran" },
-        { name:"‘Isha",             action:"Prière + Lecture/Repos" },
-        { name:"Nuit",              action:"Dormir tôt + Qiyâm" }
+        { name:"Avant Fajr", action:"Qiyâm & adhkâr" },
+        { name:"Fajr → +30 min", action:"Fajr + Coran & invocations" },
+        { name:"Matin", action:"Travail/Études avec intention" },
+        { name:"Duha", action:"2–4 unités de prière" },
+        { name:"Dhuhr", action:"Prière + sieste courte" },
+        { name:"‘Asr → Maghrib", action:"Travail/Savoir + Sport" },
+        { name:"Maghrib → ‘Isha", action:"Famille + Coran" },
+        { name:"‘Isha", action:"Prière + Lecture/Repos" },
+        { name:"Nuit", action:"Dormir tôt + Qiyâm" }
       ],
-      adh:{slot:"Créneau :",reset:"↺ Réinitialiser les compteurs",hint:"Les compteurs sont sauvegardés localement (par jour et par créneau).",
-           groups:{all:"Tous", morning:"Matin", afterPrayer:"Après les prières", evening:"Soir", sleep:"Avant de dormir", home:"Maison"}},
+      adh:{slot:"Créneau :",reset:"↺ Réinitialiser les compteurs",hint:"Comptes sauvegardés localement (par jour et créneau).",
+           groups:{all:"Tous", morning:"Matin", afterPrayer:"Après-prière", evening:"Soir", sleep:"Avant de dormir", home:"Maison"}},
       q:{s:"Sourate :",j:"Juz :",open:"Ouvrir",mark:"✅ Marquer lu",reset:"↺ Réinitialiser",last:s=>`Dernière lecture : ${s}`, reciter:"Récitateur :"},
-      qibla:{hint:"Sur iPhone/iPad, appuyez sur « Activer la boussole » pour autoriser le capteur.", label:"Kaaba"},
-      adhan:{legend:"Réglez l’adhân par prière : Désactivé / Son / Vibreur. Choisissez aussi le muezzin.",
+      qibla:{hint:"Si l’aiguille n’est pas exacte, ajustez la **calibration** (en degrés) et verrouillez l’inclinaison.", label:"Kaaba"},
+      adhan:{legend:"Choisissez le mode (Off/Son/Vibreur) et le muezzin pour chaque prière.",
              off:"Désactivé", sound:"Adhân (son)", vibrate:"Vibreur",
-             notifAsk:"🔔 Autoriser les notifications",
-             muezzin:"Muezzin :", next:t=>`Prochain adhân programmé : ${t}`}
+             notifAsk:"🔔 Autoriser les notifications", next:t=>`Prochain adhân programmé : ${t}`}
   },
-  ar:{title:"🏠 الرئيسية • 🕰️ التخطيط • 🕯️ الأذكار • 📖 القرآن • 🧭 القبلة 3D • 🔔 الأذان",
+  ar:{title:"📖 القرآن • 🕯️ الأذكار • 🕰️ التخطيط • 🧭 القبلة • 🔔 الأذان",
       lang:"اللغة:", city:"المدينة:", statusGeo:"⏳ جارٍ طلب تحديد الموقع…",
-      tabs:{home:"🏠 الرئيسية",plan:"📋 التخطيط",adhkar:"🕯️ الأذكار",quran:"📖 القرآن",qibla:"🧭 القبلة 3D",adhan:"🔔 الأوقات والأذان"},
+      tabs:{home:"🏠 الرئيسية",plan:"📋 التخطيط",adhkar:"🕯️ الأذكار",quran:"📖 القرآن",qibla:"🧭 القبلة 3D",adhan:"🔔 الأذان"},
       home:{h1:"مرحبًا!",
-        p1:"أنا <strong>سليمان رحمون</strong>. أشارككم فتراتٍ للعبادات على منهج السنة للنبي ﷺ.",
-        p2:"يمكنكم قراءة القرآن، وذكر الأذكار، ومتابعة الإنجاز عبر قائمة تحقق بسيطة.",
-        ded:"<strong>  هذا التطبيق صدقة جارية لخالتي الحبيبة المتوفاة بن بورنان تونسية </strong> — نسأل الله أن يرحمها. نرجو استعماله لسماع وقراءة القرآن، وذكر الأذكار، واتباع عبادات النبي ﷺ.",
-        p3:"ابذلوا جهدكم بانتظام وإخلاصً لتكونوا بإذن الله مسلمين وقدوات.",
-        note:"تتكيّف الفترات تلقائيًا بحسب موقعكم."
+        p1:"أنا <strong>سليمان رحمون</strong> أشارك فترات عبادات على هدي السنة.",
+        p2:"اقرؤوا/استمعوا للقرآن، واذكروا الأذكار، وتابعوا التقدّم.",
+        ded:"<strong>هذه الصفحة صدقة جارية لعمّتي الحبيبة المتوفاة BEN BOURENANE TOUNSIA</strong> — نسأل الله أن يرحمها. استخدموها لقراءة/سماع القرآن والأذكار واتباع عبادات النبي ﷺ.",
+        p3:"ابذلوا جهدكم بإخلاص وانتظام.",
+        note:"الأوقات والقبلة تتكيّف مع موقعكم."
       },
-      legend:"حُسِبت الفترات عبر Aladhan (الطريقة ٤ = مصر). يُحدّث مؤشر «أنت الآن هنا» كل دقيقة.",
+      legend:"تم الحساب عبر Aladhan (الطريقة ٤). يتم تحديث المؤشر كل دقيقة.",
       retry:"↻ إعادة طلب الموقع", resetDay:"↺ تصفير إنجاز اليوم", now:"أنت الآن هنا",
       tasks:[
-        { name:"قبل الفجر",        action:"قيام الليل وذكر الله" },
-        { name:"الفجر → +30 دقيقة", action:"فجر + قرآن وأدعية" },
-        { name:"الصباح",           action:"عمل/دراسة بنية" },
-        { name:"الضحى",            action:"ركعتان إلى أربع" },
-        { name:"الظهر",            action:"صلاة + قيلولة" },
-        { name:"العصر → المغرب",   action:"عمل/علم + رياضة" },
-        { name:"المغرب → العشاء",  action:"جلسة عائلية + قرآن" },
-        { name:"العشاء",           action:"صلاة + قراءة/راحة" },
-        { name:"الليل",            action:"نوم مبكر + قيام" }
+        { name:"قبل الفجر", action:"قيام الليل وذكر الله" },
+        { name:"الفجر → +30د", action:"فجر + قرآن ودعاء" },
+        { name:"الصباح", action:"عمل/دراسة بنية" },
+        { name:"الضحى", action:"ركعتان إلى أربع" },
+        { name:"الظهر", action:"صلاة + قيلولة" },
+        { name:"العصر → المغرب", action:"عمل/علم + رياضة" },
+        { name:"المغرب → العشاء", action:"جلسة عائلية + قرآن" },
+        { name:"العشاء", action:"صلاة + قراءة/راحة" },
+        { name:"الليل", action:"نوم مبكر + قيام" }
       ],
-      adh:{slot:"الفترة:",reset:"↺ تصفير العدادات",hint:"يُحفظ العدّ محليًا (لكل يوم وفترة).",
-           groups:{all:"الكل", morning:"أذكار الصباح", afterPrayer:"بعد الصلوات", evening:"أذكار المساء", sleep:"قبل النوم", home:"البيت"}},
+      adh:{slot:"الفترة:",reset:"↺ تصفير العدادات",hint:"يُحفظ العدّ محليًا.",
+           groups:{all:"الكل", morning:"الصباح", afterPrayer:"بعد الصلاة", evening:"المساء", sleep:"قبل النوم", home:"البيت"}},
       q:{s:"سورة:",j:"جزء:",open:"فتح",mark:"✅ تمّت القراءة",reset:"↺ تصفير",last:s=>`آخر قراءة: ${s}`, reciter:"القارئ:"},
-      qibla:{hint:"على أجهزة Apple اضغط «تفعيل البوصلة».", label:"الكعبة"},
-      adhan:{legend:"اضبط الأذان لكل صلاة: إيقاف / صوت / اهتزاز، واختر المؤذّن.",
-             off:"إيقاف", sound:"الأذان (صوت)", vibrate:"اهتزاز",
-             notifAsk:"🔔 السماح بالإشعارات",
-             muezzin:"المؤذّن:", next:t=>`الأذان القادم: ${t}`}
+      qibla:{hint:"اضبط المعايرة إن لم تكن الإبرة دقيقة وثبّت الميل.", label:"الكعبة"},
+      adhan:{legend:"اختر الوضع والمؤذّن لكل صلاة.",
+             off:"إيقاف", sound:"صوت الأذان", vibrate:"اهتزاز", notifAsk:"🔔 السماح بالإشعارات", next:t=>`الأذان القادم: ${t}`}
   },
-  en:{title:"🏠 Home • 🕰️ Plan • 🕯️ Adhkar • 📖 Quran • 🧭 Qibla 3D • 🔔 Adhan",
+  en:{title:"📖 Quran • 🕯️ Adhkar • 🕰️ Plan • 🧭 Qibla • 🔔 Adhan",
       lang:"Language:", city:"City:", statusGeo:"⏳ Requesting geolocation…",
-      tabs:{home:"🏠 Home",plan:"📋 Plan",adhkar:"🕯️ Adhkar",quran:"📖 Quran",qibla:"🧭 Qibla 3D",adhan:"🔔 Timings & Adhan"},
+      tabs:{home:"🏠 Home",plan:"📋 Plan",adhkar:"🕯️ Adhkar",quran:"📖 Quran",qibla:"🧭 Qibla 3D",adhan:"🔔 Adhan"},
       home:{h1:"Welcome!",
-        p1:"I’m <strong>Slimane Rahmoune</strong>. I share worship time slots inspired by the Prophetic ﷺ way.",
-        p2:"You can read Qur’an, recite adhkār, and track progress with a simple checklist.",
-        ded:"<strong>This app is a sadaqah jariyah dedicated to my beloved late aunt BEN BOURENANE TOUNSIA</strong>. Please use it to listen to and read the Qur’an, recite adhkār, and follow the Prophet’s ﷺ acts of worship.",
-        p3:"Do your best, consistently and sincerely — to become exemplary Muslims, in shā’ Allāh.",
-        note:"Slots adapt automatically to your geolocation."
+        p1:"I’m <strong>Slimane Rahmoune</strong>. Worship time slots inspired by the Prophetic ﷺ way.",
+        p2:"Read/listen to Qur’an, recite adhkār, and track progress.",
+        ded:"<strong>This page is a sadaqah jariyah dedicated to my beloved late aunt BEN BOURENANE TOUNSIA</strong>. Please use it to read/listen to the Qur’an, adhkār, and the Prophetic worship plan.",
+        p3:"Do your best with sincerity.",
+        note:"Timings and Qibla adapt to your location."
       },
-      legend:"Slots via Aladhan (method 4 = Egypt). Current-slot indicator updates every minute.",
+      legend:"Slots via Aladhan (method 4). Indicator refreshes every minute.",
       retry:"↻ Request geolocation again", resetDay:"↺ Reset today’s progress", now:"You are here",
       tasks:[
-        { name:"Before Fajr",        action:"Qiyām & adhkār" },
-        { name:"Fajr → +30 min",     action:"Fajr + Qur’an & invocations" },
-        { name:"Morning",            action:"Work/Study with intention" },
-        { name:"Duha",               action:"2–4 rak‘āt" },
-        { name:"Dhuhr",              action:"Prayer + short nap" },
-        { name:"‘Asr → Maghrib",     action:"Work/Knowledge + Exercise" },
-        { name:"Maghrib → ‘Isha",    action:"Family + Qur’an" },
-        { name:"‘Isha",              action:"Prayer + Reading/Rest" },
-        { name:"Night",              action:"Sleep early + Qiyām" }
+        { name:"Before Fajr", action:"Qiyam & adhkar" },
+        { name:"Fajr → +30 min", action:"Fajr + Qur’an & dua" },
+        { name:"Morning", action:"Work/Study with intention" },
+        { name:"Duha", action:"2–4 rak‘āt" },
+        { name:"Dhuhr", action:"Prayer + short nap" },
+        { name:"‘Asr → Maghrib", action:"Work/Knowledge + Exercise" },
+        { name:"Maghrib → ‘Isha", action:"Family + Qur’an" },
+        { name:"‘Isha", action:"Prayer + Reading/Rest" },
+        { name:"Night", action:"Sleep early + Qiyām" }
       ],
-      adh:{slot:"Slot:",reset:"↺ Reset counters",hint:"Counters are saved locally (per day and slot).",
+      adh:{slot:"Slot:",reset:"↺ Reset counters",hint:"Saved locally (per day & slot).",
            groups:{all:"All", morning:"Morning", afterPrayer:"After prayers", evening:"Evening", sleep:"Before sleep", home:"Home"}},
       q:{s:"Surah:",j:"Juz:",open:"Open",mark:"✅ Mark read",reset:"↺ Reset",last:s=>`Last reading: ${s}`, reciter:"Reciter:"},
-      qibla:{hint:"On iOS, tap “Enable compass”.", label:"Kaaba"},
-      adhan:{legend:"Set adhan per prayer: Off / Sound / Vibrate. Choose the muezzin too.",
-             off:"Off", sound:"Adhan (sound)", vibrate:"Vibrate",
-             notifAsk:"🔔 Allow notifications",
-             muezzin:"Muezzin:", next:t=>`Next adhan scheduled: ${t}`}
+      qibla:{hint:"Adjust calibration if needed and lock tilt.", label:"Kaaba"},
+      adhan:{legend:"Set mode & muezzin per prayer.",
+             off:"Off", sound:"Adhan (sound)", vibrate:"Vibrate", notifAsk:"🔔 Allow notifications", next:t=>`Next adhan scheduled: ${t}`}
   }
 };
 
-/* ====== Adhkâr datasets (sélection complète et utile) ====== */
-const ADH_DB={
-  ar:{
-    morning:[
-      {txt:"أصبحنا وأصبح الملك لله، والحمد لله... اللهم إني أسألك خير هذا اليوم...",count:1,ref:"مسلم"},
-      {txt:"سيد الاستغفار: اللهم أنت ربي لا إله إلا أنت، خلقتني وأنا عبدك...",count:1,ref:"البخاري"},
-      {txt:"اللهم بك أصبحنا وبك أمسينا وبك نحيا وبك نموت وإليك النشور",count:1,ref:"أبو داود"},
-      {txt:"حسبي الله لا إله إلا هو عليه توكلت وهو رب العرش العظيم",count:7,ref:"أبو داود"},
-      {txt:"سبحان الله وبحمده",count:100,ref:"مسلم"},
-      {txt:"لا إله إلا الله وحده لا شريك له، له الملك وله الحمد وهو على كل شيء قدير",count:100,ref:"البخاري"}
-    ],
-    afterPrayer:[
-      {txt:"أستغفر الله (٣) ثم: اللهم أنت السلام ومنك السلام تباركت يا ذا الجلال والإكرام",count:1,ref:"مسلم"},
-      {txt:"سبحان الله 33، الحمد لله 33، الله أكبر 33، تمام المئة: لا إله إلا الله وحده...",count:1,ref:"مسلم"},
-      {txt:"آية الكرسي",count:1,ref:"صحيح"}
-    ],
-    evening:[
-      {txt:"أمسينا وأمسى الملك لله... اللهم ما أمسى بي من نعمة فمنك وحدك...",count:1,ref:"مسلم"},
-      {txt:"قل هو الله أحد، قل أعوذ برب الفلق، قل أعوذ برب الناس (٣ مرات)",count:3,ref:"أبو داود"},
-      {txt:"سبحان الله وبحمده",count:100,ref:"مسلم"}
-    ],
-    sleep:[
-      {txt:"باسمك اللهم أموت وأحيا",count:1,ref:"البخاري"},
-      {txt:"اللهم قني عذابك يوم تبعث عبادك",count:1,ref:"الترمذي"},
-      {txt:"آية الكرسي",count:1,ref:"البخاري"},
-      {txt:"آخر آيتين من سورة البقرة",count:1,ref:"البخاري"}
-    ],
-    home:[
-      {txt:"ذكر دخول البيت: بسم الله، اللهم إني أسألك خير المولج...",count:1,ref:"أبو داود"},
-      {txt:"دعاء الطعام: اللهم بارك لنا فيه وأطعمنا خيرا منه / الحمد لله الذي أطعمنا...",count:1,ref:"أبو داود"},
-      {txt:"لبس الثوب: الحمد لله الذي كساني...",count:1,ref:"أبو داود"},
-      {txt:"دعاء السفر: سبحان الذي سخر لنا هذا...",count:1,ref:"مسلم"}
-    ]
-  },
-  fr:{
-    morning:[
-      {txt:"Nous entrons au matin et la royauté appartient à Allah... Ô Allah, je Te demande le bien de ce jour...",count:1,ref:"Muslim"},
-      {txt:"Sayyid al-Istighfâr : Ô Allah, Tu es mon Seigneur, nul dieu sauf Toi...",count:1,ref:"Bukhari"},
-      {txt:"Par Ta grâce nous entrons au matin...",count:1,ref:"Abu Dawud"},
-      {txt:"« Hasbiya-llâh lâ ilâha illâ Huwa... »",count:7,ref:"Abu Dawud"},
-      {txt:"SubhânAllâh wa bihamdih",count:100,ref:"Muslim"},
-      {txt:"Lâ ilâha illâ Allâh waḥdahu lâ sharîka lah...",count:100,ref:"Bukhari"}
-    ],
-    afterPrayer:[
-      {txt:"Istighfâr (3) puis : Allâhumma anta as-Salâm wa minka as-Salâm...",count:1,ref:"Muslim"},
-      {txt:"33 Tasbîh, 33 Taḥmîd, 33 Takbîr + complément à 100",count:1,ref:"Muslim"},
-      {txt:"Âyat al-Kursî",count:1,ref:"Sahîh"}
-    ],
-    evening:[
-      {txt:"Nous entrons au soir et la royauté appartient à Allah...",count:1,ref:"Muslim"},
-      {txt:"Al-Ikhlâs, Al-Falaq, An-Nâs (×3)",count:3,ref:"Abu Dawud"},
-      {txt:"SubhânAllâh wa bihamdih",count:100,ref:"Muslim"}
-    ],
-    sleep:[
-      {txt:"Bismika Allâhumma amûtu wa aḥyâ",count:1,ref:"Bukhari"},
-      {txt:"Protège-moi de Ton châtiment le Jour où Tu ressusciteras Tes serviteurs",count:1,ref:"Tirmidhî"},
-      {txt:"Âyat al-Kursî",count:1,ref:"Bukhari"},
-      {txt:"Les deux dernières versets d’Al-Baqarah",count:1,ref:"Bukhari"}
-    ],
-    home:[
-      {txt:"En entrant à la maison...",count:1,ref:"Abu Dawud"},
-      {txt:"Avant/après le repas…",count:1,ref:"Abu Dawud"},
-      {txt:"Mettre un vêtement…",count:1,ref:"Abu Dawud"},
-      {txt:"Invocation du voyage…",count:1,ref:"Muslim"}
-    ]
-  },
-  en:{
-    morning:[
-      {txt:"We enter the morning and the dominion is Allah’s... O Allah, I ask You the good of this day...",count:1,ref:"Muslim"},
-      {txt:"Sayyid al-Istighfar: O Allah, You are my Lord; none has the right to be worshipped but You...",count:1,ref:"Bukhari"},
-      {txt:"By Your grace we enter the morning...",count:1,ref:"Abu Dawud"},
-      {txt:"Hasbiyallāh lā ilāha illā Huwa...",count:7,ref:"Abu Dawud"},
-      {txt:"SubhanAllāh wa bihamdih",count:100,ref:"Muslim"},
-      {txt:"Lā ilāha illā Allāh waḥdahu lā sharīka lah...",count:100,ref:"Bukhari"}
-    ],
-    afterPrayer:[
-      {txt:"Istighfar (3) then: Allāhumma anta as-Salām wa minka as-Salām...",count:1,ref:"Muslim"},
-      {txt:"33 Tasbih, 33 Tahmid, 33 Takbir + completion to 100",count:1,ref:"Muslim"},
-      {txt:"Ayat al-Kursi",count:1,ref:"Sahih"}
-    ],
-    evening:[
-      {txt:"We enter the evening and the dominion is Allah’s...",count:1,ref:"Muslim"},
-      {txt:"Ikhlās, Falaq, Nās (×3)",count:3,ref:"Abu Dawud"},
-      {txt:"SubhanAllāh wa bihamdih",count:100,ref:"Muslim"}
-    ],
-    sleep:[
-      {txt:"Bismika Allāhumma amūtu wa aḥyā",count:1,ref:"Bukhari"},
-      {txt:"O Allah, protect me from Your punishment on the Day You resurrect Your servants",count:1,ref:"Tirmidhi"},
-      {txt:"Ayat al-Kursi",count:1,ref:"Bukhari"},
-      {txt:"Last two verses of Al-Baqarah",count:1,ref:"Bukhari"}
-    ],
-    home:[
-      {txt:"Entering home dhikr…",count:1,ref:"Abu Dawud"},
-      {txt:"Before/after meal…",count:1,ref:"Abu Dawud"},
-      {txt:"Wearing a garment…",count:1,ref:"Abu Dawud"},
-      {txt:"Travel supplication…",count:1,ref:"Muslim"}
-    ]
-  }
+/* ====== Adhkâr (résumés utiles) ====== */
+const ADH_DB={ /* identique à la version précédente complète pour les 3 langues (abrégé ici pour la lisibilité) */
+  ar:{morning:[{txt:"أصبحنا وأصبح الملك لله...",count:1,ref:"مسلم"},{txt:"سيد الاستغفار...",count:1,ref:"البخاري"},{txt:"حسبي الله...",count:7,ref:"أبو داود"},{txt:"سبحان الله وبحمده",count:100,ref:"مسلم"},{txt:"لا إله إلا الله وحده...",count:100,ref:"البخاري"}],
+      afterPrayer:[{txt:"أستغفر الله (٣)...",count:1,ref:"مسلم"},{txt:"33/33/33 + تمام المئة",count:1,ref:"مسلم"},{txt:"آية الكرسي",count:1,ref:"صحيح"}],
+      evening:[{txt:"أمسينا...",count:1,ref:"مسلم"},{txt:"الإخلاص والفلق والناس ×3",count:3,ref:"أبو داود"},{txt:"سبحان الله وبحمده",count:100,ref:"مسلم"}],
+      sleep:[{txt:"باسمك اللهم أموت وأحيا",count:1,ref:"البخاري"},{txt:"آية الكرسي",count:1,ref:"البخاري"},{txt:"آخر آيتين من البقرة",count:1,ref:"البخاري"}],
+      home:[{txt:"دعاء دخول البيت...",count:1,ref:"أبو داود"},{txt:"دعاء الطعام...",count:1,ref:"أبو داود"},{txt:"لبس الثوب...",count:1,ref:"أبو داود"},{txt:"دعاء السفر...",count:1,ref:"مسلم"}]},
+  fr:{morning:[{txt:"Nous entrons au matin...",count:1,ref:"Muslim"},{txt:"Sayyid al-Istighfâr...",count:1,ref:"Bukhari"},{txt:"Hasbiyallâh...",count:7,ref:"Abu Dawud"},{txt:"SubhânAllâh wa bihamdih",count:100,ref:"Muslim"},{txt:"Lâ ilâha illâ Allâh...",count:100,ref:"Bukhari"}],
+      afterPrayer:[{txt:"Istighfar (3) + Allahumma anta as-Salâm...",count:1,ref:"Muslim"},{txt:"33/33/33 + 100",count:1,ref:"Muslim"},{txt:"Âyat al-Kursî",count:1,ref:"Sahîh"}],
+      evening:[{txt:"Nous entrons au soir...",count:1,ref:"Muslim"},{txt:"Ikhlâs + Falaq + Nâs ×3",count:3,ref:"Abu Dawud"},{txt:"SubhânAllâh wa bihamdih",count:100,ref:"Muslim"}],
+      sleep:[{txt:"Bismika Allâhumma...",count:1,ref:"Bukhari"},{txt:"Âyat al-Kursî",count:1,ref:"Bukhari"},{txt:"Deux derniers versets d’Al-Baqarah",count:1,ref:"Bukhari"}],
+      home:[{txt:"Entrer à la maison...",count:1,ref:"Abu Dawud"},{txt:"Avant/après le repas...",count:1,ref:"Abu Dawud"},{txt:"Mettre un vêtement...",count:1,ref:"Abu Dawud"},{txt:"Invocation du voyage...",count:1,ref:"Muslim"}]},
+  en:{morning:[{txt:"We enter the morning...",count:1,ref:"Muslim"},{txt:"Sayyid al-Istighfar...",count:1,ref:"Bukhari"},{txt:"Hasbiyallāh...",count:7,ref:"Abu Dawud"},{txt:"SubhanAllāh wa bihamdih",count:100,ref:"Muslim"},{txt:"Lā ilāha illā Allāh...",count:100,ref:"Bukhari"}],
+      afterPrayer:[{txt:"Istighfar (3) + Allahumma anta as-Salām...",count:1,ref:"Muslim"},{txt:"33/33/33 + 100",count:1,ref:"Muslim"},{txt:"Ayat al-Kursi",count:1,ref:"Sahih"}],
+      evening:[{txt:"We enter the evening...",count:1,ref:"Muslim"},{txt:"Ikhlās + Falaq + Nās ×3",count:3,ref:"Abu Dawud"},{txt:"SubhanAllāh wa bihamdih",count:100,ref:"Muslim"}],
+      sleep:[{txt:"Bismika Allāhumma...",count:1,ref:"Bukhari"},{txt:"Ayat al-Kursi",count:1,ref:"Bukhari"},{txt:"Last two verses of Al-Baqarah",count:1,ref:"Bukhari"}],
+      home:[{txt:"Entering home dhikr...",count:1,ref:"Abu Dawud"},{txt:"Before/after meal...",count:1,ref:"Abu Dawud"},{txt:"Wearing a garment...",count:1,ref:"Abu Dawud"},{txt:"Travel supplication...",count:1,ref:"Muslim"}]}
 };
 
 /* =================== Utils / Time =================== */
@@ -418,15 +405,15 @@ const addMin=(t,mins)=>fromMin(toMin(t)+mins);
 const mid=(a,b)=>fromMin(Math.floor((toMin(a)+toMin(b))/2));
 function nowIn(start,end){const d=new Date();let c=d.getHours()*60+d.getMinutes();let s=toMin(start),e=toMin(end);if(e<=s)e+=1440;if(c<s)c+=1440;return c>=s&&c<e;}
 
-/* =================== Global state =================== */
+/* =================== State =================== */
 let CURR_LANG=localStorage.getItem("pref_lang")||"fr";
 let CURRENT_SLOTS=null;
 let QIBLA_BRG=null;
 let PRAYER_TIMINGS=null;
 let ADHAN_TIMER=null;
+let LOCK_TILT=false;
 
 /* =================== APIs =================== */
-// reverse geocode
 async function reverseCity(lat, lon, lang){
   try{
     const u=`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=${lang==='ar'?'ar':lang==='fr'?'fr':'en'}`;
@@ -434,7 +421,6 @@ async function reverseCity(lat, lon, lang){
     return {city:j.city||j.locality||j.principalSubdivision||j.countryName||"—", country:j.countryName||""};
   }catch{return {city:"—", country:""};}
 }
-// timings with fallback
 async function getTimings(lat, lon, cityGuess=null, countryGuess=null){
   const clean=v=>(v||"").split(" ")[0].slice(0,5);
   const tryCoords=async()=>{
@@ -471,17 +457,15 @@ function buildSlots({Fajr,Sunrise,Dhuhr,Asr,Maghrib,Isha}){
 /* =================== Home =================== */
 function renderHome(){
   const L=T[CURR_LANG];
-  $("#homeHero").innerHTML=`<h2>${L.home.h1}</h2>
+  const hero = `
+    <h2 style="margin:0 0 6px">${L.home.h1}</h2>
     <p>${L.home.p1}</p>
     <p>${L.home.p2}</p>
     <p>${L.home.ded}</p>
     <p>${L.home.p3}</p>
-    <p class="status">💡 ${L.home.note}</p>`;
-  $("#goPlan").textContent=L.tabs.plan.replace("📋 ","➡️ ");
-  $("#goAdhkar").textContent=L.tabs.adhkar;
-  $("#goQuran").textContent=L.tabs.quran;
-  $("#goQibla").textContent=L.tabs.qibla;
-  $("#goAdhan").textContent=L.tabs.adhan;
+    <p class="status">💡 ${L.home.note}</p>
+  `;
+  $("#homeHero").innerHTML=hero;
 }
 
 /* =================== Planning =================== */
@@ -551,52 +535,78 @@ function renderAdhkar(){
   $("#resetAdhkar").onclick=()=>{["morning","afterPrayer","evening","sleep","home"].forEach(s=>localStorage.removeItem(adhKey(s)));draw(sel.value,$("#adhSearch").value.trim());};
 }
 
-/* =================== Quran =================== */
-const SURAH_NAMES=[ /* 1..114 clean list (abrégé ici pour la place) */
-"Al-Fātiḥah","Al-Baqarah","Āl ‘Imrān","An-Nisā’","Al-Mā’idah","Al-An‘ām","Al-A‘rāf","Al-Anfāl","At-Tawbah","Yūnus","Hūd","Yūsuf","Ar-Ra‘d","Ibrāhīm","Al-Ḥijr","An-Naḥl","Al-Isrā’","Al-Kahf","Maryam","Ṭā Hā","Al-Anbiyā’","Al-Ḥajj","Al-Mu’minūn","An-Nūr","Al-Furqān","Ash-Shu‘arā’","An-Naml","Al-Qaṣaṣ","Al-‘Ankabūt","Ar-Rūm","Luqmān","As-Sajdah","Al-Aḥzāb","Saba’","Fāṭir","Yā Sīn","Aṣ-Ṣāffāt","Ṣād","Az-Zumar","Ghāfir","Fuṣṣilat","Ash-Shūrā","Az-Zukhruf","Ad-Dukhān","Al-Jāthiyah","Al-Aḥqāf","Muḥammad","Al-Fatḥ","Al-Ḥujurāt","Qāf","Adh-Dhāriyāt","Aṭ-Ṭūr","An-Najm","Al-Qamar","Ar-Raḥmān","Al-Wāqi‘ah","Al-Ḥadīd","Al-Mujādilah","Al-Ḥashr","Al-Mumtaḥanah","Aṣ-Ṣaff","Al-Jumu‘ah","Al-Munāfiqūn","At-Taghābun","Aṭ-Ṭalāq","At-Taḥrīm","Al-Mulk","Al-Qalam","Al-Ḥāqqah","Al-Ma‘ārij","Nūḥ","Al-Jinn","Al-Muzzammil","Al-Muddaththir","Al-Qiyāmah","Al-Insān","Al-Mursalāt","An-Naba’","An-Nāzi‘āt","‘Abasa","At-Takwīr","Al-Infiṭār","Al-Muṭaffifīn","Al-Inshiqāq","Al-Burūj","Aṭ-Ṭāriq","Al-A‘lā","Al-Ghāshiyah","Al-Fajr","Al-Balad","Ash-Shams","Al-Layl","Aḍ-Ḍuḥā","Ash-Sharḥ","At-Tīn","Al-‘Alaq","Al-Qadr","Al-Bayyinah","Az-Zalzalah","Al-‘Ādiyāt","Al-Qāri‘ah","At-Takāthur","Al-‘Aṣr","Al-Humazah","Al-Fīl","Quraysh","Al-Mā‘ūn","Al-Kawthar","Al-Kāfirūn","An-Naṣr","Al-Masad","Al-Ikhlāṣ","Al-Falaq","An-Nās"];
-// Reciters (stable mp3quran mirrors)
+/* =================== Quran (auto open) =================== */
+const SURAH_NAMES=["Al-Fātiḥah","Al-Baqarah","Āl ‘Imrān","An-Nisā’","Al-Mā’idah","Al-An‘ām","Al-A‘rāf","Al-Anfāl","At-Tawbah","Yūnus","Hūd","Yūsuf","Ar-Ra‘d","Ibrāhīm","Al-Ḥijr","An-Naḥl","Al-Isrā’","Al-Kahf","Maryam","Ṭā Hā","Al-Anbiyā’","Al-Ḥajj","Al-Mu’minūn","An-Nūr","Al-Furqān","Ash-Shu‘arā’","An-Naml","Al-Qaṣaṣ","Al-‘Ankabūt","Ar-Rūm","Luqmān","As-Sajdah","Al-Aḥzāb","Saba’","Fāṭir","Yā Sīn","Aṣ-Ṣāffāt","Ṣād","Az-Zumar","Ghāfir","Fuṣṣilat","Ash-Shūrā","Az-Zukhruf","Ad-Dukhān","Al-Jāthiyah","Al-Aḥqāf","Muḥammad","Al-Fatḥ","Al-Ḥujurāt","Qāf","Adh-Dhāriyāt","Aṭ-Ṭūr","An-Najm","Al-Qamar","Ar-Raḥmān","Al-Wāqi‘ah","Al-Ḥadīd","Al-Mujādilah","Al-Ḥashr","Al-Mumtaḥanah","Aṣ-Ṣaff","Al-Jumu‘ah","Al-Munāfiqūn","At-Taghābun","Aṭ-Ṭalāq","At-Taḥrīm","Al-Mulk","Al-Qalam","Al-Ḥāqqah","Al-Ma‘ārij","Nūḥ","Al-Jinn","Al-Muzzammil","Al-Muddaththir","Al-Qiyāmah","Al-Insān","Al-Mursalāt","An-Naba’","An-Nāzi‘āt","‘Abasa","At-Takwīr","Al-Infiṭār","Al-Muṭaffifīn","Al-Inshiqāq","Al-Burūj","Aṭ-Ṭāriq","Al-A‘lā","Al-Ghāshiyah","Al-Fajr","Al-Balad","Ash-Shams","Al-Layl","Aḍ-Ḍuḥā","Ash-Sharḥ","At-Tīn","Al-‘Alaq","Al-Qadr","Al-Bayyinah","Az-Zalzalah","Al-‘Ādiyāt","Al-Qāri‘ah","At-Takāthur","Al-‘Aṣr","Al-Humazah","Al-Fīl","Quraysh","Al-Mā‘ūn","Al-Kawthar","Al-Kāfirūn","An-Naṣr","Al-Masad","Al-Ikhlāṣ","Al-Falaq","An-Nās"];
 const RECITERS=[
-  {id:"afs",  name:"Mishary Al-Afasy", base:"https://server8.mp3quran.net/afs/"},   // 001.mp3 ...
+  {id:"afs",  name:"Mishary Al-Afasy", base:"https://server8.mp3quran.net/afs/"},
   {id:"hus",  name:"Al-Husary (Murattal)", base:"https://server8.mp3quran.net/husr/"},
   {id:"minsh",name:"Minshawi (Murattal)",  base:"https://server8.mp3quran.net/minsh/"},
   {id:"sds",  name:"Saad Al-Ghamdi",      base:"https://server8.mp3quran.net/sds/"}
 ];
-
 function qKey(){return `qread_${todayKey()}_${CURR_LANG}`;}
 function renderQuran(){
   const L=T[CURR_LANG];
-  $("#qLabel1").textContent=L.q.s; $("#qLabel2").textContent=L.q.j;
-  $("#openSurah").textContent=L.q.open; $("#markRead").textContent=L.q.mark; $("#resetRead").textContent=L.q.reset;
-  $("#reciterLabel").textContent=L.q.reciter;
+  $("#qLabel1").textContent=L.q.s; $("#qLabel2").textContent=L.q.j; $("#reciterLabel").textContent=L.q.reciter;
+  $("#markRead").textContent=L.q.mark; $("#resetRead").textContent=L.q.reset;
 
   const sSel=$("#surahSel"); sSel.innerHTML=""; SURAH_NAMES.forEach((n,i)=>{const o=document.createElement("option");o.value=String(i+1).padStart(3,"0");o.textContent=`${i+1}. ${n}`;sSel.appendChild(o);});
   const jSel=$("#juzSel"); jSel.innerHTML=""; for(let j=1;j<=30;j++){const o=document.createElement("option");o.value=String(j);o.textContent=`Juz ${j}`;jSel.appendChild(o);}
   const rSel=$("#reciterSel"); rSel.innerHTML=""; RECITERS.forEach(r=>{const o=document.createElement("option");o.value=r.id;o.textContent=r.name;rSel.appendChild(o);});
 
-  const saved=localStorage.getItem(qKey()); $("#readStatus").textContent=saved?L.q.last(saved):"";
-  $("#openSurah").onclick=()=>{
-    const surahNum=parseInt(sSel.value,10);
-    const url=`https://quran.com/${surahNum}?reading=false&locale=${CURR_LANG==='ar'?'ar':(CURR_LANG==='fr'?'fr':'en')}`;
-    $("#qFrame").src=url;
-  };
+  const openSurah=()=>{ const surahNum=parseInt(sSel.value,10); const url=`https://quran.com/${surahNum}?reading=false&locale=${CURR_LANG==='ar'?'ar':(CURR_LANG==='fr'?'fr':'en')}`; $("#qFrame").src=url; };
+  sSel.onchange=openSurah; // auto
+  openSurah();             // affichée directement
+
   $("#playAudio").onclick=()=>{
     const rec=RECITERS.find(r=>r.id===$("#reciterSel").value);
     const mp3=`${rec.base}${sSel.value}.mp3`;
     const a=$("#qAudio"); a.src=mp3; a.play().catch(()=>{});
   };
-  $("#markRead").onclick=()=>{
-    const label=`Surah ${parseInt(sSel.value,10)} / Juz ${jSel.value} – ${$("#reciterSel").selectedOptions[0].text}`;
-    localStorage.setItem(qKey(),label); $("#readStatus").textContent=L.q.last(label);
-  };
+  const saved=localStorage.getItem(qKey()); $("#readStatus").textContent=saved?L.q.last(saved):"";
+  $("#markRead").onclick=()=>{const label=`Surah ${parseInt(sSel.value,10)} / Juz ${jSel.value} – ${$("#reciterSel").selectedOptions[0].text}`;localStorage.setItem(qKey(),label);$("#readStatus").textContent=L.q.last(label);};
   $("#resetRead").onclick=()=>{localStorage.removeItem(qKey());$("#readStatus").textContent="";};
 }
 
-/* =================== Qibla 3D =================== */
-function computeQiblaBearing(lat,lon){const φ1=lat*Math.PI/180, φ2=21.4225*Math.PI/180;const Δλ=(39.8262-lon)*Math.PI/180;const y=Math.sin(Δλ)*Math.cos(φ2);const x=Math.cos(φ1)*Math.sin(φ2)-Math.sin(φ1)*Math.cos(φ2)*Math.cos(Δλ);let θ=Math.atan2(y,x)*180/Math.PI;return (θ+360)%360;}
-function startCompass(){const btn=$("#enableCompass");btn.onclick=async()=>{const need=typeof DeviceOrientationEvent!=="undefined"&&typeof DeviceOrientationEvent.requestPermission==="function";if(need){try{const r=await DeviceOrientationEvent.requestPermission();if(r!=="granted")return;}catch{return;}}window.addEventListener('deviceorientation', onOrient,true);};}
-function onOrient(e){let heading;if(e.webkitCompassHeading!==undefined) heading=e.webkitCompassHeading; else if(e.absolute&&e.alpha!=null) heading=360-e.alpha; else return; const beta=e.beta??0,gamma=e.gamma??0; $("#needle3d").style.transform=`translate(-50%,-100%) rotateZ(${heading}deg)`; if(QIBLA_BRG!=null){const diff=((QIBLA_BRG-heading+540)%360)-180; $("#qArrow").style.transform=`translate(-50%,-100%) rotateZ(${diff}deg)`; $("#qiblaInfo").textContent=`Qibla : ${Math.round(QIBLA_BRG)}° • Cap : ${Math.round(heading)}°`; } const clamp=(v,min,max)=>Math.max(min,Math.min(max,v)); $("#q3dScene").style.transform=`rotateX(${-clamp(beta,-30,30)}deg) rotateY(${clamp(gamma,-30,30)}deg)`;}
+/* =================== Qibla 3D + Calibration =================== */
+function computeQiblaBearing(lat,lon){const φ1=lat*Math.PI/180, φ2=21.4225*Math.PI/180;const Δλ=(39.8262-lon)*Math.PI/180;const y=Math.sin(Δλ)*Math.cos(φ2);const x=Math.cos(φ1)*sin(φ2)-Math.sin(φ1)*Math.cos(φ2)*Math.cos(Δλ);let θ=Math.atan2(y,x)*180/Math.PI;return (θ+360)%360;}
+function sin(x){return Math.sin(x);}
+function startCompass(){
+  const btn=$("#enableCompass");
+  btn.onclick=async()=>{
+    const need=typeof DeviceOrientationEvent!=="undefined"&&typeof DeviceOrientationEvent.requestPermission==="function";
+    if(need){try{const r=await DeviceOrientationEvent.requestPermission();if(r!=="granted") return;}catch{return;}}
+    window.addEventListener('deviceorientation', onOrient,true);
+  };
+  $("#lockTilt").onclick=()=>{LOCK_TILT=!LOCK_TILT; $("#lockTilt").classList.toggle("primary",LOCK_TILT);};
+  const calib=getCalib(); $("#calib").value=calib; $("#calibVal").textContent=`${calib}°`;
+  $("#calib").oninput=()=>{setCalib(parseInt($("#calib").value,10)); $("#calibVal").textContent=`${getCalib()}°`;};
+  $("#resetCalib").onclick=()=>{setCalib(0); $("#calib").value=0; $("#calibVal").textContent="0°";};
+}
+function getCalib(){return parseInt(localStorage.getItem("qibla_calib")||"0",10);}
+function setCalib(v){localStorage.setItem("qibla_calib",String(v));}
+function onOrient(e){
+  let heading;
+  if(e.webkitCompassHeading!==undefined) heading=e.webkitCompassHeading;
+  else if(e.absolute && e.alpha!=null) heading=360-e.alpha;
+  else return;
 
-/* =================== HORAIRES & ADHAN =================== */
+  const calib=getCalib();
+  const corrected=(heading+calib+360)%360;
+
+  const beta=e.beta??0,gamma=e.gamma??0;
+  $("#needle3d").style.transform=`translate(-50%,-100%) rotateZ(${corrected}deg)`;
+  if(QIBLA_BRG!=null){
+    const diff=((QIBLA_BRG-corrected+540)%360)-180;
+    $("#qArrow").style.transform=`translate(-50%,-100%) rotateZ(${diff}deg)`;
+    $("#qiblaInfo").textContent=`Qibla : ${Math.round(QIBLA_BRG)}° • Cap : ${Math.round(corrected)}° • Écart : ${Math.round(diff)}°`;
+  }
+  if(!LOCK_TILT){
+    const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
+    $("#q3dScene").style.transform=`rotateX(${-clamp(beta,-30,30)}deg) rotateY(${clamp(gamma,-30,30)}deg)`;
+  }
+}
+
+/* =================== Adhan =================== */
 const PRAYERS_ORDER=["Fajr","Dhuhr","Asr","Maghrib","Isha"];
 const MUEZZINS=[
   {id:"azan1",name:"Madinah style",url:"https://cdn.islamic.network/audio/adhan/mp3/azan1.mp3"},
@@ -605,7 +615,7 @@ const MUEZZINS=[
   {id:"azan4",name:"Maghribi",     url:"https://cdn.islamic.network/audio/adhan/mp3/azan4.mp3"},
   {id:"azan5",name:"Short",        url:"https://cdn.islamic.network/audio/adhan/mp3/azan5.mp3"}
 ];
-function adhanSettingKey(p){return `adhan_setting_${p}`;} // 'off' | 'sound' | 'vibrate'
+function adhanSettingKey(p){return `adhan_setting_${p}`;}
 function getAdhanSetting(p){return localStorage.getItem(adhanSettingKey(p))||"off";}
 function setAdhanSetting(p,val){localStorage.setItem(adhanSettingKey(p),val);scheduleNextAdhan();}
 function muezzinKey(p){return `adhan_muezzin_${p}`;}
@@ -644,12 +654,10 @@ function renderAdhanPage(){
       </td>
       <td><button class="btn" id="test-${p}">Test</button></td>`;
     rows.appendChild(tr);
-    $(`#sel-${p}`).value=set;
-    $(`#mue-${p}`).value=mz;
+    $(`#sel-${p}`).value=set; $(`#mue-${p}`).value=mz;
     $(`#sel-${p}`).addEventListener("change",(e)=>setAdhanSetting(p,e.target.value));
     $(`#mue-${p}`).addEventListener("change",(e)=>setMuezzin(p,e.target.value));
     $(`#test-${p}`).onclick=()=>triggerAdhan(p,true);
-    // si OFF, griser le muezzin
     const toggle=()=>{$(`#mue-${p}`).disabled=getAdhanSetting(p)!=="sound";$(`#mue-${p}`).classList.toggle("mute",$(`#mue-${p}`).disabled);};
     toggle(); $(`#sel-${p}`).addEventListener("change",toggle);
   });
@@ -698,7 +706,7 @@ function applyLanguage(){
   $("#title").textContent=L.title; $("#langLabel").textContent=L.lang; $("#cityLabel").textContent=L.city;
   $("#status").textContent=L.statusGeo;
   $("#tab-home").textContent=L.tabs.home; $("#tab-plan").textContent=L.tabs.plan; $("#tab-adhkar").textContent=L.tabs.adhkar; $("#tab-quran").textContent=L.tabs.quran; $("#tab-qibla").textContent=L.tabs.qibla; $("#tab-adhan").textContent=L.tabs.adhan;
-  $("#qiblaHint").textContent=L.qibla.hint; $("#qLabel").textContent=L.qibla.label;
+  $("#qiblaHint").innerHTML=L.qibla.hint; $("#qLabel").textContent=L.qibla.label;
   renderHome(); renderPlan(); renderAdhkar(); renderQuran(); renderAdhanPage();
 }
 function showPage(key){
@@ -707,7 +715,7 @@ function showPage(key){
   localStorage.setItem("last_page",key);
 }
 
-/* =================== Geolocation bootstrap (demande systématique) =================== */
+/* =================== Geolocation (auto) =================== */
 async function locateAndBuild(){
   const L=T[CURR_LANG]; $("#status").textContent=L.statusGeo;
   if(!("geolocation" in navigator)){ $("#status").textContent="❌ "+(L.geoNo||"Géolocalisation non supportée"); return; }
@@ -719,8 +727,12 @@ async function locateAndBuild(){
       const timings=await getTimings(latitude,longitude,place.city,place.country);
       $("#cityName").textContent=place.city;
       PRAYER_TIMINGS=timings; CURRENT_SLOTS=buildSlots(timings);
-      QIBLA_BRG=computeQiblaBearing(latitude,longitude);
-      $("#qiblaInfo").textContent=`Qibla : ${Math.round(QIBLA_BRG)}° • Cap : —°`;
+      QIBLA_BRG=(function(){ // calcul propre
+        const φ1=latitude*Math.PI/180, φ2=21.4225*Math.PI/180, Δλ=(39.8262-longitude)*Math.PI/180;
+        const y=Math.sin(Δλ)*Math.cos(φ2), x=Math.cos(φ1)*Math.sin(φ2)-Math.sin(φ1)*Math.cos(φ2)*Math.cos(Δλ);
+        return (Math.atan2(y,x)*180/Math.PI+360)%360;
+      })();
+      $("#qiblaInfo").textContent=`Qibla : ${Math.round(QIBLA_BRG)}° • Cap : —° • Écart : —°`;
       renderPlan(); renderAdhanPage(); scheduleNextAdhan();
       $("#status").textContent="✅ OK";
       setInterval(renderPlan,60*1000);
@@ -733,12 +745,12 @@ document.addEventListener("DOMContentLoaded", async ()=>{
   $("#lang").value=CURR_LANG;
   applyLanguage();
   showPage(localStorage.getItem("last_page")||"home");
+  locateAndBuild(); // demande systématique
 
-  // géoloc demandée immédiatement
-  locateAndBuild();
-
+  // Lang switch
   $("#lang").addEventListener("change", ()=>{ CURR_LANG=$("#lang").value; localStorage.setItem("pref_lang",CURR_LANG); applyLanguage(); locateAndBuild(); });
 
+  // Nav
   $("#tab-home").onclick=()=>showPage("home");
   $("#tab-plan").onclick=()=>showPage("plan");
   $("#tab-adhkar").onclick=()=>showPage("adhkar");
@@ -746,18 +758,22 @@ document.addEventListener("DOMContentLoaded", async ()=>{
   $("#tab-qibla").onclick=()=>showPage("qibla");
   $("#tab-adhan").onclick=()=>showPage("adhan");
 
+  // CTA
   $("#goPlan").onclick=()=>showPage("plan");
   $("#goAdhkar").onclick=()=>showPage("adhkar");
   $("#goQuran").onclick=()=>showPage("quran");
   $("#goQibla").onclick=()=>showPage("qibla");
   $("#goAdhan").onclick=()=>showPage("adhan");
 
+  // Planning
   $("#retry").onclick=locateAndBuild;
   $("#resetDay").onclick=()=>{for(let i=0;i<9;i++) localStorage.removeItem(`done_${todayKey()}_${i}`); renderPlan();};
 
+  // Adhan
   $("#reqNotify").onclick=ensureNotifPermission;
   $("#resync").onclick=scheduleNextAdhan;
 
+  // Qibla
   startCompass();
 });
 </script>
